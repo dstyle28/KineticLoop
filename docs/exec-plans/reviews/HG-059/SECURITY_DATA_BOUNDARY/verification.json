@@ -1,0 +1,153 @@
+{
+  "review_identity": "harness-governance-v0.1/HG-059",
+  "base_commit": "9700a1b95d05c856897f74f125cfdf6fb3f6e646",
+  "tested_commit": "74c93c06e83cd5087ecd3b4cc11320b88b246616",
+  "reviewed_head_sha": "337146e1927ba0f57995d4af26f4108cfc95d7a5",
+  "status": "PASS",
+  "review_scope": "Definitions and enforcement only; no source retrieval implementation",
+  "independent_checks": {
+    "governance_schema_and_exact_changed_path_set": {
+      "status": "PASS",
+      "paths": 176
+    },
+    "authority_hashes": {
+      "status": "PASS",
+      "index_entries": 30,
+      "manifest_entries": 343
+    },
+    "declaration_schema": {
+      "status": "PASS",
+      "valid_tuples": 6,
+      "negative_cases": 94,
+      "coverage": [
+        "malformed identities/full OIDs",
+        "absolute/traversal/dot/empty/control/backslash/non-ASCII paths",
+        "trailing newline",
+        "unknown fields",
+        "duplicate JSON key",
+        "duplicate/conflicting tuple",
+        "foreign review record",
+        "path/count/raw-byte exhaustion"
+      ]
+    },
+    "original_binding": {
+      "status": "PASS",
+      "tuples": 6,
+      "original_record_commits": [
+        "ec6738fd758943d71aa2fcba337a9adaf931385e",
+        "39a9a562cb4b9604916099b1a2af48e270c5b8d7"
+      ],
+      "record_blobs_unchanged_at_base_and_reviewed": true,
+      "HG045_reviewed_source_blob": "9a34163c2b5e726d1a1d4a9af2dd6c00e7235b64",
+      "HG047_fallback_source_blobs": [
+        "fb33e99c3a47c9c1b60fe27ad30ab5ea42e5e329",
+        "e565722e8f495008d00962304ecd2522c5100740",
+        "816e9ff76f8f85676d854627bd34a35b742f6fb7"
+      ],
+      "HG047_single_parent_edges": [
+        {
+          "commit": "89b3d3f55de1c8e9882bfb7f5b109eb4c15da3c2",
+          "changed_paths": 46
+        },
+        {
+          "commit": "39a9a562cb4b9604916099b1a2af48e270c5b8d7",
+          "changed_paths": 5
+        }
+      ],
+      "all_edge_paths_whole_component_same_owner": true,
+      "source_bytes": [
+        35709,
+        35709,
+        35709,
+        6697,
+        6729,
+        10728
+      ],
+      "historical_source_executed": false
+    },
+    "implementation_boundary": {
+      "status": "PASS",
+      "changed_existing_functions": [
+        "governance_allowed_patterns",
+        "validate"
+      ],
+      "new_functions": [
+        "source_lineage_projection_errors"
+      ],
+      "runtime_readers_and_storage_controller_unchanged": true,
+      "frozen_and_requirement_KL081_unchanged": true,
+      "implementation_T_to_R_unchanged": true
+    },
+    "author_captures": {
+      "status": "PASS",
+      "checks": 8,
+      "exact_tested_command_exit_and_stored_raw_hashes": true,
+      "actual_log_outcomes": {
+        "definitions": "PASS",
+        "validator": "161 passed",
+        "unit": "247 passed",
+        "harness": "1770 passed",
+        "lint": "All checks passed",
+        "typecheck": "Success: no issues found in 172 source files",
+        "authority": "HARNESS_CHECK_PASS tasks=78 active=74",
+        "diff": "empty; exit 0"
+      },
+      "suite_identities": [
+        {
+          "suite": "validator",
+          "cases": 161,
+          "passed_call_reports": 161,
+          "ordered_collection_sha256": "5c4d85b8cf3b9e688bdce43455d891d3b61ed99e12704382a18232f079c8f6a3"
+        },
+        {
+          "suite": "unit",
+          "cases": 247,
+          "passed_call_reports": 247,
+          "ordered_collection_sha256": "56b899af5f42258cc7d61015e5119cfcf94dac04f93e8db54734c1ad4d7569e7"
+        },
+        {
+          "suite": "harness",
+          "cases": 1770,
+          "passed_call_reports": 1770,
+          "passed_phase_reports": 5310,
+          "workers": [
+            "gw0",
+            "gw1"
+          ],
+          "ordered_collection_sha256": "2692bac0fdf4bddb453a6d5953759fafb394dbf5edccc0047a1bbb10bac0b241"
+        }
+      ],
+      "collection_execution_started_JUnit_identity_equal": true,
+      "failure_error_skip_or_observer_error_count": 0
+    },
+    "HG047_strict_RRO": {
+      "status": "PRESERVED_FAILURE",
+      "current_validator_revision": "337146e1927ba0f57995d4af26f4108cfc95d7a5",
+      "suffix_error": "review-revision:evidence-envelope-json",
+      "current_failing_path": "docs/exec-plans/reviews/HG-047/security_round4/verify.py",
+      "approved_historical_HG058_diagnostic_path": "docs/exec-plans/reviews/HG-047/general_round4/verify-attempt1.py",
+      "historical_binding": "ROUTING_PREPARATION_OUTCOME.json at ada3b2f0e4f24f2b1fe857ad32c95e8ff6c6b983 records base9700/tested3f3254 and ordinary evidence-envelope-json for all six refs; scratch preflight explicitly used HG058 owner live classifier for per-edge attribution",
+      "interpretation": "Different classifier revisions. No current attempt1 failure or RRO PASS is claimed; source lineage cannot replace selected freshness or storage verdict."
+    },
+    "continuation": {
+      "status": "PASS_DEFINITION_ONLY",
+      "HG058_HG059_unique_merge_base": "9700a1b95d05c856897f74f125cfdf6fb3f6e646",
+      "repair_map_commit": "d1c1411eae72cbc3499e5fbdc8a266dfde19d003",
+      "repair_map_source": "6af4b99f6895ac63686f3a560cae2d01a8a40a17",
+      "repair_map_blob": "fab5eda72851219c32694fe17414454d770d2099",
+      "retained_map_preconditions_and_both_audits_still_required": true
+    }
+  },
+  "probe_notes": [
+    "Initial reviewer JUnit comparison split parameter text containing double-colon; corrected to partition parameter bracket before splitting selector, matching repository normalization, then all identities matched.",
+    "An initial direct HG047 storage probe selected an edge without the failing current source; per-edge inventory identified security_round4/verify.py, and complete suffix reproduces the unchanged failure. Neither exploratory probe is execution-suite PASS."
+  ],
+  "not_run_by_reviewer": [
+    "unchanged full suites",
+    "source routing implementation",
+    "DB/App/install/admission/network/hosted checks",
+    "final candidate storage audit and ci-pr",
+    "merge"
+  ],
+  "merge_recommendation": "NOT_ISSUED; remaining root and exact-candidate gates are separate"
+}
