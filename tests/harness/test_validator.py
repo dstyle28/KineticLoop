@@ -2668,7 +2668,8 @@ class SourceLineageDefinitionTests(unittest.TestCase):
             self.assertFalse(v.matches(path, v.governance_allowed_patterns('HG-058')))
 
     def test_hg059_exact_checks_authorities_and_no_product_definition_projection(self):
-        record = {'checks_run': [{'check_id': name} for name in v.HG059_REQUIRED_CHECKS],
+        record: dict[str, list] = {
+            'checks_run': [{'check_id': name} for name in v.HG059_REQUIRED_CHECKS],
                   'authority_entries_added': ['REVIEW_SOURCE_DECLARATIONS.schema.json',
                                              'docs/harness/REVIEW_SOURCE_DECLARATIONS.json'],
                   'packets_refined': []}

@@ -23,4 +23,4 @@ for name in sys.argv[1:]:
  meta.update(exit_code=p.returncode,elapsed_seconds=time.time()-start)
  (scratch/(name+'-command.json')).write_text(json.dumps(meta,indent=2)+'\n')
  print(name,p.returncode,round(meta['elapsed_seconds'],2),flush=True)
- if p.returncode: print((scratch/(name+'.log')).read_text()[-5000:],flush=True);break
+ if p.returncode: print((scratch/(name+'.log')).read_text()[-5000:],flush=True);sys.exit(p.returncode)
