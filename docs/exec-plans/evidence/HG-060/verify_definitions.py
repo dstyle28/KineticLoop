@@ -134,7 +134,8 @@ def main():
             'Global validation enumerates every', 'Selected ci-pr independently requires',
             'execution_state', 'INTERRUPTED', 'command_exit_code null', 'driver_exit_code',
             'fabricated-PASS', 'SKIPPED cannot be stored', 'first-parent3965',
-            '256KiB candidate', '1024-work/1MiB', 'No identity exemption'),
+            '256KiB candidate', '1024-work/1MiB', 'No identity exemption',
+            'no retroactive collector/JUnit format migration', 'status-only diagnostic'),
         'docs/harness/EVIDENCE_STORAGE_POLICY.md': (
             'nine ordinary non-envelope', 'byte-for-byte', 'RECEIPT.json', 'PATH_INVENTORY.json',
             'No old report', 'not storage migration authority', 'firstcommit FAIL'),

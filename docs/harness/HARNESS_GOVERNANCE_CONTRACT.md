@@ -286,8 +286,14 @@ For every executed check, bind the exact command and tested SHA to the actual
 lossless output at the record's immutable evidence revision. PASS requires observed
 integer exit0 and the existing positive execution/semantic oracle; FAIL requires an
 actual nonzero integer command exit and preserved failure output/diagnostics. A
-receipt saying PASS or exit0 cannot fabricate execution; test success requires
-collection/execution/JUnit identities and existing no-skip/error/failure rules.
+receipt saying PASS or exit0 cannot fabricate execution. Historical executed
+checks retain their originally governed evidence formats and positive execution
+oracles; this definition imposes no retroactive collector/JUnit format migration.
+Where existing authorities require collection/execution/JUnit identities, all of
+them remain mandatory; fresh HG060/HG058 author checks require full identities and
+no skips/errors/failures. Original valid plain execution logs retain their original
+bindings and actual observed command/exit evidence. A status-only diagnostic is
+never such a log or a substitute for actual execution.
 Nonzero exit, failed/error/skipped/incomplete observed execution contradicts PASS.
 An absent/invalid output or mismatched command/tested revision is invalid even in a
 failed record. Do not turn decoder errors into status-only validity. Global
