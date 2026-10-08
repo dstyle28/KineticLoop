@@ -278,12 +278,26 @@ identity, unique checks, state, base/tested provenance and available revision-bo
 references remain mandatory. Validate every PASS claim against its actual evidence,
 including a PASS check inside a non-PASS record. A BLOCKED or SPEC_CHANGE_REQUIRED
 outcome can contain actual FAIL and truthful NOT_RUN checks; those states never
-become success. Global validation success means the inventory is coherent, never
+become success. A change_status PASS record containing any FAIL or NOT_RUN check
+is contradictory and globally invalid. Validating a non-PASS record never promotes
+its outcome. Global validation success means the inventory is coherent, never
 merge/admission/release authorization. Historical failed records remain at original
 SHAs; no relabeling or future PASS pre-seeding is allowed.
 
+For global inventory, validation_revision is the exact immutable Git commit being
+validated: the author's committed current T, or ci-pr's exact supplied candidate C.
+Load every durable governance record and its check evidence/diagnostic references
+as regular Git blobs at that same validation_revision. Any working-tree copy must
+be byte-identical to its bound blob; uncommitted records are still enumerated and
+fail durable binding rather than being skipped. No new evidence_revision field is
+added to HARNESS_CHANGE. The record's tested_commit identifies the producer T; it
+does not claim that later results or evidence already existed at T. Existing
+review, integration and declared-source references retain their own specific bound
+SHAs; validation_revision never replaces those bindings or permits ambient fallback.
+
 For every executed check, bind the exact command and tested SHA to the actual
-lossless output at the record's immutable evidence revision. PASS requires observed
+lossless output at the record's immutable evidence revision (validation_revision
+for this global inventory). PASS requires observed
 integer exit0 and the existing positive execution/semantic oracle; FAIL requires an
 actual nonzero integer command exit and preserved failure output/diagnostics. A
 receipt saying PASS or exit0 cannot fabricate execution. Historical executed

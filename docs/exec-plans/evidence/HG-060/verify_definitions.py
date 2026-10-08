@@ -135,7 +135,10 @@ def main():
             'execution_state', 'INTERRUPTED', 'command_exit_code null', 'driver_exit_code',
             'fabricated-PASS', 'SKIPPED cannot be stored', 'first-parent3965',
             '256KiB candidate', '1024-work/1MiB', 'No identity exemption',
-            'no retroactive collector/JUnit format migration', 'status-only diagnostic'),
+            'no retroactive collector/JUnit format migration', 'status-only diagnostic',
+            'validation_revision is the exact immutable Git commit',
+            'No new evidence_revision field', 'uncommitted records are still enumerated',
+            'change_status PASS record containing any FAIL or NOT_RUN'),
         'docs/harness/EVIDENCE_STORAGE_POLICY.md': (
             'nine ordinary non-envelope', 'byte-for-byte', 'RECEIPT.json', 'PATH_INVENTORY.json',
             'No old report', 'not storage migration authority', 'firstcommit FAIL'),
