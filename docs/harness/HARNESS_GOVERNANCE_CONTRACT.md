@@ -258,3 +258,105 @@ unit/harness/fullDB, cleanup, hosted checks and normal merge. No author install,
 sign/admit or DB/App lease follows from these definitions. KL081 dependencies and
 all 16 functional checks remain unchanged; all release/production/shadow boundaries
 remain enforced.
+
+## HG060 bounded recovery definitions
+
+HG060 is one definitions-only governance task under its committed PACKET.md. Its
+literal write scope and exact eight checks (definitions, validator, unit, harness,
+lint, typecheck, authority, diff) are enforced by the validator; fresh SHA-bound
+GENERAL and SECURITY_DATA_BOUNDARY reviews are mandatory. Only derived index hashes
+and own delivery/derived manifest changes are admitted. packets_refined remains []
+under the unchanged KL-only schema; summary/files explicitly enumerate the HG058
+packet refinement. No schema, source dispatcher, classifier, global-state runtime,
+controller, DB, frozen, product, installation or admission change occurs here.
+
+### Durable governance inventory versus selected acceptance
+
+Global validation enumerates every durable governance record; none is skipped by
+identity or outcome. Schema, canonical path/unique representation, namespaced
+identity, unique checks, state, base/tested provenance and available revision-bound
+references remain mandatory. Validate every PASS claim against its actual evidence,
+including a PASS check inside a non-PASS record. A BLOCKED or SPEC_CHANGE_REQUIRED
+outcome can contain actual FAIL and truthful NOT_RUN checks; those states never
+become success. Global validation success means the inventory is coherent, never
+merge/admission/release authorization. Historical failed records remain at original
+SHAs; no relabeling or future PASS pre-seeding is allowed.
+
+For every executed check, bind the exact command and tested SHA to the actual
+lossless output at the record's immutable evidence revision. PASS requires observed
+integer exit0 and the existing positive execution/semantic oracle; FAIL requires an
+actual nonzero integer command exit and preserved failure output/diagnostics. A
+receipt saying PASS or exit0 cannot fabricate execution; test success requires
+collection/execution/JUnit identities and existing no-skip/error/failure rules.
+Nonzero exit, failed/error/skipped/incomplete observed execution contradicts PASS.
+An absent/invalid output or mismatched command/tested revision is invalid even in a
+failed record. Do not turn decoder errors into status-only validity. Global
+validation never substitutes source availability for execution evidence.
+
+NOT_RUN uses a bounded ordinary plain diagnostic JSON reference, not an execution
+envelope, resolving as a regular Git blob at the record's immutable evidence
+revision under its own evidence subtree. Its status or result must explicitly be
+NOT_RUN, with a nonempty truthful reason and exact tested_commit (or tested);
+base, when present, must equal the record base. The record's check_id/command/ref
+binds each covered non-execution check; a diagnostic checks list, when present,
+must contain that exact check_id/command/NOT_RUN tuple once and no contradictory
+claim. A shared diagnostic without a checks list covers only the referencing
+record's NOT_RUN entries at that exact tested SHA. Missing execution metadata means
+non-execution only, never an implicit exit0. Any supplied aliases must agree;
+execution status/PASS, output/exit/count/success claims contradict an unstarted
+NOT_RUN assertion. Optional execution_state UNSTARTED requires execution_started
+false, command_exit_code null and output_refs []; all must agree if supplied.
+Unknown execution-like fields must fail closed rather than certify success.
+
+An interrupted command may remain NOT_RUN only with explicit execution_state
+INTERRUPTED, execution_started true, command_exit_code null, truthful termination
+reason and complete preserved partial output refs bound to that command/tested SHA
+and record revision. Bind driver exit separately as driver_exit_code; it never
+becomes the unknown child command exit. If the child exit is known nonzero, record
+FAIL with its real output, not unstarted NOT_RUN. Interrupted/unknown-exit output
+cannot be a successful execution envelope or supply test PASS. Diagnostics do not
+assert that the planned command ran. SKIPPED cannot be stored as a governance check
+result under the unchanged HARNESS_CHANGE schema; schema rejection remains. Observed
+skips in real execution never count as success. No identity exemption or whole-record
+short circuit is authorized.
+
+Selected ci-pr independently requires change_status PASS, every actual required
+check PASS with valid evidence, exact base/T/R bindings, unchanged tested suffix,
+fresh required reviews/full REVIEW_RECORD_ONLY proof, exact files/scope/derived
+metadata, global storage/history and every existing guard. Non-PASS checks or record
+states reject selected acceptance even when globally coherent. This breaks the
+fresh T -> author checks -> truthful R cycle without weakening selected gates.
+HG060 defines this behavior only; HG058 receives the narrow implementation grant
+below. Global inventory must still report contradictions and invalid provenance.
+
+### Same HG058 continuation after HG060 normal merge
+
+HG058 stays frozen at 3965cac382d333bd97f6c67fec8ecbe805b5932f (failed tested
+7496d0d0696a6a870d164b15cf1bbe201e942d5e). Only after normal HG060 merge may the
+coordinator regrant its same five exclusive resources; no DB/App reservation.
+Continue SAME task by normal forward merge of live protected master retaining
+first-parent3965, original maps/source commits and every failed result/review.
+Original auditbase9700 and live PR base remain separate. Rerun retained-map
+base-advance conditions only for genuinely changed base and retain their prior
+bound proof when base is unchanged; every map/history/original guard still applies.
+
+HG058 may implement global durable-record state/provenance validation exactly as
+above in tools/harness/validate_harness.py and existing scoped tests, alongside its
+four already-authorized source callers. This adds no selected/M3/task/product/runtime
+semantics. Fresh tests must cover blocked/not-run inventory, real failure provenance,
+interrupted unknown exits, contradictory status/exit/evidence and fabricated-PASS
+negatives, plus independent selected rejection. Prior record artifacts at original
+SHAs remain unchanged; new diagnostics/records describe new observations only.
+
+Existing generic classifier correction for giant quoted values and nonassignable
+speculative prefixes is within HG058 scope only under unchanged 256KiB candidate,
+1024-work/1MiB aggregate and native fail-closed exhaustion rules. No XML/path/hash
+exceptions, truncation, decoder-error swallowing or output transformation. Exact
+triage execution objects are regression inputs, never decoding bypass sources.
+No test_planning_fixture_scope write-scope expansion merely to shorten future IDs.
+Run affected reproductions first, prove the finite known-failure set clears, then
+run expensive full author checks. Later defects remain real findings. New stable
+T -> fresh commands -> truthful R -> fresh GENERAL/SECURITY -> final audits is
+mandatory; root retains installed review/install, exact admission, App/fullDB,
+cleanup, hosted gates and normal merge. All prior HG059/storage/release boundaries
+remain enforced. Definitions PASS supplies no HG058/product/review/merge PASS.

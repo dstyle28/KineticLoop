@@ -43,7 +43,8 @@ must retain originals, and unavailable original revisions fail original verifica
 
 The indexed `REVIEW_SOURCE_DECLARATIONS.schema.json` and
 `docs/harness/REVIEW_SOURCE_DECLARATIONS.json` supply explicit purpose assertions
-for six exact historical record/reference tuples. THREAD_REVIEW.schema.json and
+for eight exact historical record/reference tuples (the original six HG059 tuples
+and exactly two HG060 additions). THREAD_REVIEW.schema.json and
 historical review bytes remain unchanged. A declaration is reviewed authority,
 never a runtime source path/hash allowlist. Governance independently establishes
 that each cited use is source inspection rather than command output; filename,
@@ -122,3 +123,22 @@ The same path used as output still undergoes strict decoding. No catch-and-retry
 on decoder failure and no blanket switch of evidence_refs. A global historical
 source-availability error may clear; this proves no other predicate. HG059 defines
 this boundary only; it implements no source retrieval, dispatch or cache.
+
+## HG060 exact additional source declarations
+
+HG060 adds only HG042/GENERAL and HG043/GENERAL for
+`tests/harness/test_review_evidence_provenance.py`. Their canonical record commits,
+blobs and reviewed SHAs are pinned in REVIEW_SOURCE_DECLARATIONS.json and independently
+verified in docs/exec-plans/evidence/HG-060/SOURCE_IDENTITIES.json. Both reviewed
+source objects are regular mode100644, blob e6e18454c7fef54e7d2bd704ab63be56bc685cfd,
+14776 bytes, SHA256 0cac4692d4188b5bfb9cfa3f9d6436ba905ebe8d8c90640f2445eea69f28b8b7.
+Reviewed-first retrieval suffices; these present objects need no fallback. All HG059
+bounds, original six tuple fields, schema, caller exclusions, identity/ancestry
+proofs and strict source-versus-output boundary remain unchanged. Availability is
+never execution/storage/review PASS. This defines no new dispatcher or source trust.
+
+Nine ordinary HG058 metadata reports have the exact prospective preservation
+specified by EVIDENCE_STORAGE_POLICY.md and HG060/PRESERVATION_DISPOSITION.json.
+They are never typed reviews; canonical root review JSON schema validation remains
+unchanged, without filename exclusions. Historical reviews and references keep
+original revisions; preservation cannot close CHANGES_REQUIRED or establish RRO.

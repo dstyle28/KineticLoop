@@ -300,3 +300,52 @@ collection/execution/JUnit provenance and demonstrate that it consumed that actu
 execution. This grants no execution grouping, fake PASS, new evidence platform or
 relaxation of required commands. Identical same-directory content-addressed payload
 bytes may be shared; distinct actual executions retain distinct envelopes.
+
+## HG060 nine-file plain metadata preservation disposition
+
+Exactly the nine ordinary non-envelope reports pinned at frozen HG058 result
+3965cac382d333bd97f6c67fec8ecbe805b5932f in
+`docs/exec-plans/evidence/HG-060/PRESERVATION_DISPOSITION.json` may be preserved
+prospectively by HG058, before its new stable T, at the listed same-owner child
+`docs/exec-plans/reviews/HG-058/preserved-metadata/` destinations. The inventory is
+literal: each original path, regular mode, blob OID, SHA256 and byte length is
+mandatory, and each destination must be absent before this one forward disposition.
+These are DIRECT_REVIEW_APPEND, GENERAL_COMMAND_INDEX, RAW_REVIEW_APPEND,
+RECOVERY_REVIEW_APPEND_INDEX, REVIEW_APPEND_INDEX, SECURITY_COMMAND_INDEX,
+SECURITY_narrow-results, SECURITY_preservation and WRAPPER_REVIEW_APPEND, all .json.
+No other object is covered. HG060 defines disposition only and moves no HG058 files.
+
+HG058 must re-inventory every current tracked literal original-path reference,
+including cross-owner references, before moving. The independently verified frozen3965
+inventory finds references only in HG058.yaml files_changed and REVIEW_APPEND_INDEX.json
+navigation; protected base6d24 has none. Their exact reference blobs are pinned in
+the disposition. Preserve the reports byte-for-byte (including navigation strings);
+remove only these nine original current-tree paths after creating the exact
+byte-identical destinations. Original report bytes/paths remain retrievable at
+3965 and their original commits through normal first-parent ancestry. Existing
+historical files_changed/navigation references resolve by their original recorded
+revision, never by substituting HEAD. New navigation must explicitly pair original
+revision/path/blob with the destination identity. No old report or historical record
+is edited to redirect a reference.
+
+Before T, HG058 adds its own ordinary plain preservation receipt at
+`docs/exec-plans/evidence/HG-058/metadata-preservation/RECEIPT.json`, containing the
+HG060 disposition identity/hash, original3965 identities, actual preservation
+commit, destination regular-blob identities, complete reference inventory and
+original-revision resolution proof. Add a sibling PATH_INVENTORY.json for original
+revision/path and current destination navigation. The preservation commit precedes
+the receipt commit; the receipt is never a self-bound execution record. Verify all
+nine source/destination byte identities and references at the bound commits. Fail
+closed on changed/missing/nonregular originals, collision, extra moves, unknown
+references that cannot retain their original binding, or loss of original ancestry;
+report concrete findings for further governance. No external-reference exception is
+inferred from this disposition.
+
+This is bounded plain metadata preservation, not storage migration authority:
+no envelopes/payloads, codecs, reserved markers, maps, reencoding, conversion,
+rewriting or compact-name bypass. It neither uses HG051/HG054 migration permissions
+nor modifies their guards. All unchanged storage budgets/classification and
+ancestral edge/blob audits apply; any native storage rejection remains a concrete
+finding. No validator filename exemption, recasting metadata as reviews or
+REVIEW_RECORD_ONLY exception is authorized. Historical firstcommit FAIL remains
+FAIL; relocation supplies no execution, task, requirement or review PASS.
