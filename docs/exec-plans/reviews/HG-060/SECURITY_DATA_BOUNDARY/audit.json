@@ -1,0 +1,199 @@
+{
+  "status": "PASS",
+  "protected_base": "6d24db615b7c6e517478530d130feecd678bc123",
+  "tested_commit": "5c1b24369df37c11031c09badd6fe430acc60f74",
+  "reviewed_head": "bba4a4d0341473aa9e652b423eedef5d1d1362c8",
+  "changed_paths_count": 132,
+  "tested_result_suffix": [
+    "bba4a4d0341473aa9e652b423eedef5d1d1362c8"
+  ],
+  "source_declarations": [
+    {
+      "owner": "harness-governance-v0.1/HG-042",
+      "source_sha256": "0cac4692d4188b5bfb9cfa3f9d6436ba905ebe8d8c90640f2445eea69f28b8b7",
+      "source_bytes": 14776,
+      "source_definitions": 26
+    },
+    {
+      "owner": "harness-governance-v0.1/HG-043",
+      "source_sha256": "0cac4692d4188b5bfb9cfa3f9d6436ba905ebe8d8c90640f2445eea69f28b8b7",
+      "source_bytes": 14776,
+      "source_definitions": 26
+    }
+  ],
+  "preservation_native": [
+    {
+      "path": "docs/exec-plans/reviews/HG-058/DIRECT_REVIEW_APPEND.json",
+      "bytes": 10004,
+      "native_classification": "ordinary"
+    },
+    {
+      "path": "docs/exec-plans/reviews/HG-058/GENERAL_COMMAND_INDEX.json",
+      "bytes": 1883,
+      "native_classification": "ordinary"
+    },
+    {
+      "path": "docs/exec-plans/reviews/HG-058/RAW_REVIEW_APPEND.json",
+      "bytes": 7236,
+      "native_classification": "ordinary"
+    },
+    {
+      "path": "docs/exec-plans/reviews/HG-058/RECOVERY_REVIEW_APPEND_INDEX.json",
+      "bytes": 6868,
+      "native_classification": "ordinary"
+    },
+    {
+      "path": "docs/exec-plans/reviews/HG-058/REVIEW_APPEND_INDEX.json",
+      "bytes": 3133,
+      "native_classification": "ordinary"
+    },
+    {
+      "path": "docs/exec-plans/reviews/HG-058/SECURITY_COMMAND_INDEX.json",
+      "bytes": 3267,
+      "native_classification": "ordinary"
+    },
+    {
+      "path": "docs/exec-plans/reviews/HG-058/SECURITY_narrow-results.json",
+      "bytes": 4939,
+      "native_classification": "ordinary"
+    },
+    {
+      "path": "docs/exec-plans/reviews/HG-058/SECURITY_preservation.json",
+      "bytes": 630,
+      "native_classification": "ordinary"
+    },
+    {
+      "path": "docs/exec-plans/reviews/HG-058/WRAPPER_REVIEW_APPEND.json",
+      "bytes": 5168,
+      "native_classification": "ordinary"
+    }
+  ],
+  "decoded_envelopes": 56,
+  "actual_check_outputs": [
+    {
+      "check_id": "definitions",
+      "exit_code": 0,
+      "raw_bytes": 8392,
+      "raw_sha256": "0d335cd943c4136e1215e6a97e20ff6e08768d4bd9eba57ab5307a3c29b80dfc"
+    },
+    {
+      "check_id": "validator",
+      "exit_code": 0,
+      "raw_bytes": 355,
+      "raw_sha256": "b7c894c5c4e71d0abd69d7c08dabe2f8f4483adb434504ddeb500e87ed082e68"
+    },
+    {
+      "check_id": "unit",
+      "exit_code": 0,
+      "raw_bytes": 433,
+      "raw_sha256": "cd3c55b4569ffb0378caf1bb362652ce2188dd1063fbcd08e6a81813b439a3e5"
+    },
+    {
+      "check_id": "harness",
+      "exit_code": 0,
+      "raw_bytes": 2162,
+      "raw_sha256": "b59dd29ff6a34c7a063ed2b43702b73de59cabc47290a36edc73e8d68ef5dd3f"
+    },
+    {
+      "check_id": "lint",
+      "exit_code": 0,
+      "raw_bytes": 19,
+      "raw_sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+    },
+    {
+      "check_id": "typecheck",
+      "exit_code": 0,
+      "raw_bytes": 45,
+      "raw_sha256": "bad84ae458ed0b1339e9ee07060b39569951bea401de790a17ecace58d345afb"
+    },
+    {
+      "check_id": "authority",
+      "exit_code": 0,
+      "raw_bytes": 38,
+      "raw_sha256": "575c27614271c1c49c6a8e1968a2a6c79b664c9c880dde43ec8113846e575f94"
+    },
+    {
+      "check_id": "diff",
+      "exit_code": 0,
+      "raw_bytes": 0,
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "positive_execution": [
+    {
+      "suite": "validator",
+      "collected": 164,
+      "started": 164,
+      "passed_calls": 164,
+      "phase_reports": 492,
+      "junit_cases": 164,
+      "workers": [
+        "serial"
+      ],
+      "nodeids_sha256": "c4954cac32c3ee71275cafbd48dbcfc1ab8e02187aca21a18f03fd293a7f6e83",
+      "skips_errors_failures_worker_loss": 0
+    },
+    {
+      "suite": "unit",
+      "collected": 247,
+      "started": 247,
+      "passed_calls": 247,
+      "phase_reports": 741,
+      "junit_cases": 247,
+      "workers": [
+        "serial"
+      ],
+      "nodeids_sha256": "a3e4b0c207d0a3c51b9645fd602414c4d0e0c966c3e1ba0010bf8491df811a04",
+      "skips_errors_failures_worker_loss": 0
+    },
+    {
+      "suite": "harness",
+      "collected": 1773,
+      "started": 1773,
+      "passed_calls": 1773,
+      "phase_reports": 5319,
+      "junit_cases": 1773,
+      "workers": [
+        "gw0",
+        "gw1"
+      ],
+      "nodeids_sha256": "f9c165b2a452d11eb5fcc72b13950d1b13334c97c21828210d2f94599378c831",
+      "skips_errors_failures_worker_loss": 0
+    }
+  ],
+  "superseded": [
+    {
+      "tested_commit": "290d5fc262f3615b18a1f5da81cfc1179d3a48ba",
+      "harness": {
+        "state": "INTERRUPTED",
+        "actual_cli_exit": -15,
+        "driver_exit": 241,
+        "pytest_exit": null,
+        "execution_complete": false
+      },
+      "remaining": {
+        "lint": "NOT_RUN",
+        "typecheck": "NOT_RUN",
+        "authority": "NOT_RUN",
+        "diff": "NOT_RUN"
+      }
+    },
+    {
+      "tested_commit": "e821c542b788cc14562c8b69fa17a932a7474c3b",
+      "harness": {
+        "state": "INTERRUPTED",
+        "actual_cli_exit": -15,
+        "driver_exit": 241,
+        "pytest_exit": null,
+        "execution_complete": false
+      },
+      "remaining": {
+        "lint": "NOT_RUN",
+        "typecheck": "NOT_RUN",
+        "authority": "NOT_RUN",
+        "diff": "NOT_RUN"
+      }
+    }
+  ],
+  "limits": "Review checks immutable evidence only; installed/controller/DB/hosted gates remain separate."
+}
