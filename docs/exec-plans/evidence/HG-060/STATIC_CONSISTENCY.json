@@ -1,0 +1,78 @@
+{
+  "tested": "5c1b24369df37c11031c09badd6fe430acc60f74",
+  "protected_base": "6d24db615b7c6e517478530d130feecd678bc123",
+  "status": "CONSISTENT",
+  "areas": {
+    "record_and_evidence_revision": [
+      "validation_revision is the exact immutable Git commit",
+      "same validation_revision",
+      "uncommitted records are still enumerated",
+      "No new evidence_revision field",
+      "tested_commit identifies the producer T"
+    ],
+    "command_and_exit": [
+      "exact command and tested SHA",
+      "actual nonzero integer command exit",
+      "command_exit_code null",
+      "driver_exit_code",
+      "status-only diagnostic"
+    ],
+    "historical_formats": [
+      "originally governed evidence formats",
+      "no retroactive collector/JUnit format migration",
+      "Original valid plain execution logs",
+      "fresh HG060/HG058 author checks require full identities"
+    ],
+    "states": [
+      "change_status PASS record containing any FAIL or NOT_RUN",
+      "SKIPPED cannot be stored",
+      "NOT_RUN entries",
+      "INTERRUPTED",
+      "Unknown execution-like fields must fail closed"
+    ],
+    "global_selected_separation": [
+      "Global validation enumerates every",
+      "Global validation success means the inventory is coherent",
+      "Selected ci-pr independently requires",
+      "every actual required",
+      "fresh required reviews/full REVIEW_RECORD_ONLY"
+    ],
+    "continuation": [
+      "first-parent3965",
+      "Original auditbase9700",
+      "only for genuinely changed base",
+      "256KiB candidate",
+      "1024-work/1MiB",
+      "No identity exemption"
+    ]
+  },
+  "schema_unchanged": true,
+  "global_runtime_unchanged": true,
+  "original_diagnostic_observations": [
+    {
+      "revision": "7496d0d0696a6a870d164b15cf1bbe201e942d5e",
+      "record_state": "BLOCKED",
+      "tested": "36b942f3087497d0c6609839df5e04398ec8bc4e",
+      "not_run_count": 10,
+      "diagnostic": "docs/exec-plans/evidence/HG-058/DIRECT_WRAPPER_NOT_RUN.json",
+      "diagnostic_sha256": "61b6c4b5049de08c5e8ced95beb62eb8a8415f6e6b3f1f54d2decbff4b763589",
+      "failure_metadata": []
+    },
+    {
+      "revision": "3965cac382d333bd97f6c67fec8ecbe805b5932f",
+      "record_state": "SPEC_CHANGE_REQUIRED",
+      "tested": "7496d0d0696a6a870d164b15cf1bbe201e942d5e",
+      "not_run_count": 11,
+      "diagnostic": "docs/exec-plans/evidence/HG-058/continuation-failed-7496d0d0696a/NOT_RUN.json",
+      "diagnostic_sha256": "b1d0290bee336bf05124a645d050d5ded6050155771400a08cf41ca184a90599",
+      "failure_metadata": [
+        {
+          "check_id": "unit",
+          "observed_exit": 1,
+          "tested": "7496d0d0696a6a870d164b15cf1bbe201e942d5e"
+        }
+      ]
+    }
+  ],
+  "meaning": "Bounded static definitions consistency only. No implementation, historical execution, gate relaxation or PASS reuse."
+}

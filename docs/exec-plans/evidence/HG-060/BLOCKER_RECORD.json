@@ -1,0 +1,107 @@
+{
+  "revision": "3965cac382d333bd97f6c67fec8ecbe805b5932f",
+  "path": "docs/exec-plans/governance/HG-058.yaml",
+  "blob": "0c4086bb7734bd25b784aaea5a98f3bcbb774d8d",
+  "bytes": 61311,
+  "sha256": "9215594bbe6f3bcb264d7734337adf584eccb7230a340cbc6ce2140e08277625",
+  "tested_commit": "7496d0d0696a6a870d164b15cf1bbe201e942d5e",
+  "change_status": "SPEC_CHANGE_REQUIRED",
+  "checks": [
+    {
+      "check_id": "compact_collection",
+      "result": "PASS",
+      "evidence_ref": "docs/exec-plans/evidence/HG-058/continuation-failed-7496d0d0696a/compact_collection.log.json"
+    },
+    {
+      "check_id": "compact",
+      "result": "PASS",
+      "evidence_ref": "docs/exec-plans/evidence/HG-058/continuation-failed-7496d0d0696a/compact.log.json"
+    },
+    {
+      "check_id": "bound_readers_collection",
+      "result": "PASS",
+      "evidence_ref": "docs/exec-plans/evidence/HG-058/continuation-failed-7496d0d0696a/bound_readers_collection.log.json"
+    },
+    {
+      "check_id": "bound_readers",
+      "result": "PASS",
+      "evidence_ref": "docs/exec-plans/evidence/HG-058/continuation-failed-7496d0d0696a/bound_readers.log.json"
+    },
+    {
+      "check_id": "local_gate_collection",
+      "result": "PASS",
+      "evidence_ref": "docs/exec-plans/evidence/HG-058/continuation-failed-7496d0d0696a/local_gate_collection.log.json"
+    },
+    {
+      "check_id": "local_gate",
+      "result": "PASS",
+      "evidence_ref": "docs/exec-plans/evidence/HG-058/continuation-failed-7496d0d0696a/local_gate.log.json"
+    },
+    {
+      "check_id": "unit_collection",
+      "result": "PASS",
+      "evidence_ref": "docs/exec-plans/evidence/HG-058/continuation-failed-7496d0d0696a/unit_collection.log.json"
+    },
+    {
+      "check_id": "unit",
+      "result": "FAIL",
+      "evidence_ref": "docs/exec-plans/evidence/HG-058/continuation-failed-7496d0d0696a/unit.log.json"
+    },
+    {
+      "check_id": "routing",
+      "result": "NOT_RUN",
+      "evidence_ref": "docs/exec-plans/evidence/HG-058/continuation-failed-7496d0d0696a/NOT_RUN.json"
+    },
+    {
+      "check_id": "compatibility",
+      "result": "NOT_RUN",
+      "evidence_ref": "docs/exec-plans/evidence/HG-058/continuation-failed-7496d0d0696a/NOT_RUN.json"
+    },
+    {
+      "check_id": "scope",
+      "result": "NOT_RUN",
+      "evidence_ref": "docs/exec-plans/evidence/HG-058/continuation-failed-7496d0d0696a/NOT_RUN.json"
+    },
+    {
+      "check_id": "harness",
+      "result": "NOT_RUN",
+      "evidence_ref": "docs/exec-plans/evidence/HG-058/continuation-failed-7496d0d0696a/NOT_RUN.json"
+    },
+    {
+      "check_id": "lint",
+      "result": "NOT_RUN",
+      "evidence_ref": "docs/exec-plans/evidence/HG-058/continuation-failed-7496d0d0696a/NOT_RUN.json"
+    },
+    {
+      "check_id": "typecheck",
+      "result": "NOT_RUN",
+      "evidence_ref": "docs/exec-plans/evidence/HG-058/continuation-failed-7496d0d0696a/NOT_RUN.json"
+    },
+    {
+      "check_id": "authority",
+      "result": "NOT_RUN",
+      "evidence_ref": "docs/exec-plans/evidence/HG-058/continuation-failed-7496d0d0696a/NOT_RUN.json"
+    },
+    {
+      "check_id": "diff",
+      "result": "NOT_RUN",
+      "evidence_ref": "docs/exec-plans/evidence/HG-058/continuation-failed-7496d0d0696a/NOT_RUN.json"
+    },
+    {
+      "check_id": "original_audit",
+      "result": "NOT_RUN",
+      "evidence_ref": "docs/exec-plans/evidence/HG-058/continuation-failed-7496d0d0696a/NOT_RUN.json"
+    },
+    {
+      "check_id": "live_audit",
+      "result": "NOT_RUN",
+      "evidence_ref": "docs/exec-plans/evidence/HG-058/continuation-failed-7496d0d0696a/NOT_RUN.json"
+    },
+    {
+      "check_id": "final_candidate_ci_pr",
+      "result": "NOT_RUN",
+      "evidence_ref": "docs/exec-plans/evidence/HG-058/continuation-failed-7496d0d0696a/NOT_RUN.json"
+    }
+  ],
+  "meaning": "Exact blocker identity independently read; old failures remain, no execution reused."
+}
