@@ -1,0 +1,204 @@
+{
+  "base": "ebee712b591d14c165007cd3d56d89cb14ea1487",
+  "tested": "de3d4d3427b975798bd7428bfdb3d952acfa6c5d",
+  "reviewed": "1f45cd8f55868ba31526ad4a02b9e07427b4bc9b",
+  "changed_path_count": 72,
+  "validator_function_delta": {
+    "added": [
+      "historical_semantic_projection_errors"
+    ],
+    "changed": [
+      "validate",
+      "governance_allowed_patterns"
+    ],
+    "unchanged": 96
+  },
+  "unchanged_sensitive_assets": {
+    "tools/harness/local_gate.py": "3d2b0162a7877c51eb87f72fb26e2931e042f3c2325beb8c022df3eac28bb69d",
+    "tools/harness/github_app.py": "413afc01f5fe32feb84a86012272a568f74565136833e0bc41c75a034acd334e",
+    "tools/harness/db_ci.py": "9117178078cd33b46ccf9f66222dfcdb8733d180eb6ebf3f4bd8ed844253e95e",
+    "tools/harness/db_policy.py": "f38c298f1db950cd34e66fe74d95658ad1a23d5302c01260391fc0f573c89244",
+    "tools/harness/db_ci_pytest.py": "015ba311d943d5154dd81bc98a2344c7fff6eba49dbbb6b7f2ab1c9f5a9c8e9b",
+    "tools/harness/compact_evidence.py": "a7af4738fc24a2afef2fe7bd33b8f75afe9c82375b7736f7ee2be15db3aeae7f",
+    "tools/harness/gate_validate.py": "14a12be4a2517fa4adadbdda5c6050c1803b7d2e11be1c78adef2a3c292125bf",
+    "tools/harness/gate_pytest.py": "52ce264e08c28ce6ad291b0783a1853db6236304c86e1dcd5a4d188157e826b2",
+    "tools/harness/local_db/Dockerfile": "6d48b8fd7b28aef879082256000ea7ec166165b70378a3cb1546fb2fd250d384",
+    "tools/harness/local_db/entrypoint.sh": "d25f2dc7a8c61c4d81e1412b66b77bd95ca895fdb5b091f38274e622b2ec871f",
+    "tools/harness/parallel_observer.py": "cc8156f2f04334e62e25631bae3a8d1de5c766e156154f1df994d0ac1e322a73",
+    "FROZEN_BASELINE.json": "bb8cd79942d3ca735e38e0363d8f56c5c45bbd79210a6618d29704aac3dd04df",
+    "CURRENT_REQUIREMENT_SET.json": "c7ce1793c0b5fcbdec99afc8742e33b60e42cb633eacf9424ae84c4639dfa750",
+    "REVIEW_SOURCE_DECLARATIONS.schema.json": "3a803a8a6074739fa9a5240a3e48cf80d32162f3d40312eb4443aa9d337c6837",
+    "docs/harness/REVIEW_SOURCE_DECLARATIONS.json": "81e432996ee065be60bd6462cc90977cacd81f29d1fa6babe2621a4e212d27c6",
+    "docs/harness/EVIDENCE_STORAGE_POLICY.md": "6c7027b54d4c5cec7bc59c1be83a99ed10deb0ca2cd6a2ff203ffb99c0a8d23d",
+    "docs/harness/THREAD_REVIEW_CONTRACT.md": "003a6cae9c4e7f30a1c7f83874681c01e429c6d7d00bd4ea15834dd74de44228",
+    "docs/harness/LOCAL_DB_CI.md": "29a981c374729e01883fa95c94b4bcfcf798ff53073528ed18832bcc6a1ff95d"
+  },
+  "substantive_T_R_preservation": true,
+  "check_index_sha256": "21b48556ee4701aef8d3bbcbf2e54c6b81bf0708e6b6643059dbfc5aca21b211",
+  "checks": [
+    {
+      "check_id": "definitions",
+      "exit_code": 0,
+      "artifact_count": 1,
+      "environment": {
+        "PYTHONPATH": "/Users/davetian/.codex/worktrees/hg061-semantic-definitions/KineticLoop:/Users/davetian/.codex/worktrees/hg061-semantic-definitions/KineticLoop/src:/private/tmp/kl080-uv-cache/archive-v0/pMDaJUI6sj_futnY:/private/tmp/kl080-uv-cache/archive-v0/_eUbZQqhbuQIXsBR"
+      }
+    },
+    {
+      "check_id": "validator",
+      "exit_code": 0,
+      "artifact_count": 5,
+      "environment": {
+        "PYTHONPATH": "/Users/davetian/.codex/worktrees/hg061-semantic-definitions/KineticLoop:/Users/davetian/.codex/worktrees/hg061-semantic-definitions/KineticLoop/src:/private/tmp/kl080-uv-cache/archive-v0/pMDaJUI6sj_futnY:/private/tmp/kl080-uv-cache/archive-v0/_eUbZQqhbuQIXsBR",
+        "KINETICLOOP_HARNESS_ROOT": "/Users/davetian/.codex/worktrees/hg061-semantic-definitions/KineticLoop",
+        "KINETICLOOP_HARNESS_WORKERS": "1",
+        "KINETICLOOP_HARNESS_OBSERVER": "/private/tmp/hg061-author-de3d4d3427b9/validator-execution.json"
+      },
+      "cases": 167,
+      "collection_execution_junit_identity_equal": true,
+      "errors_skips_failures": 0
+    },
+    {
+      "check_id": "unit",
+      "exit_code": 0,
+      "artifact_count": 5,
+      "environment": {
+        "PYTHONPATH": "/Users/davetian/.codex/worktrees/hg061-semantic-definitions/KineticLoop:/Users/davetian/.codex/worktrees/hg061-semantic-definitions/KineticLoop/src:/private/tmp/kl080-uv-cache/archive-v0/pMDaJUI6sj_futnY:/private/tmp/kl080-uv-cache/archive-v0/_eUbZQqhbuQIXsBR",
+        "KINETICLOOP_HARNESS_ROOT": "/Users/davetian/.codex/worktrees/hg061-semantic-definitions/KineticLoop",
+        "KINETICLOOP_HARNESS_WORKERS": "1",
+        "KINETICLOOP_HARNESS_OBSERVER": "/private/tmp/hg061-author-de3d4d3427b9/unit-execution.json"
+      },
+      "cases": 247,
+      "collection_execution_junit_identity_equal": true,
+      "errors_skips_failures": 0
+    },
+    {
+      "check_id": "harness",
+      "exit_code": 0,
+      "artifact_count": 7,
+      "environment": {
+        "PYTHONPATH": "/Users/davetian/.codex/worktrees/hg061-semantic-definitions/KineticLoop:/Users/davetian/.codex/worktrees/hg061-semantic-definitions/KineticLoop/src:/Users/davetian/.cache/uv/archive-v0/nnPNXkWpFSNRe9Ad:/Users/davetian/.cache/uv/archive-v0/X_H5kIMi_L692EPn"
+      },
+      "cases": 1776,
+      "collection_execution_junit_identity_equal": true,
+      "errors_skips_failures": 0
+    },
+    {
+      "check_id": "lint",
+      "exit_code": 0,
+      "artifact_count": 1,
+      "environment": {
+        "PYTHONPATH": "/Users/davetian/.codex/worktrees/hg061-semantic-definitions/KineticLoop:/Users/davetian/.codex/worktrees/hg061-semantic-definitions/KineticLoop/src:/Users/davetian/.cache/uv/archive-v0/nnPNXkWpFSNRe9Ad:/Users/davetian/.cache/uv/archive-v0/X_H5kIMi_L692EPn"
+      }
+    },
+    {
+      "check_id": "typecheck",
+      "exit_code": 0,
+      "artifact_count": 1,
+      "environment": {
+        "PYTHONPATH": "/Users/davetian/.codex/worktrees/hg061-semantic-definitions/KineticLoop:/Users/davetian/.codex/worktrees/hg061-semantic-definitions/KineticLoop/src:/Users/davetian/.cache/uv/archive-v0/nnPNXkWpFSNRe9Ad:/Users/davetian/.cache/uv/archive-v0/X_H5kIMi_L692EPn"
+      }
+    },
+    {
+      "check_id": "authority",
+      "exit_code": 0,
+      "artifact_count": 1,
+      "environment": {
+        "PYTHONPATH": "/Users/davetian/.codex/worktrees/hg061-semantic-definitions/KineticLoop:/Users/davetian/.codex/worktrees/hg061-semantic-definitions/KineticLoop/src:/Users/davetian/.cache/uv/archive-v0/nnPNXkWpFSNRe9Ad:/Users/davetian/.cache/uv/archive-v0/X_H5kIMi_L692EPn"
+      }
+    },
+    {
+      "check_id": "diff",
+      "exit_code": 0,
+      "artifact_count": 1,
+      "environment": {
+        "PYTHONPATH": "/Users/davetian/.codex/worktrees/hg061-semantic-definitions/KineticLoop:/Users/davetian/.codex/worktrees/hg061-semantic-definitions/KineticLoop/src:/Users/davetian/.cache/uv/archive-v0/nnPNXkWpFSNRe9Ad:/Users/davetian/.cache/uv/archive-v0/X_H5kIMi_L692EPn"
+      }
+    }
+  ],
+  "harness_manifest": {
+    "tested_commit": "de3d4d3427b975798bd7428bfdb3d952acfa6c5d",
+    "dirty_source": false,
+    "workers": 2,
+    "versions": {
+      "pytest": "8.4.2",
+      "pytest-xdist": "3.8.0",
+      "execnet": "2.1.2"
+    },
+    "execution_complete": true,
+    "exit_code": 0,
+    "evidence_scope": "developer-harness; App-bound local-db-gate still required"
+  },
+  "retry_dependency_files": 38,
+  "superseded": [
+    {
+      "folder": "superseded-078adf6c365a",
+      "tested": "078adf6c365a79b28159a75c6fcc801af3ab8427",
+      "exit": 1,
+      "environment": {
+        "PYTHONPATH": "/Users/davetian/.codex/worktrees/hg061-semantic-definitions/KineticLoop:/Users/davetian/.codex/worktrees/hg061-semantic-definitions/KineticLoop/src:/private/tmp/kl080-uv-cache/archive-v0/pMDaJUI6sj_futnY:/private/tmp/kl080-uv-cache/archive-v0/_eUbZQqhbuQIXsBR"
+      },
+      "state": {
+        "tested_commit": "078adf6c365a79b28159a75c6fcc801af3ab8427",
+        "definitions_exit_code": 1,
+        "reason": "Definition text phrase spans a line break; verifier literal assertion failed. Historical or runtime semantics did not execute.",
+        "unstarted_checks": [
+          "validator",
+          "unit",
+          "harness",
+          "lint",
+          "typecheck",
+          "authority",
+          "diff"
+        ],
+        "output_ref": "docs/exec-plans/evidence/HG-061/superseded-078adf6c365a/definitions.log.json",
+        "command_metadata_ref": "docs/exec-plans/evidence/HG-061/superseded-078adf6c365a/definitions-command.json.json"
+      }
+    },
+    {
+      "folder": "superseded-de3d4d3427b9-harness-preflight",
+      "tested": "de3d4d3427b975798bd7428bfdb3d952acfa6c5d",
+      "exit": 4,
+      "environment": {
+        "PYTHONPATH": "/Users/davetian/.codex/worktrees/hg061-semantic-definitions/KineticLoop:/Users/davetian/.codex/worktrees/hg061-semantic-definitions/KineticLoop/src:/private/tmp/kl080-uv-cache/archive-v0/pMDaJUI6sj_futnY:/private/tmp/kl080-uv-cache/archive-v0/_eUbZQqhbuQIXsBR"
+      },
+      "state": {
+        "tested_commit": "de3d4d3427b975798bd7428bfdb3d952acfa6c5d",
+        "actual_harness_exit_code": 4,
+        "reason": "pytest-xdist code was present in supplied temporary dependency cache but .dist-info entry point metadata had been cleaned; -n was unavailable. Harness execution was unstarted after preflight failure.",
+        "retained_successful_same_T_checks": [
+          "definitions",
+          "validator",
+          "unit"
+        ],
+        "later_checks_unstarted_in_this_attempt": [
+          "lint",
+          "typecheck",
+          "authority",
+          "diff"
+        ],
+        "retry": "Same immutable T; existing intact user uv cache supplied xdist3.8.0 and execnet2.1.2 without installation. Exact separate retry command/environment retained in CHECK_INDEX."
+      }
+    }
+  ],
+  "compressed_artifacts_verified": 28,
+  "original_sample": {
+    "owner": "harness-governance-v0.1/HG-044",
+    "base": "2c44f456a0daf8e6933f20fc3eadc7e1869d6fff",
+    "tested": "06dab6dbb38221e7111c18811cb20b42b8cc2397",
+    "reviewed": "cf0b99359d04c136d01fd4c5eeec8a23cd0bbc54",
+    "merged": "26906bd7f4444914c228e98377f2b164fee0dd5d",
+    "recomputed_predicates": 9,
+    "report_path_count": 308,
+    "review_path_count": 319,
+    "source_sha256": "93791ed2b12afcbad75539ae12591ce0c7a0e3625d460c809007314486c1ae3b",
+    "original_indexed_scope_matches": true,
+    "historical_execution": "UNVERIFIED_MISSING_EXIT",
+    "acceptance_eligible": false
+  },
+  "superseded_harness_no_collection_proven": true,
+  "status": "PASS",
+  "root_gates": "NOT_RUN",
+  "historical_execution": "UNVERIFIED_MISSING_EXIT",
+  "merge_authorization": false
+}
