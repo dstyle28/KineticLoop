@@ -140,6 +140,7 @@ def main():
     manifest = json.loads(raw(tested, 'HARNESS_DOCUMENT_MANIFEST.json')[2])
     before_manifest = json.loads(raw(BASE, 'HARNESS_DOCUMENT_MANIFEST.json')[2])
     old_paths = {entry['path'] for entry in before_manifest['files']}
+    assert 'docs/exec-plans/governance/HG-061.yaml' not in {entry['path'] for entry in manifest['files']}, 'mutable result must remain outside frozen delivery manifest'
     for entry in manifest['files']:
         value = raw(tested, entry['path'])[2]
         assert len(value) == entry['bytes'] and hashlib.sha256(value).hexdigest() == entry['sha256']
