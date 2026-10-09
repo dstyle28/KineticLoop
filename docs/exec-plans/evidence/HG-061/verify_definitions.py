@@ -89,7 +89,7 @@ def main():
     for phrase in (b'only', b'global archival', b'Original PASS labels remain claims',
                    b'No generic success Boolean', b'prerequisite', b'storage/history',
                    b'Current candidate additions', b'first-parent3965', b'normal HG061 merge'):
-        assert phrase in contract, phrase
+        assert phrase in b' '.join(contract.split()), phrase
     matrix = contract.split(b'### HG061 required implementation decision matrix')[1].split(b'### Same HG058')[0]
     for phrase in (b'owner-neutral', b'New or modified candidate', b'Selected historical owner',
                    b'interrupted', b'unstarted', b'Status-only', b'weakened equality/all',
