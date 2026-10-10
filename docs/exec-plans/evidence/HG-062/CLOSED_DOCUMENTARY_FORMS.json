@@ -1,0 +1,1304 @@
+{
+  "draft_version": "remaining-documentary-forms-v1",
+  "purpose": "PROSPECTIVE_ARCHIVAL_DOCUMENTARY_TYPES_ONLY",
+  "sample_values_are_not_runtime_constraints": true,
+  "profiles": {
+    "controller_receipt": {
+      "sample_provenance": {
+        "revision": "4e9c60a242d84b81b6e82b635da6c7227af68912",
+        "path": "docs/exec-plans/evidence/HG-046/controller-8fb35e9/receipt.json",
+        "sha256": "80b86c25471e2cae28922965bc1a0fb184dcc73f0c240b652333761368b1aa17",
+        "runtime_allowlist": false
+      },
+      "schema": {
+        "type": "object",
+        "properties": {
+          "controller": {
+            "type": "string",
+            "maxLength": 1048576
+          },
+          "format": {
+            "type": "string",
+            "maxLength": 1048576
+          },
+          "policy": {
+            "type": "object",
+            "properties": {
+              "base": {
+                "type": "string",
+                "maxLength": 1048576,
+                "pattern": "^[0-9a-f]{40}$"
+              },
+              "changed_paths": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "maxLength": 1048576
+                },
+                "maxItems": 4096
+              },
+              "format": {
+                "type": "string",
+                "maxLength": 1048576
+              },
+              "full_database_required": {
+                "type": "boolean"
+              },
+              "head": {
+                "type": "string",
+                "maxLength": 1048576,
+                "pattern": "^[0-9a-f]{40}$"
+              },
+              "requiring_paths": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "maxLength": 1048576
+                },
+                "maxItems": 4096
+              }
+            },
+            "required": [
+              "base",
+              "changed_paths",
+              "format",
+              "full_database_required",
+              "head",
+              "requiring_paths"
+            ],
+            "additionalProperties": false
+          },
+          "run_id": {
+            "type": "string",
+            "maxLength": 1048576
+          },
+          "snapshot": {
+            "type": "object",
+            "properties": {
+              "base": {
+                "type": "string",
+                "maxLength": 1048576,
+                "pattern": "^[0-9a-f]{40}$"
+              },
+              "head": {
+                "type": "string",
+                "maxLength": 1048576,
+                "pattern": "^[0-9a-f]{40}$"
+              },
+              "pr": {
+                "type": "integer"
+              },
+              "repository_id": {
+                "type": "integer"
+              }
+            },
+            "required": [
+              "base",
+              "head",
+              "pr",
+              "repository_id"
+            ],
+            "additionalProperties": false
+          },
+          "status": {
+            "type": "string",
+            "maxLength": 1048576
+          },
+          "test_only": {
+            "type": "boolean"
+          },
+          "tree": {
+            "type": "string",
+            "maxLength": 1048576,
+            "pattern": "^[0-9a-f]{40}$"
+          },
+          "worker": {
+            "type": "object",
+            "properties": {
+              "artifacts": {
+                "type": "object",
+                "properties": {
+                  "collection.log": {
+                    "type": "string",
+                    "maxLength": 1048576
+                  },
+                  "compose_config_valid.log": {
+                    "type": "string",
+                    "maxLength": 1048576
+                  },
+                  "dependency_sync.log": {
+                    "type": "string",
+                    "maxLength": 1048576
+                  },
+                  "destroy.log": {
+                    "type": "string",
+                    "maxLength": 1048576
+                  },
+                  "full_database.log": {
+                    "type": "string",
+                    "maxLength": 1048576
+                  },
+                  "harness.log": {
+                    "type": "string",
+                    "maxLength": 1048576
+                  },
+                  "image_build.log": {
+                    "type": "string",
+                    "maxLength": 1048576
+                  },
+                  "lint.log": {
+                    "type": "string",
+                    "maxLength": 1048576
+                  },
+                  "merge_gate.log": {
+                    "type": "string",
+                    "maxLength": 1048576
+                  },
+                  "peer_checkout.log": {
+                    "type": "string",
+                    "maxLength": 1048576
+                  },
+                  "peer_remove.log": {
+                    "type": "string",
+                    "maxLength": 1048576
+                  },
+                  "postgres_ready.log": {
+                    "type": "string",
+                    "maxLength": 1048576
+                  },
+                  "reset_idempotent.log": {
+                    "type": "string",
+                    "maxLength": 1048576
+                  },
+                  "typecheck.log": {
+                    "type": "string",
+                    "maxLength": 1048576
+                  },
+                  "unit.log": {
+                    "type": "string",
+                    "maxLength": 1048576
+                  },
+                  "worker/harness.xml": {
+                    "type": "string",
+                    "maxLength": 1048576
+                  },
+                  "worker/run/collection.json": {
+                    "type": "string",
+                    "maxLength": 1048576
+                  },
+                  "worker/run/database.xml": {
+                    "type": "string",
+                    "maxLength": 1048576
+                  },
+                  "worker/run/execution.json": {
+                    "type": "string",
+                    "maxLength": 1048576
+                  },
+                  "worker/unit.xml": {
+                    "type": "string",
+                    "maxLength": 1048576
+                  },
+                  "worktree_db_isolated.log": {
+                    "type": "string",
+                    "maxLength": 1048576
+                  }
+                },
+                "required": [
+                  "collection.log",
+                  "compose_config_valid.log",
+                  "dependency_sync.log",
+                  "destroy.log",
+                  "full_database.log",
+                  "harness.log",
+                  "image_build.log",
+                  "lint.log",
+                  "merge_gate.log",
+                  "peer_checkout.log",
+                  "peer_remove.log",
+                  "postgres_ready.log",
+                  "reset_idempotent.log",
+                  "typecheck.log",
+                  "unit.log",
+                  "worker/harness.xml",
+                  "worker/run/collection.json",
+                  "worker/run/database.xml",
+                  "worker/run/execution.json",
+                  "worker/unit.xml",
+                  "worktree_db_isolated.log"
+                ],
+                "additionalProperties": false
+              },
+              "base": {
+                "type": "string",
+                "maxLength": 1048576,
+                "pattern": "^[0-9a-f]{40}$"
+              },
+              "checks": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "argv": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "maxLength": 1048576
+                      },
+                      "maxItems": 4096
+                    },
+                    "check_id": {
+                      "type": "string",
+                      "maxLength": 1048576
+                    },
+                    "duration_seconds": {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    "exit_code": {
+                      "type": "integer"
+                    },
+                    "interrupted": {
+                      "type": "boolean"
+                    },
+                    "stdout": {
+                      "type": "object",
+                      "properties": {
+                        "bytes": {
+                          "type": "integer"
+                        },
+                        "path": {
+                          "type": "string",
+                          "maxLength": 1048576
+                        },
+                        "sha256": {
+                          "type": "string",
+                          "maxLength": 1048576,
+                          "pattern": "^[0-9a-f]{64}$"
+                        }
+                      },
+                      "required": [
+                        "bytes",
+                        "path",
+                        "sha256"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "argv",
+                    "check_id",
+                    "duration_seconds",
+                    "exit_code",
+                    "interrupted",
+                    "stdout"
+                  ],
+                  "additionalProperties": false
+                },
+                "maxItems": 4096
+              },
+              "container": {
+                "type": "string",
+                "maxLength": 1048576
+              },
+              "container_removed": {
+                "type": "boolean"
+              },
+              "database": {
+                "type": "object",
+                "properties": {
+                  "errors": {
+                    "type": "integer"
+                  },
+                  "failures": {
+                    "type": "integer"
+                  },
+                  "skipped": {
+                    "type": "integer"
+                  },
+                  "tests": {
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "errors",
+                  "failures",
+                  "skipped",
+                  "tests"
+                ],
+                "additionalProperties": false
+              },
+              "full_database_required": {
+                "type": "boolean"
+              },
+              "head": {
+                "type": "string",
+                "maxLength": 1048576,
+                "pattern": "^[0-9a-f]{40}$"
+              },
+              "image": {
+                "type": "string",
+                "maxLength": 1048576
+              },
+              "mounts": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "Destination": {
+                      "type": "string",
+                      "maxLength": 1048576
+                    },
+                    "Name": {
+                      "type": "string",
+                      "maxLength": 1048576
+                    },
+                    "Type": {
+                      "type": "string",
+                      "maxLength": 1048576
+                    }
+                  },
+                  "required": [
+                    "Destination",
+                    "Name",
+                    "Type"
+                  ],
+                  "additionalProperties": false
+                },
+                "maxItems": 4096
+              },
+              "status": {
+                "type": "string",
+                "maxLength": 1048576
+              },
+              "volume": {
+                "type": "string",
+                "maxLength": 1048576
+              },
+              "volume_removed": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "artifacts",
+              "base",
+              "checks",
+              "container",
+              "container_removed",
+              "database",
+              "full_database_required",
+              "head",
+              "image",
+              "mounts",
+              "status",
+              "volume",
+              "volume_removed"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "controller",
+          "format",
+          "policy",
+          "run_id",
+          "snapshot",
+          "status",
+          "test_only",
+          "tree",
+          "worker"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "integrity_report": {
+      "sample_provenance": {
+        "revision": "4e9c60a242d84b81b6e82b635da6c7227af68912",
+        "path": "docs/exec-plans/evidence/HG-047/ROUND4_VERIFICATION.json",
+        "sha256": "7a91dd3ee6534f8319c17adefce9504ff1d1accf530d0f73b01bbede18361c6a",
+        "runtime_allowlist": false
+      },
+      "schema": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "maxLength": 1048576
+          },
+          "tested_commit": {
+            "type": "string",
+            "maxLength": 1048576,
+            "pattern": "^[0-9a-f]{40}$"
+          },
+          "result_commit": {
+            "type": "string",
+            "maxLength": 1048576,
+            "pattern": "^[0-9a-f]{40}$"
+          },
+          "governance_schema": {
+            "type": "string",
+            "maxLength": 1048576
+          },
+          "suffix": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 4096
+          },
+          "audit": {
+            "type": "object",
+            "properties": {
+              "identity": {
+                "type": "string",
+                "maxLength": 1048576
+              },
+              "base": {
+                "type": "string",
+                "maxLength": 1048576,
+                "pattern": "^[0-9a-f]{40}$"
+              },
+              "head": {
+                "type": "string",
+                "maxLength": 1048576,
+                "pattern": "^[0-9a-f]{40}$"
+              },
+              "stored_bytes": {
+                "type": "integer"
+              },
+              "files": {
+                "type": "integer"
+              },
+              "errors": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "maxItems": 4096
+              },
+              "remedy": {
+                "type": "string",
+                "maxLength": 1048576
+              }
+            },
+            "required": [
+              "identity",
+              "base",
+              "head",
+              "stored_bytes",
+              "files",
+              "errors",
+              "remedy"
+            ],
+            "additionalProperties": false
+          },
+          "selected_raw_bytes": {
+            "type": "integer"
+          },
+          "reconstructed_artifacts": {
+            "type": "integer"
+          },
+          "full_database_required": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "status",
+          "tested_commit",
+          "result_commit",
+          "governance_schema",
+          "suffix",
+          "audit",
+          "selected_raw_bytes",
+          "reconstructed_artifacts",
+          "full_database_required"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "comparison_report": {
+      "sample_provenance": {
+        "revision": "4e9c60a242d84b81b6e82b635da6c7227af68912",
+        "path": "docs/exec-plans/evidence/HG-048/COMPARISON.json",
+        "sha256": "5aa46de62e62407f86915e051065661ae09acc89d47dcb550c753b0ab5f73b3a",
+        "runtime_allowlist": false
+      },
+      "schema": {
+        "type": "object",
+        "properties": {
+          "tested_commit": {
+            "type": "string",
+            "maxLength": 1048576,
+            "pattern": "^[0-9a-f]{40}$"
+          },
+          "same_collection_all_runs": {
+            "type": "boolean"
+          },
+          "tests": {
+            "type": "integer"
+          },
+          "runs": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "run": {
+                  "type": "string",
+                  "maxLength": 1048576
+                },
+                "workers": {
+                  "type": "integer"
+                },
+                "wall_seconds": {
+                  "type": "number",
+                  "minimum": 0
+                },
+                "exit_code": {
+                  "type": "integer"
+                },
+                "tests": {
+                  "type": "integer"
+                },
+                "phase_outcomes": {
+                  "type": "object",
+                  "properties": {
+                    "passed": {
+                      "type": "integer"
+                    },
+                    "failed": {
+                      "type": "integer"
+                    },
+                    "skipped": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "passed",
+                    "failed",
+                    "skipped"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "required": [
+                "run",
+                "workers",
+                "wall_seconds",
+                "exit_code",
+                "tests",
+                "phase_outcomes"
+              ],
+              "additionalProperties": false
+            },
+            "maxItems": 4096
+          },
+          "hardware": {
+            "type": "object",
+            "properties": {
+              "physical_cpus": {
+                "type": "integer"
+              },
+              "logical_cpus": {
+                "type": "integer"
+              },
+              "memory_bytes": {
+                "type": "integer"
+              }
+            },
+            "required": [
+              "physical_cpus",
+              "logical_cpus",
+              "memory_bytes"
+            ],
+            "additionalProperties": false
+          },
+          "limitations": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "maxLength": 1048576
+            },
+            "maxItems": 4096
+          }
+        },
+        "required": [
+          "tested_commit",
+          "same_collection_all_runs",
+          "tests",
+          "runs",
+          "hardware",
+          "limitations"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "scope_report": {
+      "sample_provenance": {
+        "revision": "4e9c60a242d84b81b6e82b635da6c7227af68912",
+        "path": "docs/exec-plans/evidence/HG-048/SCOPE_AUDIT.json",
+        "sha256": "39c2bb5cc767152944258b37324b32a46444206fff267765ba9bbb469df6f2ae",
+        "runtime_allowlist": false
+      },
+      "schema": {
+        "type": "object",
+        "properties": {
+          "base_commit": {
+            "type": "string",
+            "maxLength": 1048576,
+            "pattern": "^[0-9a-f]{40}$"
+          },
+          "tested_commit": {
+            "type": "string",
+            "maxLength": 1048576,
+            "pattern": "^[0-9a-f]{40}$"
+          },
+          "files_changed": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "maxLength": 1048576
+            },
+            "maxItems": 4096
+          },
+          "frozen_and_execution_policy_unchanged": {
+            "type": "boolean"
+          },
+          "pinned_controller_assets_changed": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "maxLength": 1048576
+            },
+            "maxItems": 4096
+          },
+          "compatibility_note": {
+            "type": "string",
+            "maxLength": 1048576
+          },
+          "errors": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 4096
+          },
+          "requirements_status": {
+            "type": "string",
+            "maxLength": 1048576
+          }
+        },
+        "required": [
+          "base_commit",
+          "tested_commit",
+          "files_changed",
+          "frozen_and_execution_policy_unchanged",
+          "pinned_controller_assets_changed",
+          "compatibility_note",
+          "errors",
+          "requirements_status"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "benchmark_index": {
+      "sample_provenance": {
+        "revision": "4e9c60a242d84b81b6e82b635da6c7227af68912",
+        "path": "docs/exec-plans/evidence/HG-048/BENCHMARK_INDEX.json",
+        "sha256": "a310d48a505122e1eb85349c8199601fe48a83784f9e9ea058b29ded6dacaf36",
+        "runtime_allowlist": false
+      },
+      "schema": {
+        "type": "object",
+        "properties": {
+          "tested_commit": {
+            "type": "string",
+            "maxLength": 1048576,
+            "pattern": "^[0-9a-f]{40}$"
+          },
+          "base_commit": {
+            "type": "string",
+            "maxLength": 1048576,
+            "pattern": "^[0-9a-f]{40}$"
+          },
+          "codec_source": {
+            "type": "object",
+            "properties": {
+              "upstream_pr": {
+                "type": "integer"
+              },
+              "source_git_blob": {
+                "type": "string",
+                "maxLength": 1048576,
+                "pattern": "^[0-9a-f]{40}$"
+              },
+              "sha256": {
+                "type": "string",
+                "maxLength": 1048576,
+                "pattern": "^[0-9a-f]{64}$"
+              },
+              "use": {
+                "type": "string",
+                "maxLength": 1048576
+              },
+              "source_revision": {
+                "type": "string",
+                "maxLength": 1048576,
+                "pattern": "^[0-9a-f]{40}$"
+              }
+            },
+            "required": [
+              "upstream_pr",
+              "source_git_blob",
+              "sha256",
+              "use",
+              "source_revision"
+            ],
+            "additionalProperties": false
+          },
+          "final_runs": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "label": {
+                  "type": "string",
+                  "maxLength": 1048576
+                },
+                "tested_commit": {
+                  "type": "string",
+                  "maxLength": 1048576,
+                  "pattern": "^[0-9a-f]{40}$"
+                },
+                "workers": {
+                  "type": "integer"
+                },
+                "exit_code": {
+                  "type": "integer"
+                },
+                "wall_seconds": {
+                  "type": "number",
+                  "minimum": 0
+                },
+                "command": {
+                  "type": "string",
+                  "maxLength": 1048576
+                },
+                "artifacts": {
+                  "type": "object",
+                  "properties": {
+                    "collection.json": {
+                      "type": "string",
+                      "maxLength": 1048576
+                    },
+                    "collection.log": {
+                      "type": "string",
+                      "maxLength": 1048576
+                    },
+                    "execution.json": {
+                      "type": "string",
+                      "maxLength": 1048576
+                    },
+                    "junit.xml": {
+                      "type": "string",
+                      "maxLength": 1048576
+                    },
+                    "manifest.json": {
+                      "type": "string",
+                      "maxLength": 1048576
+                    },
+                    "pytest.log": {
+                      "type": "string",
+                      "maxLength": 1048576
+                    }
+                  },
+                  "required": [
+                    "collection.json",
+                    "collection.log",
+                    "execution.json",
+                    "junit.xml",
+                    "manifest.json",
+                    "pytest.log"
+                  ],
+                  "additionalProperties": false
+                },
+                "nodes_sha256": {
+                  "type": "string",
+                  "maxLength": 1048576,
+                  "pattern": "^[0-9a-f]{64}$"
+                },
+                "tests": {
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "label",
+                "tested_commit",
+                "workers",
+                "exit_code",
+                "wall_seconds",
+                "command",
+                "artifacts",
+                "nodes_sha256",
+                "tests"
+              ],
+              "additionalProperties": false
+            },
+            "maxItems": 4096
+          },
+          "development_runs": {
+            "type": "array",
+            "items": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "label": {
+                      "type": "string",
+                      "maxLength": 1048576
+                    },
+                    "tested_commit": {
+                      "type": "string",
+                      "maxLength": 1048576,
+                      "pattern": "^[0-9a-f]{40}$"
+                    },
+                    "workers": {
+                      "type": "integer"
+                    },
+                    "exit_code": {
+                      "type": "integer"
+                    },
+                    "wall_seconds": {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    "command": {
+                      "type": "string",
+                      "maxLength": 1048576
+                    },
+                    "artifacts": {
+                      "type": "object",
+                      "properties": {
+                        "collection.json": {
+                          "type": "string",
+                          "maxLength": 1048576
+                        },
+                        "collection.log": {
+                          "type": "string",
+                          "maxLength": 1048576
+                        },
+                        "junit.xml": {
+                          "type": "string",
+                          "maxLength": 1048576
+                        },
+                        "manifest.json": {
+                          "type": "string",
+                          "maxLength": 1048576
+                        },
+                        "pytest.log": {
+                          "type": "string",
+                          "maxLength": 1048576
+                        }
+                      },
+                      "required": [
+                        "collection.json",
+                        "collection.log",
+                        "junit.xml",
+                        "manifest.json",
+                        "pytest.log"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "label",
+                    "tested_commit",
+                    "workers",
+                    "exit_code",
+                    "wall_seconds",
+                    "command",
+                    "artifacts"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "label": {
+                      "type": "string",
+                      "maxLength": 1048576
+                    },
+                    "tested_commit": {
+                      "type": "string",
+                      "maxLength": 1048576,
+                      "pattern": "^[0-9a-f]{40}$"
+                    },
+                    "workers": {
+                      "type": "integer"
+                    },
+                    "exit_code": {
+                      "type": "integer"
+                    },
+                    "wall_seconds": {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    "command": {
+                      "type": "string",
+                      "maxLength": 1048576
+                    },
+                    "artifacts": {
+                      "type": "object",
+                      "properties": {
+                        "collection.json": {
+                          "type": "string",
+                          "maxLength": 1048576
+                        },
+                        "collection.log": {
+                          "type": "string",
+                          "maxLength": 1048576
+                        },
+                        "execution.json": {
+                          "type": "string",
+                          "maxLength": 1048576
+                        },
+                        "junit.xml": {
+                          "type": "string",
+                          "maxLength": 1048576
+                        },
+                        "manifest.json": {
+                          "type": "string",
+                          "maxLength": 1048576
+                        },
+                        "pytest.log": {
+                          "type": "string",
+                          "maxLength": 1048576
+                        }
+                      },
+                      "required": [
+                        "collection.json",
+                        "collection.log",
+                        "execution.json",
+                        "junit.xml",
+                        "manifest.json",
+                        "pytest.log"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "label",
+                    "tested_commit",
+                    "workers",
+                    "exit_code",
+                    "wall_seconds",
+                    "command",
+                    "artifacts"
+                  ],
+                  "additionalProperties": false
+                }
+              ]
+            },
+            "maxItems": 4096
+          },
+          "quality": {
+            "type": "object",
+            "properties": {
+              "lint": {
+                "type": "object",
+                "properties": {
+                  "command": {
+                    "type": "string",
+                    "maxLength": 1048576
+                  },
+                  "exit_code": {
+                    "type": "integer"
+                  },
+                  "wall_seconds": {
+                    "type": "number",
+                    "minimum": 0
+                  },
+                  "artifacts": {
+                    "type": "object",
+                    "properties": {
+                      "lint.log": {
+                        "type": "string",
+                        "maxLength": 1048576
+                      },
+                      "lint.json": {
+                        "type": "string",
+                        "maxLength": 1048576
+                      }
+                    },
+                    "required": [
+                      "lint.log",
+                      "lint.json"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "required": [
+                  "command",
+                  "exit_code",
+                  "wall_seconds",
+                  "artifacts"
+                ],
+                "additionalProperties": false
+              },
+              "typecheck": {
+                "type": "object",
+                "properties": {
+                  "command": {
+                    "type": "string",
+                    "maxLength": 1048576
+                  },
+                  "exit_code": {
+                    "type": "integer"
+                  },
+                  "wall_seconds": {
+                    "type": "number",
+                    "minimum": 0
+                  },
+                  "artifacts": {
+                    "type": "object",
+                    "properties": {
+                      "typecheck.log": {
+                        "type": "string",
+                        "maxLength": 1048576
+                      },
+                      "typecheck.json": {
+                        "type": "string",
+                        "maxLength": 1048576
+                      }
+                    },
+                    "required": [
+                      "typecheck.log",
+                      "typecheck.json"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "required": [
+                  "command",
+                  "exit_code",
+                  "wall_seconds",
+                  "artifacts"
+                ],
+                "additionalProperties": false
+              },
+              "unit": {
+                "type": "object",
+                "properties": {
+                  "command": {
+                    "type": "string",
+                    "maxLength": 1048576
+                  },
+                  "exit_code": {
+                    "type": "integer"
+                  },
+                  "wall_seconds": {
+                    "type": "number",
+                    "minimum": 0
+                  },
+                  "artifacts": {
+                    "type": "object",
+                    "properties": {
+                      "unit.log": {
+                        "type": "string",
+                        "maxLength": 1048576
+                      },
+                      "unit.json": {
+                        "type": "string",
+                        "maxLength": 1048576
+                      },
+                      "unit.xml": {
+                        "type": "string",
+                        "maxLength": 1048576
+                      }
+                    },
+                    "required": [
+                      "unit.log",
+                      "unit.json",
+                      "unit.xml"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "required": [
+                  "command",
+                  "exit_code",
+                  "wall_seconds",
+                  "artifacts"
+                ],
+                "additionalProperties": false
+              },
+              "authority": {
+                "type": "object",
+                "properties": {
+                  "command": {
+                    "type": "string",
+                    "maxLength": 1048576
+                  },
+                  "exit_code": {
+                    "type": "integer"
+                  },
+                  "wall_seconds": {
+                    "type": "number",
+                    "minimum": 0
+                  },
+                  "artifacts": {
+                    "type": "object",
+                    "properties": {
+                      "authority.log": {
+                        "type": "string",
+                        "maxLength": 1048576
+                      },
+                      "authority.json": {
+                        "type": "string",
+                        "maxLength": 1048576
+                      }
+                    },
+                    "required": [
+                      "authority.log",
+                      "authority.json"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "required": [
+                  "command",
+                  "exit_code",
+                  "wall_seconds",
+                  "artifacts"
+                ],
+                "additionalProperties": false
+              },
+              "diff": {
+                "type": "object",
+                "properties": {
+                  "command": {
+                    "type": "string",
+                    "maxLength": 1048576
+                  },
+                  "exit_code": {
+                    "type": "integer"
+                  },
+                  "wall_seconds": {
+                    "type": "number",
+                    "minimum": 0
+                  },
+                  "artifacts": {
+                    "type": "object",
+                    "properties": {
+                      "diff.log": {
+                        "type": "string",
+                        "maxLength": 1048576
+                      },
+                      "diff.json": {
+                        "type": "string",
+                        "maxLength": 1048576
+                      }
+                    },
+                    "required": [
+                      "diff.log",
+                      "diff.json"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "required": [
+                  "command",
+                  "exit_code",
+                  "wall_seconds",
+                  "artifacts"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "lint",
+              "typecheck",
+              "unit",
+              "authority",
+              "diff"
+            ],
+            "additionalProperties": false
+          },
+          "roundtrips": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "ref": {
+                  "type": "string",
+                  "maxLength": 1048576
+                },
+                "raw_sha256": {
+                  "type": "string",
+                  "maxLength": 1048576,
+                  "pattern": "^[0-9a-f]{64}$"
+                },
+                "raw_bytes": {
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "ref",
+                "raw_sha256",
+                "raw_bytes"
+              ],
+              "additionalProperties": false
+            },
+            "maxItems": 4096
+          },
+          "excluded_development_artifacts": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "label": {
+                  "type": "string",
+                  "maxLength": 1048576
+                },
+                "original_path": {
+                  "type": "string",
+                  "maxLength": 1048576
+                },
+                "raw_sha256": {
+                  "type": "string",
+                  "maxLength": 1048576,
+                  "pattern": "^[0-9a-f]{64}$"
+                },
+                "raw_bytes": {
+                  "type": "integer"
+                },
+                "reason": {
+                  "type": "string",
+                  "maxLength": 1048576
+                }
+              },
+              "required": [
+                "label",
+                "original_path",
+                "raw_sha256",
+                "raw_bytes",
+                "reason"
+              ],
+              "additionalProperties": false
+            },
+            "maxItems": 4096
+          }
+        },
+        "required": [
+          "tested_commit",
+          "base_commit",
+          "codec_source",
+          "final_runs",
+          "development_runs",
+          "quality",
+          "roundtrips",
+          "excluded_development_artifacts"
+        ],
+        "additionalProperties": false
+      }
+    }
+  }
+}

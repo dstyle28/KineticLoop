@@ -1,0 +1,291 @@
+{
+  "authority": "PROSPECTIVE_DEFINITION_CASES_ONLY",
+  "runtime_execution_status": "NOT_RUN",
+  "expected_archival_observation": {
+    "documentary_validation": "BOUND_ORIGINAL_CLAIM",
+    "semantic_validation": "UNVERIFIED_ORIGINAL_COMPUTATION",
+    "historical_execution": "UNVERIFIED_MISSING_PRODUCER_EXIT",
+    "historical_review_acceptance": "NOT_CERTIFIED",
+    "acceptance_eligible": false
+  },
+  "positive_cases": [
+    {
+      "case": "original_controller",
+      "expected": "BOUND_ORIGINAL_CLAIM",
+      "acceptance_eligible": false
+    },
+    {
+      "case": "original_integrity_with_preserved_RRO_failure",
+      "expected": "BOUND_ORIGINAL_CLAIM",
+      "acceptance_eligible": false
+    },
+    {
+      "case": "original_comparison",
+      "expected": "BOUND_ORIGINAL_CLAIM",
+      "acceptance_eligible": false
+    },
+    {
+      "case": "original_scope_declared_subset",
+      "expected": "BOUND_ORIGINAL_CLAIM",
+      "acceptance_eligible": false
+    },
+    {
+      "case": "original_benchmark_parallel_codec_claim_only_no_companion_scan",
+      "expected": "BOUND_ORIGINAL_CLAIM",
+      "acceptance_eligible": false
+    },
+    {
+      "case": "owner_neutral_equivalent_each_form",
+      "expected": "BOUND_ORIGINAL_CLAIM",
+      "acceptance_eligible": false
+    },
+    {
+      "case": "inert_absolute_host_attribution",
+      "expected": "BOUND_ORIGINAL_CLAIM",
+      "acceptance_eligible": false
+    },
+    {
+      "case": "distinct_development_130_preserved",
+      "expected": "BOUND_ORIGINAL_CLAIM",
+      "acceptance_eligible": false
+    },
+    {
+      "case": "codec_source_identity_unverified",
+      "expected": "BOUND_ORIGINAL_CLAIM",
+      "acceptance_eligible": false
+    }
+  ],
+  "negative_cases": [
+    {
+      "case": "unknown_form",
+      "expected": "INVALID",
+      "acceptance_eligible": false
+    },
+    {
+      "case": "unknown_nested_field",
+      "expected": "INVALID",
+      "acceptance_eligible": false
+    },
+    {
+      "case": "duplicate_JSON_key",
+      "expected": "INVALID",
+      "acceptance_eligible": false
+    },
+    {
+      "case": "nonfinite_BOM_trailing_JSON",
+      "expected": "INVALID",
+      "acceptance_eligible": false
+    },
+    {
+      "case": "wrong_scalar_type",
+      "expected": "INVALID",
+      "acceptance_eligible": false
+    },
+    {
+      "case": "invalid_revision_or_hash",
+      "expected": "INVALID",
+      "acceptance_eligible": false
+    },
+    {
+      "case": "missing_or_ambiguous_original_merge",
+      "expected": "INVALID",
+      "acceptance_eligible": false
+    },
+    {
+      "case": "original_merge_not_protected_first_parent",
+      "expected": "INVALID",
+      "acceptance_eligible": false
+    },
+    {
+      "case": "wrong_namespaced_owner",
+      "expected": "INVALID",
+      "acceptance_eligible": false
+    },
+    {
+      "case": "wrong_B_T_R_lineage",
+      "expected": "INVALID",
+      "acceptance_eligible": false
+    },
+    {
+      "case": "record_absent_R",
+      "expected": "INVALID",
+      "acceptance_eligible": false
+    },
+    {
+      "case": "record_or_report_changed_since_M",
+      "expected": "INVALID",
+      "acceptance_eligible": false
+    },
+    {
+      "case": "symlink_submodule_or_directory",
+      "expected": "INVALID",
+      "acceptance_eligible": false
+    },
+    {
+      "case": "missing_or_ambiguous_original_GENERAL",
+      "expected": "INVALID",
+      "acceptance_eligible": false
+    },
+    {
+      "case": "review_owner_or_R_mismatch",
+      "expected": "INVALID",
+      "acceptance_eligible": false
+    },
+    {
+      "case": "missing_direct_or_one_record_link",
+      "expected": "INVALID",
+      "acceptance_eligible": false
+    },
+    {
+      "case": "extra_reference_hop",
+      "expected": "INVALID",
+      "acceptance_eligible": false
+    },
+    {
+      "case": "original_index_hash_mismatch",
+      "expected": "INVALID",
+      "acceptance_eligible": false
+    },
+    {
+      "case": "changed_T_R_original_authority",
+      "expected": "INVALID",
+      "acceptance_eligible": false
+    },
+    {
+      "case": "duplicate_report_check_ref",
+      "expected": "INVALID",
+      "acceptance_eligible": false
+    },
+    {
+      "case": "command_or_T_mismatch",
+      "expected": "INVALID",
+      "acceptance_eligible": false
+    },
+    {
+      "case": "missing_or_duplicate_benchmark_companion",
+      "expected": "INVALID",
+      "acceptance_eligible": false
+    },
+    {
+      "case": "codec_tuple_malformed_or_reused_as_source_availability",
+      "expected": "INVALID",
+      "acceptance_eligible": false
+    },
+    {
+      "case": "scope_undeclared_duplicate_or_ambiguous_basename",
+      "expected": "INVALID",
+      "acceptance_eligible": false
+    },
+    {
+      "case": "malformed_main_storage_envelope",
+      "expected": "INVALID",
+      "acceptance_eligible": false
+    },
+    {
+      "case": "native_strict_decoder_denial",
+      "expected": "INVALID",
+      "acceptance_eligible": false
+    },
+    {
+      "case": "false_affirmative_or_nonempty_failure_collection",
+      "expected": "INVALID",
+      "acceptance_eligible": false
+    },
+    {
+      "case": "known_exact_parent_nonzero",
+      "expected": "INVALID",
+      "acceptance_eligible": false
+    },
+    {
+      "case": "known_exact_parent_interrupted",
+      "expected": "INVALID",
+      "acceptance_eligible": false
+    },
+    {
+      "case": "known_exact_parent_unstarted",
+      "expected": "INVALID",
+      "acceptance_eligible": false
+    },
+    {
+      "case": "known_exact_parent_incomplete",
+      "expected": "INVALID",
+      "acceptance_eligible": false
+    },
+    {
+      "case": "known_exact_parent_failure_or_skip",
+      "expected": "INVALID",
+      "acceptance_eligible": false
+    },
+    {
+      "case": "unauthenticated_observation_input",
+      "expected": "INVALID",
+      "acceptance_eligible": false
+    },
+    {
+      "case": "unfinished_native_inventory",
+      "expected": "INVALID",
+      "acceptance_eligible": false
+    },
+    {
+      "case": "selected_owner_or_alias",
+      "expected": "INVALID",
+      "acceptance_eligible": false
+    },
+    {
+      "case": "new_current_self_archival",
+      "expected": "INVALID",
+      "acceptance_eligible": false
+    },
+    {
+      "case": "unknown_purpose",
+      "expected": "INVALID",
+      "acceptance_eligible": false
+    },
+    {
+      "case": "selected_or_review_consumer",
+      "expected": "INVALID",
+      "acceptance_eligible": false
+    },
+    {
+      "case": "prerequisite_M3_requirement_consumer",
+      "expected": "INVALID",
+      "acceptance_eligible": false
+    },
+    {
+      "case": "storage_history_decoder_source_consumer",
+      "expected": "INVALID",
+      "acceptance_eligible": false
+    },
+    {
+      "case": "install_admit_App_release_consumer",
+      "expected": "INVALID",
+      "acceptance_eligible": false
+    },
+    {
+      "case": "execution_decoder_RRO_cache_reuse",
+      "expected": "INVALID",
+      "acceptance_eligible": false
+    },
+    {
+      "case": "each_byte_node_depth_git_entry_budget_exhausted",
+      "expected": "INVALID",
+      "acceptance_eligible": false
+    },
+    {
+      "case": "classification_from_PASS_or_sample_identity",
+      "expected": "INVALID",
+      "acceptance_eligible": false
+    }
+  ],
+  "observed_exit_control": {
+    "case": "HG055_and_owner_neutral_observed_parent_exit0",
+    "expected": "ORDINARY_NATIVE_EXIT_BINDING_ONLY"
+  },
+  "delivery_requirements": [
+    "definition verifier mechanically validates catalog, exact fixtures and unchanged guards before stable T",
+    "owner-neutral fixture for every supported form with unrelated owner/B/T/R/M/report refs, never pinned-success IDs",
+    "negative definition fixtures before definition T; future runtime cases executed by HG058",
+    "exact R GENERAL and SECURITY_DATA_BOUNDARY task reviews required after definition author checks",
+    "all raw decoder, selected execution, review/RRO, product and release guards remain independent"
+  ]
+}

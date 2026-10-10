@@ -499,3 +499,87 @@ and all source, storage, production/shadow boundaries. Fresh result R and indepe
 GENERAL/SECURITY reviews precede final audits. Root retains complete installed
 bundle review, install, exact admission, App/unit/harness/fullDB, cleanup, hosted
 gates and normal merge. Definitions PASS does not confer any of those facts.
+
+
+## HG062 unverified historical documentary report definitions
+
+HG062 is definitions-only governance under its exact PACKET.md in
+`docs/exec-plans/evidence/HG-062/`. Its literal nine write patterns, eight checks
+(definitions, validator, unit, harness, lint, typecheck, authority, diff), empty
+new-authority/product projection, and fresh exact-R GENERAL plus
+SECURITY_DATA_BOUNDARY reviews are enforced. No production observer is implemented.
+`packets_refined` remains [] under the unchanged KL-only schema; summary/files
+explicitly identify the HG058 packet refinement.
+
+### Normative inputs and their authority
+
+The six byte-pinned appendices in `docs/exec-plans/evidence/HG-062/` are incorporated
+as this prospective closed definition: RULE_PROPOSAL.md, BINDING_RULES.md,
+CLOSED_DOCUMENTARY_FORMS.json, ORIGINAL_BINDINGS.json, AUTHORITY_MAPPING.json and
+DECISION_MATRIX.json. REVIEW_INPUTS.json pins their exact bytes and the four
+preparation inputs. The original draft labels are preserved as provenance;
+normal HG062 merge activates only the prospective rule, binding text, grammar and
+required matrix through this contract. ORIGINAL_BINDINGS and AUTHORITY_MAPPING
+remain immutable research/regression pins, never owner/hash/path exemptions or
+historical certification. The other preparation inputs and R3 advisories are
+non-authoritative research, not executed HG062 checks or actual task reviews.
+The task-owned definition oracle and fixtures test the definition only; they are
+not a production recognizer or a new evidence reader.
+
+Only the five closed forms in that catalog are defined: controller lifecycle
+receipt, committed integrity report, cross-mode comparison, frozen scope report,
+and benchmark packaging index. All original record/report/review/B/T/R/M/validation
+bindings, strict regular-object/byte/type/grammar/reference/lineage rules, finite
+read/metadata/operation budgets, authenticated contradiction and completed native
+observation requirements in BINDING_RULES.md apply conjunctively. Immutable original
+linkage selects the form; PASS labels and sample identities never select it.
+Absolute host attribution stays inert. The closed codec tuple remains CLAIM_ONLY;
+no companion scan, source lookup/hash computation, source availability or execution
+certification is authorized. Missing original producer source is never invented.
+
+The only result is the typed observation documentary_validation=BOUND_ORIGINAL_CLAIM,
+semantic_validation=UNVERIFIED_ORIGINAL_COMPUTATION,
+historical_execution=UNVERIFIED_MISSING_PRODUCER_EXIT,
+historical_review_acceptance=NOT_CERTIFIED, acceptance_eligible=false. No old
+computation, parent exit0, PASS or review acceptance is inferred. Component claims
+and distinct development exit130 remain separate. Authenticated exact-parent
+nonzero/interrupted/unstarted/incomplete/error/failure/skip or conflicting evidence
+rejects; observed parent exit0 uses the ordinary native evidence path. Only the
+global archival governance inventory may consume this observation. Unknown purpose,
+selected owner/aliases, fresh or modified candidate self-archival, malformed input,
+decoder denial or exhausted bounds rejects, with no fallback or reusable success
+Boolean. No selected/execution/source/decoder/storage/RRO cache receives it.
+
+### Explicit inventory limitations and count
+
+A current global archival inventory may complete with these unverified entries
+only after all independent normal native observation and other mandatory guards
+complete. It must emit each entry's five typed dimensions and limitations, plus a
+machine-readable `documentary_unverified_count` equal to the exact cardinality of
+these entries. This is a nonnegative integer (never a Boolean), zero iff no such
+entries exist. Missing, mismatched, hidden or falsely zero counts reject inventory
+completion. Nonzero must remain visible in machine-readable and human summaries;
+completion must never be labeled all historical semantics or execution verified.
+This is a prospective output contract only; HG062 does not implement inventory.
+
+All selected/freshness/full REVIEW_RECORD_ONLY, global review/source-reference,
+storage/history, source, decoder, M3, requirements, admission/App/release guards
+remain independent and unchanged. HG047's actual historical strict RRO failure
+remains failure; this observation cannot repair or replace it. HG061's distinct
+source-verifiable semantic form and its original rules remain unchanged. Frozen
+Protocol/DB, authorization, Evidence Admission, T1–T8, lock order, provider trust,
+production/shadow separation and production auto-activation are unchanged.
+
+### Same HG058 continuation after HG062 normal merge
+
+This trigger supersedes the earlier HG059/HG060/HG061 triggers. SAME HG058 stays
+clean at 3965cac382d333bd97f6c67fec8ecbe805b5932f without regrant until actual normal
+HG062 merge and coordinator regrant of harness_core, harness_governance,
+harness_validator, evidence_storage and trusted_local_ci_controller. Then retain
+first-parent3965 through normal forward merge, all old report/result/failure/map/
+source bytes, original auditbase9700 versus actual live base, eight source tuples,
+four callers, nine ordinary metadata and all finite budgets. No second task,
+history rewrite or retrospective PASS is authorized. All HG058 fresh author
+acceptance/reviews/final audits remain required. Root retains complete installed
+bundle review/install, exact admission, App/unit/harness/fullDB, cleanup, live
+hosted gates and normal protected merge. No DB/App executor is reserved here.

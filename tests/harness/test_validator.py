@@ -2083,6 +2083,13 @@ class ValidatorTests(unittest.TestCase):
         self.check(1, 'governance-required-reviews-not-pass:HG-061',
                    '--ci-pr-base', self.base, '--ci-pr-head', 'HEAD')
 
+    def test_hg062_security_review_is_mandatory(self):
+        self.put('docs/exec-plans/evidence/HG-062/scope.md', 'fixture scope')
+        tested = self.commit('HG061 governance definitions')
+        self.persist_governance_change('HG-062', tested, [], ['GENERAL'])
+        self.check(1, 'governance-required-reviews-not-pass:HG-062',
+                   '--ci-pr-base', self.base, '--ci-pr-head', 'HEAD')
+
     def test_hg060_security_review_is_mandatory(self):
         self.put('docs/exec-plans/evidence/HG-060/scope.md', 'fixture scope')
         tested = self.commit('HG060 governance definitions')
@@ -2801,4 +2808,52 @@ class HistoricalSemanticDefinitionTests(unittest.TestCase):
                       v.historical_semantic_projection_errors(record, {'KL-081'}))
         self.assertIn('historical-semantic-task-projection',
                       v.historical_semantic_projection_errors(
+                          dict(record, packets_refined=['KL-081']), set()))
+
+
+class HistoricalDocumentaryDefinitionTests(unittest.TestCase):
+    def test_hg062_exact_literal_scope(self):
+        allowed = {
+            'docs/harness/HARNESS_GOVERNANCE_CONTRACT.md', 'docs/exec-plans/active/HG-058.md',
+            'tools/harness/validate_harness.py', 'tests/harness/test_validator.py',
+            'CURRENT_DOCUMENT_INDEX.json', 'HARNESS_DOCUMENT_MANIFEST.json',
+            'docs/exec-plans/governance/HG-062.yaml',
+            'docs/exec-plans/evidence/HG-062/**', 'docs/exec-plans/reviews/HG-062/**'}
+        self.assertEqual(set(v.governance_allowed_patterns('HG-062')), allowed)
+        for path in ('REVIEW_SOURCE_DECLARATIONS.schema.json', 'HARNESS_CHANGE.schema.json',
+                     'docs/harness/REVIEW_SOURCE_DECLARATIONS.json',
+                     'docs/harness/THREAD_REVIEW_CONTRACT.md', 'docs/harness/EVIDENCE_STORAGE_POLICY.md',
+                     'tools/harness/compact_evidence.py', 'tools/harness/local_gate.py',
+                     'tools/harness/local_ci_controller.py', '.github/workflows/ci.yml',
+                     'tests/harness/test_review_evidence_provenance.py',
+                     'CURRENT_REQUIREMENT_SET.json', 'FROZEN_BASELINE.json',
+                     'docs/exec-plans/governance/HG-058.yaml',
+                     'docs/exec-plans/evidence/HG-058/probe.json',
+                     'docs/exec-plans/evidence/HG-062A/probe.json',
+                     'docs/exec-plans/active/KL-081.md'):
+            with self.subTest(path=path):
+                self.assertFalse(v.matches(path, list(allowed)))
+
+    def test_hg062_exact_checks_and_unchanged_authority_product_projection(self):
+        record: dict[str, list] = {
+            'checks_run': [{'check_id': name} for name in v.HG062_REQUIRED_CHECKS],
+            'authority_entries_added': [], 'packets_refined': []}
+        self.assertEqual(v.historical_documentary_projection_errors(record, set()), [])
+        for variant in ('missing', 'duplicate', 'foreign'):
+            bad = copy.deepcopy(record)
+            if variant == 'missing':
+                bad['checks_run'].pop()
+            elif variant == 'duplicate':
+                bad['checks_run'].append(bad['checks_run'][0])
+            else:
+                bad['checks_run'][0] = {'check_id': 'invented'}
+            self.assertIn('historical-documentary-required-checks',
+                          v.historical_documentary_projection_errors(bad, set()))
+        self.assertIn('historical-documentary-authority-projection',
+                      v.historical_documentary_projection_errors(
+                          dict(record, authority_entries_added=['HARNESS_CHANGE.schema.json']), set()))
+        self.assertIn('historical-documentary-task-projection',
+                      v.historical_documentary_projection_errors(record, {'KL-081'}))
+        self.assertIn('historical-documentary-task-projection',
+                      v.historical_documentary_projection_errors(
                           dict(record, packets_refined=['KL-081']), set()))

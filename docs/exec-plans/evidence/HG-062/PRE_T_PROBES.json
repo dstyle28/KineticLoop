@@ -1,0 +1,65 @@
+{
+  "probes": [
+    {
+      "name": "definitions-1",
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python /Users/davetian/.codex/worktrees/hg062-documentary-definitions/KineticLoop/docs/exec-plans/evidence/HG-062/verify_definitions.py --base 4e9c60a242d84b81b6e82b635da6c7227af68912 --tested 4e9c60a242d84b81b6e82b635da6c7227af68912 --research-only",
+      "cwd": "/Users/davetian/.codex/worktrees/hg062-documentary-definitions/KineticLoop",
+      "exit_code": 0,
+      "output_path": "/private/tmp/hg062-preT-definitions-1.log",
+      "output_bytes": 10626,
+      "output_sha256": "a701458742035753c554aa9f90976999d594c4cd5cf71ab2a5633065ff9e7de9",
+      "meaning": "affected pre-T development probe only; no stable-T acceptance",
+      "environment": {}
+    },
+    {
+      "name": "validator-1",
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m pytest tests/harness/test_validator.py -q -k hg062",
+      "cwd": "/Users/davetian/.codex/worktrees/hg062-documentary-definitions/KineticLoop",
+      "exit_code": 0,
+      "output_path": "/private/tmp/hg062-preT-validator-1.log",
+      "output_bytes": 114,
+      "output_sha256": "3caba58e726d55c456fab09140313c41252813f24049419b4fc7875606505fbf",
+      "meaning": "affected pre-T development probe only; no stable-T acceptance",
+      "environment": {
+        "PYTHONPATH": ".:src:/Users/davetian/.cache/uv/archive-v0/nnPNXkWpFSNRe9Ad:/Users/davetian/.cache/uv/archive-v0/X_H5kIMi_L692EPn"
+      }
+    },
+    {
+      "name": "definitions-2",
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python docs/exec-plans/evidence/HG-062/verify_definitions.py --base 4e9c60a242d84b81b6e82b635da6c7227af68912 --tested 4e9c60a242d84b81b6e82b635da6c7227af68912 --research-only",
+      "cwd": "/Users/davetian/.codex/worktrees/hg062-documentary-definitions/KineticLoop",
+      "exit_code": 0,
+      "output_path": "/private/tmp/hg062-preT-definitions-2.log",
+      "output_bytes": 12677,
+      "output_sha256": "adcd650f8f841a2e9a74038c400a08c9e8c48cb9151335158164d6ab7d34ddb6",
+      "meaning": "affected pre-T development probe only; no stable-T acceptance",
+      "environment": {}
+    },
+    {
+      "name": "lint-1",
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m ruff check tools/harness/validate_harness.py tests/harness/test_validator.py",
+      "cwd": "/Users/davetian/.codex/worktrees/hg062-documentary-definitions/KineticLoop",
+      "exit_code": 0,
+      "output_path": "/private/tmp/hg062-preT-lint-1.log",
+      "output_bytes": 19,
+      "output_sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "meaning": "affected pre-T development probe only; no stable-T acceptance",
+      "environment": {
+        "PYTHONPATH": ".:src:/Users/davetian/.cache/uv/archive-v0/nnPNXkWpFSNRe9Ad:/Users/davetian/.cache/uv/archive-v0/X_H5kIMi_L692EPn"
+      }
+    },
+    {
+      "name": "definitions-3",
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python docs/exec-plans/evidence/HG-062/verify_definitions.py --base 4e9c60a242d84b81b6e82b635da6c7227af68912 --tested 4e9c60a242d84b81b6e82b635da6c7227af68912 --research-only",
+      "cwd": "/Users/davetian/.codex/worktrees/hg062-documentary-definitions/KineticLoop",
+      "exit_code": 0,
+      "output_path": "/private/tmp/hg062-preT-definitions-3.log",
+      "output_bytes": 12677,
+      "output_sha256": "adcd650f8f841a2e9a74038c400a08c9e8c48cb9151335158164d6ab7d34ddb6",
+      "meaning": "affected pre-T development probe only; no stable-T acceptance",
+      "environment": {}
+    }
+  ],
+  "nonzero_interrupted_attempts": [],
+  "unavailable_uv": "command -v uv exited1; existing-environment fallback expressly approved by packet"
+}

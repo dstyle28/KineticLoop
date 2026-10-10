@@ -1,0 +1,235 @@
+{
+  "base": "4e9c60a242d84b81b6e82b635da6c7227af68912",
+  "rows": [
+    {
+      "owner": "harness-governance-v0.1/HG-046",
+      "record": "docs/exec-plans/governance/HG-046.yaml",
+      "record_sha256": "fde878c3dee24b1befd6b8df11c8d2b170edcf4acfabf54102d37e9e6c545f9f",
+      "base": "fc8a044ffa4d15a74ce5dc59298ae411f1f4009b",
+      "tested": "8fb35e9364deb5cfbe1424535f046c744bf3b369",
+      "reviewed": "65ab5bfc3608b477a301ded604ab6a63374a247a",
+      "original_merge": "391c9198fa8ec647e377a0572700bc7568468c85",
+      "review": {
+        "task_identity": "harness-governance-v0.1/HG-046",
+        "reviewed_head_sha": "65ab5bfc3608b477a301ded604ab6a63374a247a",
+        "review_type": "GENERAL",
+        "status": "PASS",
+        "findings": [],
+        "evidence_refs": [
+          "docs/exec-plans/governance/HG-046.yaml",
+          "docs/exec-plans/evidence/HG-046/SCOPE.md",
+          "docs/exec-plans/evidence/HG-046/CONTROLLER_8fb35e9.md",
+          "docs/exec-plans/evidence/HG-046/controller-8fb35e9/receipt.json",
+          "docs/exec-plans/evidence/HG-046/controller-8fb35e9/worker-receipt.json",
+          "docs/exec-plans/evidence/HG-046/controller-8fb35e9/worker/run/collection.json",
+          "docs/exec-plans/evidence/HG-046/controller-8fb35e9/worker/run/execution.json",
+          "docs/exec-plans/evidence/HG-046/controller-8fb35e9/worker/run/database.xml",
+          "docs/exec-plans/evidence/HG-046/controller-8fb35e9/worker/harness.xml",
+          "docs/exec-plans/evidence/HG-046/controller-8fb35e9/worker/unit.xml",
+          "docs/exec-plans/evidence/HG-046/controller-8fb35e9/environment-readback.json",
+          "docs/exec-plans/evidence/HG-046/checks-8fb35e9/focused.json",
+          "docs/exec-plans/evidence/HG-046/checks-8fb35e9/lint.json",
+          "docs/exec-plans/evidence/HG-046/checks-8fb35e9/typecheck.json",
+          "docs/exec-plans/evidence/HG-046/checks-8fb35e9/scope_frozen.json",
+          "docs/exec-plans/evidence/HG-046/hardening-setup/master-effective-local-gate.json"
+        ],
+        "review_contract_version": "v0.2"
+      },
+      "reports": [
+        {
+          "path": "docs/exec-plans/evidence/HG-046/controller-8fb35e9/receipt.json",
+          "mode_blob": "100644 blob e0c124caacb765e3b7d248a9b5796b8eec161f8a\tdocs/exec-plans/evidence/HG-046/controller-8fb35e9/receipt.json",
+          "bytes": 54437,
+          "sha256": "80b86c25471e2cae28922965bc1a0fb184dcc73f0c240b652333761368b1aa17",
+          "fields": [
+            "controller",
+            "format",
+            "policy",
+            "run_id",
+            "snapshot",
+            "status",
+            "test_only",
+            "tree",
+            "worker"
+          ]
+        }
+      ]
+    },
+    {
+      "owner": "harness-governance-v0.1/HG-047",
+      "record": "docs/exec-plans/governance/HG-047.yaml",
+      "record_sha256": "1ad4200ab8820f002d58d76b7145cf9f0b98f27bc6d0a5b40990f2224cdc497c",
+      "base": "d08927706a01a397dac2c78ca4aec7e9918a389c",
+      "tested": "7b35dc5dd7c488b60651175574e37b5d9389d335",
+      "reviewed": "b71d2d63f8bc27ab0e905b0be8a0cea5f0122a91",
+      "original_merge": "95ddd75d3eb410b7dffa15a1017276c504adc9a6",
+      "review": {
+        "task_identity": "harness-governance-v0.1/HG-047",
+        "reviewed_head_sha": "b71d2d63f8bc27ab0e905b0be8a0cea5f0122a91",
+        "review_type": "GENERAL",
+        "status": "PASS",
+        "findings": [
+          {
+            "id": "G-01",
+            "classification": "NONBLOCKING",
+            "title": "Unicode escape causes ordinary duplicate-key JSON to be rejected",
+            "file": "tools/harness/compact_evidence.py",
+            "line": 129,
+            "description": "Independently reproduced: storage_pairs calls unique before reserved storage identity is established. An ordinary duplicate-key object with literal values remains plain; an equivalent Unicode-escaped value raises evidence-duplicate-key. This is a lossless compatibility limitation, but fails closed, supplies no PASS/provenance bypass, and affects none of the selected or historical artifacts independently retrieved in this review. Classification is freshly assessed, not inherited from the old PASS.",
+            "suggested_change": "Prospectively identify reserved storage objects before enforcing storage duplicate-key rejection, preserve nonreserved raw bytes, and add literal/escaped parity coverage while retaining strict envelope rejection."
+          }
+        ],
+        "evidence_refs": [
+          "docs/exec-plans/governance/HG-047.yaml",
+          "docs/exec-plans/evidence/HG-047/SCOPE.md",
+          "docs/exec-plans/evidence/HG-047/round4-7b35dc5/execution.json",
+          "docs/exec-plans/reviews/HG-047/general_round4/REPORT.md",
+          "docs/exec-plans/reviews/HG-047/general_round4/checks.json",
+          "docs/exec-plans/reviews/HG-047/general_round4/verify.py",
+          "docs/exec-plans/reviews/HG-047/general_round4/verification.json",
+          "docs/exec-plans/reviews/HG-047/general_round4/verification.log",
+          "docs/exec-plans/reviews/HG-047/general_round4/verify-attempt1.py",
+          "docs/exec-plans/reviews/HG-047/general_round4/verification-attempt1.log",
+          "docs/exec-plans/reviews/HG-047/general_round4/execution_audit.py",
+          "docs/exec-plans/reviews/HG-047/general_round4/execution-verification.json",
+          "docs/exec-plans/reviews/HG-047/general_round4/execution-verification.log",
+          "docs/exec-plans/reviews/HG-047/general_round4/governance-verification.json",
+          "docs/exec-plans/reviews/HG-047/general_round4/targeted-log.json",
+          "docs/exec-plans/reviews/HG-047/general_round4/targeted-xml.json",
+          "docs/exec-plans/reviews/HG-047/general_round4/parallel.log",
+          "docs/exec-plans/reviews/HG-047/general_round4/parallel.xml",
+          "docs/exec-plans/reviews/HG-047/general_round4/interrupted.log",
+          "docs/exec-plans/reviews/HG-047/general_round4/interrupted.xml",
+          "docs/exec-plans/reviews/HG-047/general_round4/validator.log",
+          "docs/exec-plans/reviews/HG-047/general_round4/validator.xml",
+          "docs/exec-plans/reviews/HG-047/general_round4/authority.log",
+          "docs/exec-plans/reviews/HG-047/general_round4/finalize.py",
+          "docs/exec-plans/reviews/HG-047/general_round4/locked-review-requirements.txt",
+          "docs/exec-plans/reviews/HG-047/general_round4/dependency-install.log",
+          "docs/exec-plans/reviews/HG-047/general_round4/compact_conversion.py",
+          "docs/exec-plans/reviews/HG-047/general_round4/compact-conversion.json"
+        ],
+        "review_contract_version": "v0.2"
+      },
+      "reports": [
+        {
+          "path": "docs/exec-plans/evidence/HG-047/ROUND4_VERIFICATION.json",
+          "mode_blob": "100644 blob 939a9aeacce31ad5cc53cc0a2e2671e0e08092f6\tdocs/exec-plans/evidence/HG-047/ROUND4_VERIFICATION.json",
+          "bytes": 589,
+          "sha256": "7a91dd3ee6534f8319c17adefce9504ff1d1accf530d0f73b01bbede18361c6a",
+          "fields": [
+            "status",
+            "tested_commit",
+            "result_commit",
+            "governance_schema",
+            "suffix",
+            "audit",
+            "selected_raw_bytes",
+            "reconstructed_artifacts",
+            "full_database_required"
+          ]
+        }
+      ]
+    },
+    {
+      "owner": "harness-governance-v0.1/HG-048",
+      "record": "docs/exec-plans/governance/HG-048.yaml",
+      "record_sha256": "cc83264d89418d9edde591774da79907c62ea752d247bc7d73a8190b019ebe78",
+      "base": "391c9198fa8ec647e377a0572700bc7568468c85",
+      "tested": "0045808352507b7af67a3a2135408421d8bcc6bc",
+      "reviewed": "fb41a15fd8779d2e1192246a80c1520e777bf221",
+      "original_merge": "d08927706a01a397dac2c78ca4aec7e9918a389c",
+      "review": {
+        "task_identity": "harness-governance-v0.1/HG-048",
+        "reviewed_head_sha": "fb41a15fd8779d2e1192246a80c1520e777bf221",
+        "review_type": "GENERAL",
+        "status": "PASS",
+        "review_contract_version": "v0.2",
+        "protected_base_sha": "391c9198fa8ec647e377a0572700bc7568468c85",
+        "tested_commit": "0045808352507b7af67a3a2135408421d8bcc6bc",
+        "summary": "Fresh independent GENERAL review finds no blocker at the exact reviewed SHA. HG-048 meets its developer concurrency and evidence scope. PR #91 integration, a fresh SHA-bound review, reviewed controller installation, and the App-bound isolated DB gate remain separate prerequisites; product requirements remain NOT_RUN.",
+        "findings": [
+          {
+            "classification": "NONBLOCKING",
+            "path": "tools/harness/run_harness_tests.py",
+            "line": 120,
+            "description": "If pytest returns zero from preflight but collection.json is missing or invalid, the read or parse raises before manifest.json is written. This remains fail closed and collection.log is retained, but the diagnostic manifest is absent in that exceptional path. No correction is required for the completed benchmark evidence."
+          }
+        ],
+        "evidence_refs": [
+          "CURRENT_DOCUMENT_INDEX.json",
+          "docs/harness/THREAD_REVIEW_CONTRACT.md",
+          "docs/exec-plans/evidence/HG-048/SCOPE.md",
+          "docs/exec-plans/governance/HG-048.yaml",
+          "docs/exec-plans/evidence/HG-048/BENCHMARK_INDEX.json",
+          "docs/exec-plans/evidence/HG-048/COMPARISON.json",
+          "docs/exec-plans/evidence/HG-048/QUALITY.json",
+          "docs/exec-plans/evidence/HG-048/SCOPE_AUDIT.json",
+          "docs/exec-plans/evidence/HG-048/CONTROLLER_HANDOFF.md",
+          "docs/exec-plans/evidence/HG-048/raw/final-serial-execution-json.json",
+          "docs/exec-plans/evidence/HG-048/raw/final-initial-w2-execution-json.json",
+          "docs/exec-plans/evidence/HG-048/raw/final-w4-execution-json.json",
+          "docs/exec-plans/evidence/HG-048/raw/final-repeat-w2-execution-json.json",
+          "tests/harness/test_parallel_runner.py",
+          "tools/harness/run_harness_tests.py",
+          "tools/harness/parallel_observer.py"
+        ],
+        "independent_observations": [
+          "At clean fb41a15 HEAD, the base-to-HEAD changed-path set equals all 119 declared governance files. Tested commit 0045808 is an ancestor; its only successor adds HG-048 evidence and governance files. No implementation or test path changed after testing.",
+          "Independently decoded all 51 lossless evidence envelopes and verified stored and raw SHA-256 and byte counts. Four final runs at tested commit 0045808 share the same 1,071 unique collected IDs, execute each ID once, contain exactly 3,213 passed setup/call/teardown reports, and have matching JUnit case identities. Worker IDs are serial, gw0/gw1, or gw0-gw3 as configured; all 18 focused regression calls passed in each run.",
+          "Quality raw records bind tested commit 0045808 and record exit zero for lint, typecheck, unit, check-harness, and diff. Independent git diff --check at reviewed HEAD passed. Current-index hashes recompute correctly; indexed frozen Protocol and DB entries are byte-identical to the protected base.",
+          "Scope audit and implementation diff show no DB, migration, production authorization, installed controller, or frozen-authority change. The installed pin and decoder, exact-head App-bound isolated DB gate, PR #91 integration, and new SHA-bound review remain separate obligations."
+        ]
+      },
+      "reports": [
+        {
+          "path": "docs/exec-plans/evidence/HG-048/COMPARISON.json",
+          "mode_blob": "100644 blob 388d83c0b85d047775fe89f960a8e405d6458f4d\tdocs/exec-plans/evidence/HG-048/COMPARISON.json",
+          "bytes": 1431,
+          "sha256": "5aa46de62e62407f86915e051065661ae09acc89d47dcb550c753b0ab5f73b3a",
+          "fields": [
+            "tested_commit",
+            "same_collection_all_runs",
+            "tests",
+            "runs",
+            "hardware",
+            "limitations"
+          ]
+        },
+        {
+          "path": "docs/exec-plans/evidence/HG-048/SCOPE_AUDIT.json",
+          "mode_blob": "100644 blob 6c3ca4fadfd9132a2722babfd6a43ddcd7d61301\tdocs/exec-plans/evidence/HG-048/SCOPE_AUDIT.json",
+          "bytes": 955,
+          "sha256": "39c2bb5cc767152944258b37324b32a46444206fff267765ba9bbb469df6f2ae",
+          "fields": [
+            "base_commit",
+            "tested_commit",
+            "files_changed",
+            "frozen_and_execution_policy_unchanged",
+            "pinned_controller_assets_changed",
+            "compatibility_note",
+            "errors",
+            "requirements_status"
+          ]
+        },
+        {
+          "path": "docs/exec-plans/evidence/HG-048/BENCHMARK_INDEX.json",
+          "mode_blob": "100644 blob 5fd421b0668f50c6806a216e08c571c07d9cb909\tdocs/exec-plans/evidence/HG-048/BENCHMARK_INDEX.json",
+          "bytes": 22164,
+          "sha256": "a310d48a505122e1eb85349c8199601fe48a83784f9e9ea058b29ded6dacaf36",
+          "fields": [
+            "tested_commit",
+            "base_commit",
+            "codec_source",
+            "final_runs",
+            "development_runs",
+            "quality",
+            "roundtrips",
+            "excluded_development_artifacts"
+          ]
+        }
+      ]
+    }
+  ],
+  "purpose": "Immutable original linkage and report identity only; no historical command exit or semantic PASS inferred."
+}
