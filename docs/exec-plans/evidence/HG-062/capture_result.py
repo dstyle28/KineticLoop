@@ -152,6 +152,7 @@ record = {
         'GENERAL and SECURITY_DATA_BOUNDARY independent actual-R reviews are pending, as are final audits, installed-bundle review/install, exact admission, App/unit/harness/fullDB/cleanup, hosted gates and normal protected merge.',
         'HG058 remains frozen3965; original auditbase9700/live-base distinction, source/map/failure history, eight tuples/four callers/nine metadata and all independent selected/storage/source/decoder/RRO/M3/admission guards remain unchanged.',
         'The first candidate a4f823f9291106389e2ac538c308c34cd19f276c was invalidated by self-review for missing explicit selected-display-alias fixture coverage. Its definitions exit0, validator collection exit0 and intentionally interrupted validator exit2 after75 passes remain in invalidated-a4f823f92911/PRESERVATION.json and ancestry. No prior execution is reused.',
+        'Candidate f54b7e3b3d2242c2ac97d5329f7f9a5d2a55be82 was invalidated by self-review for a zero-count false-verification-label fixture gap. Its definitions/validator170/unit247 exits0 and intentionally interrupted harness exit2 after1103 passes, including incomplete identity diagnostics, remain in invalidated-f54b7e3b3d22/PRESERVATION.json and ancestry. No prior execution is reused.',
         'No product or requirement status is promoted. packets_refined stays empty under existing KL-only schema; summary/files identify HG058 refinement.',
     ]}
 result_path.write_text(yaml.safe_dump(record, sort_keys=False, width=110))

@@ -285,9 +285,9 @@ def semantic_fields(r, c, catalog):
 def inventory(entries, count, native_complete=True, label='COMPLETE_WITH_LIMITATIONS'):
     require(native_complete is True, 'inventory native incomplete')
     require(type(count) is int and count >= 0, 'inventory integer count')
-    require(all(entry == OBS for entry in entries), 'typed entry limitation')
+    require(all(type(entry) is dict and set(entry) == set(OBS) and all(type(entry[k]) is type(v) and entry[k] == v for k, v in OBS.items()) for entry in entries), 'typed entry limitation')
     require(count == len(entries), 'exact documentary count')
-    require(not entries or label == 'COMPLETE_WITH_LIMITATIONS', 'visible unverified limitations')
+    require(label == 'COMPLETE_WITH_LIMITATIONS', 'completion is not historical verification')
     return {'documentary_unverified_count': count, 'entries': entries, 'summary': label}
 
 
@@ -484,12 +484,17 @@ def fixture_matrix(contexts, catalog):
         run('path-' + repr(path),mutate=lambda c,r,p=path:r['files_changed'].append(p))
     run('report-changed', raw_transform=lambda b:b+b' ')
     run('conflicting-parent', mutate=lambda c,r:c['observations'].extend([Native(tuple_for(c),'COMPLETED',0,TOKEN),Native(tuple_for(c),'COMPLETED',1,TOKEN)]))
+    run('parent-skipped', mutate=lambda c,r:c['observations'].append(Native(tuple_for(c),'SKIPPED',0,TOKEN)))
+    run('parent-error', mutate=lambda c,r:c['observations'].append(Native(tuple_for(c),'ERROR',0,TOKEN)))
+    run('profile-version', mutate=put('profile_version','unknown'))
+    run('regular-executable-mode', mutate=lambda c,r:c['entries'].__setitem__(c['report_ref'],['100755','blob','a'*40]),expected='BOUND_ORIGINAL_CLAIM')
+    run('json-byte-inclusive',raw_transform=lambda b:b+b' '*(1048576-len(b)),expected='BOUND_ORIGINAL_CLAIM')
     run('selected-display-alias', mutate=lambda c,r:c['selected_aliases'].append(c['D']))
     run('distinct-child-nonzero', mutate=lambda c,r:c['observations'].append(Native(tuple_for(c)[:-1]+('other-report',),'INTERRUPTED',130,TOKEN)),expected='BOUND_ORIGINAL_CLAIM')
     for count in [0,1,5]:
         require(inventory([dict(OBS) for _ in range(count)], count)['documentary_unverified_count']==count,'inventory cardinality')
         done['inventory-valid-'+str(count)]='COMPLETE_WITH_LIMITATIONS'
-    for name, entries, count, complete, label in [('zero-mismatch',[OBS],0,True,'COMPLETE_WITH_LIMITATIONS'),('nonzero-mismatch',[],1,True,'COMPLETE_WITH_LIMITATIONS'),('bool',[],False,True,'COMPLETE_WITH_LIMITATIONS'),('missing',[],None,True,'COMPLETE_WITH_LIMITATIONS'),('hidden',[OBS],1,True,'ALL_HISTORICAL_EXECUTION_VERIFIED'),('native',[],0,False,'COMPLETE_WITH_LIMITATIONS'),('typed',[dict(OBS,semantic_validation='VERIFIED')],1,True,'COMPLETE_WITH_LIMITATIONS')]:
+    for name, entries, count, complete, label in [('zero-mismatch',[OBS],0,True,'COMPLETE_WITH_LIMITATIONS'),('nonzero-mismatch',[],1,True,'COMPLETE_WITH_LIMITATIONS'),('bool',[],False,True,'COMPLETE_WITH_LIMITATIONS'),('missing',[],None,True,'COMPLETE_WITH_LIMITATIONS'),('hidden',[OBS],1,True,'ALL_HISTORICAL_EXECUTION_VERIFIED'),('zero-false-label',[],0,True,'ALL_HISTORICAL_EXECUTION_VERIFIED'),('zero-semantic-label',[],0,True,'ALL_HISTORICAL_SEMANTICS_VERIFIED'),('nonzero-semantic-label',[OBS],1,True,'ALL_HISTORICAL_SEMANTICS_VERIFIED'),('integer-eligibility',[dict(OBS,acceptance_eligible=0)],1,True,'COMPLETE_WITH_LIMITATIONS'),('native',[],0,False,'COMPLETE_WITH_LIMITATIONS'),('typed',[dict(OBS,semantic_validation='VERIFIED')],1,True,'COMPLETE_WITH_LIMITATIONS')]:
         try: inventory(entries,count,complete,label)
         except ValueError: done['inventory-invalid-'+name]='INVALID'
         else: raise ValueError('inventory accepted '+name)
@@ -584,6 +589,8 @@ def main():
             contexts[form]=(neutral_context,neutral_raw)
             research.append({'form':form,'owner':row['owner'],'report':pin['path'],'sha256':sha(raw),'B':c['B'],'T':c['T'],'R':c['R'],'M':c['M'],'validation_revision':BASE,'secondary_entries':c['usage']['metadata_entries'],'observation':OBS})
     cases=fixture_matrix(contexts,catalog)
+    fixture_catalog=strict((HERE/'FIXTURE_CATALOG.json').read_bytes())
+    require(fixture_catalog['count']==len(cases) and {r['case']:r['expected'] for r in fixture_catalog['cases']}==cases and len(fixture_catalog['cases'])==len(cases),'exact before-T fixture catalog coverage')
     guards=preservation(args.base,args.tested) if not args.research_only else {'pre_T_affected_check_only':True}
     print(json.dumps({'meaning':'HG062 definition fixtures and immutable documentary research only; runtime recognition NOT_RUN; original computation/producer/review acceptance NOT_CERTIFIED','original_samples':research,'fixture_cases':cases,'fixture_case_count':len(cases),'preservation':guards,'typed_observation':OBS},indent=2))
 
