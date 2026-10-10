@@ -164,6 +164,7 @@ def classify(raw, c, catalog):
     require(c['report_ref'] in refs or c['record_ref'] in refs, 'direct or one record hop')
     checks = [q for q in c['checks'] if q['evidence_ref'] == c['report_ref']]
     require(len(checks) == 1 and checks[0]['check_id'] == c['check_id'] and checks[0]['command'] == c['command'], 'unique exact original check')
+    require(checks[0]['result'] == 'PASS', 'bound original parent conflicting claim')
     require(c['record_owner'] == c['owner'] and c['record_B'] == c['B'] and c['record_T'] == c['T'], 'record owner/B/T')
     inert(c['command']); require(shlex.split(c['command']), 'command argv')
     for path in AUTH_PATHS:
@@ -195,9 +196,27 @@ def semantic_fields(r, c, catalog):
         canonical(path)
         require(path.startswith('docs/exec-plans/evidence/' + c['D'] + '/') and path in c['entries'], 'secondary reference')
         regular(c['entries'][path])
-    def command(value):
+    def command(value, evidence_ref, role):
         inert(value); require(shlex.split(value), 'nonexpanding argv')
-        require(len([q for q in c['checks'] if q['command'] == value]) == 1, 'component command linkage')
+        by_command = [q for q in c['checks'] if q['command'] == value]
+        by_reference = [q for q in c['checks'] if q['evidence_ref'] == evidence_ref]
+        require(len(by_command) == len(by_reference) == 1 and by_command[0] == by_reference[0], 'component role/reference/command linkage')
+        require(by_reference[0]['result'] == 'PASS', 'bound component conflicting claim')
+        # Resolve the declared action from inert, bounded argv only. Unknown role
+        # is ambiguous and rejects; no command is run and no source is consulted.
+        argv = shlex.split(by_reference[0]['command'])
+        action = None
+        if len(argv) > 3 and argv[1] == '-m' and argv[2] in ('kineticloop.cli', 'kineticloop.db.cli'):
+            action = argv[3]
+        elif len(argv) > 1 and Path(argv[0]).name == 'kl':
+            action = argv[1]
+        elif len(argv) > 3 and Path(argv[0]).name == 'uv' and argv[1] == 'run' and Path(argv[2]).name == 'kl':
+            action = argv[3]
+        elif len(argv) > 2 and Path(argv[0]).name == 'git' and argv[1:3] == ['diff', '--check']:
+            action = 'diff'
+        actions = {'harness': 'test-harness', 'lint': 'lint', 'typecheck': 'typecheck',
+                   'unit': 'test-unit', 'authority': 'check-harness', 'diff': 'diff'}
+        require(action == actions[role], 'original declared component role')
     def number(value, positive=False):
         require(type(value) in (int, float) and math.isfinite(value) and value >= (1 if positive else 0), 'numeric bound')
     if 'tested_commit' in r:
@@ -240,7 +259,14 @@ def semantic_fields(r, c, catalog):
         require(len(companions) == 1, 'benchmark companion uniqueness')
         q = companions[0]; ref(q['ref']); require(q['hash_M'] == q['hash_current'] == sha(json.dumps(q['report'], sort_keys=True).encode()), 'companion immutable')
         grammar(q['report'], catalog['profiles']['benchmark_index']['schema'])
-        require(q['report']['tested_commit'] == c['T'] and q['report']['base_commit'] == c['B'], 'companion B/T')
+        # A selected companion is the same closed benchmark form, including its
+        # original check contradiction and component bindings, not grammar alone.
+        selected = [check for check in c['checks'] if check['evidence_ref'] == q['ref']]
+        require(len(selected) == 1, 'companion original check uniqueness')
+        companion_context = dict(c, form='benchmark_index', report_ref=q['ref'],
+            report_hash_M=q['hash_M'], report_hash_current=q['hash_current'],
+            check_id=selected[0]['check_id'], command=selected[0]['command'])
+        classify(json.dumps(q['report'], sort_keys=True).encode(), companion_context, catalog)
         final = q['report']['final_runs']; unique([x['label'] for x in final]); unique([x['run'] for x in r['runs']])
         require({x['label'] for x in final} == {x['run'] for x in r['runs']}, 'comparison run identities')
         for item in r['runs']:
@@ -267,14 +293,14 @@ def semantic_fields(r, c, catalog):
         unique([x['label'] for x in r['final_runs']]); unique([(x['label'], x['tested_commit']) for x in r['development_runs']])
         for run in r['final_runs']:
             require(run['tested_commit'] == c['T'] and type(run['exit_code']) is int and run['exit_code'] == 0, 'final run identity/exit')
-            number(run['tests'], True); number(run['workers'], True); number(run['wall_seconds']); hexstr(run['nodes_sha256'], 64); command(run['command'])
+            number(run['tests'], True); number(run['workers'], True); number(run['wall_seconds']); hexstr(run['nodes_sha256'], 64); command(run['command'], run['artifacts']['manifest.json'], 'harness')
             for path in run['artifacts'].values(): ref(path)
         for run in r['development_runs']:
             hexstr(run['tested_commit'], 40); require(run['tested_commit'] != c['T'], 'development cannot substitute final')
             require(type(run['exit_code']) is int, 'development exit'); inert(run['command']); number(run['workers'], True); number(run['wall_seconds'])
             for path in run['artifacts'].values(): ref(path)
-        for q in r['quality'].values():
-            require(type(q['exit_code']) is int and q['exit_code'] == 0, 'quality exit'); number(q['wall_seconds']); command(q['command'])
+        for role, q in r['quality'].items():
+            require(type(q['exit_code']) is int and q['exit_code'] == 0, 'quality exit'); number(q['wall_seconds']); command(q['command'], q['artifacts'][role + '.json'], role)
             for path in q['artifacts'].values(): ref(path)
         unique([q['ref'] for q in r['roundtrips']])
         for q in r['roundtrips']: ref(q['ref']); hexstr(q['raw_sha256'], 64); number(q['raw_bytes'])
@@ -348,6 +374,8 @@ def context(row, report_pin, form, raw, record, review, catalog):
                     require(object_at(BASE, pin['path'])[0] == qraw, 'companion byte equality')
                     digest = sha(json.dumps(value, sort_keys=True).encode())
                     c['companions'].append({'ref': pin['path'], 'report': value, 'hash_M': digest, 'hash_current': digest}); references.add(pin['path'])
+                    for run in value['final_runs'] + value['development_runs'] + list(value['quality'].values()): references.update(run['artifacts'].values())
+                    references.update(item['ref'] for item in value['roundtrips'])
     require(len(references) <= 512, 'secondary metadata budget')
     entries = git('ls-tree', '-z', c['M'], '--', *sorted(references)).decode().split('\0')
     for line in filter(None, entries):
@@ -368,7 +396,14 @@ def neutral(c, report):
         mapping[path] = path.replace(c['D'], 'HG-913') if c['D'] in path else 'fixture/' + path
     mapping[c['record_ref']] = 'docs/exec-plans/governance/HG-913.yaml'
     mapping[c['review_ref']] = 'docs/exec-plans/reviews/HG-913/GENERAL.json'
-    for check in c['checks']: mapping[check['command']] = '/fixture/python -m specimen ' + sha(check['command'].encode())[:12]
+    for check in c['checks']:
+        argv = shlex.split(check['command'])
+        # Rename attribution without deleting the declared action that defines
+        # harness versus quality roles. Equality still uses the complete command.
+        argv = [('/fixture/bin/' + Path(value).name if i == 0 else
+                 '/fixture/argument/' + sha(value.encode())[:16]) if value.startswith('/')
+                else mapping.get(value, value) for i, value in enumerate(argv)]
+        mapping[check['command']] = shlex.join(argv)
     # Do not rename indexed authority paths, which are fixed contract roles.
     def rewrite(value):
         if isinstance(value, str):
@@ -518,6 +553,47 @@ def fixture_matrix(contexts, catalog):
         ('benchmark-roundtrip-duplicate', 'benchmark_index', lambda c,r: r['roundtrips'].append(r['roundtrips'][0])),
     ]
     for name, form, mutation in extra: run(name, form, mutation)
+    # R1 mandatory original-claim and role/reference audit. PASS labels remain
+    # claims only: rejecting a contradiction never establishes producer execution.
+    def parent_claim(c, status, report_ref=None):
+        next(q for q in c['checks'] if q['evidence_ref'] == (report_ref or c['report_ref']))['result'] = status
+    for form in contexts:
+        for status in ('FAIL', 'NOT_RUN'):
+            run('original-parent-' + form + '-' + status, form,
+                lambda c,r,s=status:parent_claim(c,s))
+        run('original-parent-' + form + '-FAIL-native0', form,
+            lambda c,r:(parent_claim(c,'FAIL'),c['observations'].append(Native(tuple_for(c),'COMPLETED',0,TOKEN))))
+    def companion_mutation(mutation):
+        def apply(c, r):
+            q = c['companions'][0]
+            mutation(c, q['report'])
+            q['hash_M'] = q['hash_current'] = sha(json.dumps(q['report'],sort_keys=True).encode())
+        return apply
+    binding_cases = [
+        ('final-borrows-quality-command', lambda c,r:r['final_runs'][0].__setitem__('command',r['quality']['lint']['command'])),
+        ('final-borrows-quality-command-and-ref', lambda c,r:(r['final_runs'][0].__setitem__('command',r['quality']['lint']['command']),r['final_runs'][0]['artifacts'].__setitem__('manifest.json',r['quality']['lint']['artifacts']['lint.json']))),
+        ('quality-borrows-harness-command-and-ref', lambda c,r:(r['quality']['lint'].__setitem__('command',r['final_runs'][0]['command']),r['quality']['lint']['artifacts'].__setitem__('lint.json',r['final_runs'][0]['artifacts']['manifest.json']))),
+        ('final-borrows-other-harness-command', lambda c,r:r['final_runs'][0].__setitem__('command',r['final_runs'][1]['command'])),
+        ('quality-borrows-other-quality-command', lambda c,r:r['quality']['lint'].__setitem__('command',r['quality']['typecheck']['command'])),
+        ('quality-borrows-harness-command', lambda c,r:r['quality']['lint'].__setitem__('command',r['final_runs'][0]['command'])),
+        ('final-wrong-existing-reference', lambda c,r:r['final_runs'][0]['artifacts'].__setitem__('manifest.json',r['final_runs'][1]['artifacts']['manifest.json'])),
+        ('quality-wrong-existing-reference', lambda c,r:r['quality']['lint']['artifacts'].__setitem__('lint.json',r['quality']['typecheck']['artifacts']['typecheck.json'])),
+        ('final-check-FAIL', lambda c,r:parent_claim(c,'FAIL',r['final_runs'][0]['artifacts']['manifest.json'])),
+        ('quality-check-NOT_RUN', lambda c,r:parent_claim(c,'NOT_RUN',r['quality']['lint']['artifacts']['lint.json'])),
+        ('final-command-ambiguous', lambda c,r:c['checks'].append(dict(next(q for q in c['checks'] if q['command']==r['final_runs'][0]['command']),evidence_ref=c['record_ref']))),
+        ('quality-reference-ambiguous', lambda c,r:c['checks'].append(dict(next(q for q in c['checks'] if q['evidence_ref']==r['quality']['lint']['artifacts']['lint.json']),command='other command'))),
+        ('codec-zero-PR', lambda c,r:r['codec_source'].__setitem__('upstream_pr',0)),
+    ]
+    for name, mutation in binding_cases:
+        run('benchmark-binding-' + name,'benchmark_index',mutation)
+        run('comparison-companion-binding-' + name,'comparison_report',companion_mutation(mutation))
+    for name, form, mutation in extra:
+        if form == 'benchmark_index':
+            run('comparison-companion-' + name,'comparison_report',companion_mutation(mutation))
+    run('comparison-companion-original-parent-FAIL','comparison_report',
+        lambda c,r:parent_claim(c,'FAIL',c['companions'][0]['ref']))
+    run('benchmark-empty-final-runs-not-prohibited','benchmark_index',
+        lambda c,r:r.__setitem__('final_runs',[]),expected='BOUND_ORIGINAL_CLAIM')
     for form in contexts:
         run('form-extra-'+form, form, lambda c,r:r.__setitem__('unrecognized', True))
         run('form-missing-'+form, form, lambda c,r:r.pop(next(iter(r))))

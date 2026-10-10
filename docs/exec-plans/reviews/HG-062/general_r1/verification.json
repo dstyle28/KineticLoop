@@ -1,0 +1,89 @@
+{
+  "reviewed_head": "cf203ab10c1e5979fb2f414211d42c48d7f95795",
+  "checks": [
+    {
+      "check_id": "definitions",
+      "observed_exit": 0,
+      "artifacts_verified": 1,
+      "exact_identities": null
+    },
+    {
+      "check_id": "validator",
+      "observed_exit": 0,
+      "artifacts_verified": 5,
+      "exact_identities": 170
+    },
+    {
+      "check_id": "unit",
+      "observed_exit": 0,
+      "artifacts_verified": 5,
+      "exact_identities": 247
+    },
+    {
+      "check_id": "harness",
+      "observed_exit": 0,
+      "artifacts_verified": 7,
+      "exact_identities": 1779
+    },
+    {
+      "check_id": "lint",
+      "observed_exit": 0,
+      "artifacts_verified": 1,
+      "exact_identities": null
+    },
+    {
+      "check_id": "typecheck",
+      "observed_exit": 0,
+      "artifacts_verified": 1,
+      "exact_identities": null
+    },
+    {
+      "check_id": "authority",
+      "observed_exit": 0,
+      "artifacts_verified": 1,
+      "exact_identities": null
+    },
+    {
+      "check_id": "diff",
+      "observed_exit": 0,
+      "artifacts_verified": 1,
+      "exact_identities": null
+    }
+  ],
+  "interrupted_candidates": [
+    {
+      "T": "a4f823f9291106389e2ac538c308c34cd19f276c",
+      "observed": {
+        "definitions": 0,
+        "validator_collection": 0,
+        "validator_execution": 2,
+        "validator_partial_cases": 75
+      },
+      "artifacts_verified": 8
+    },
+    {
+      "T": "f54b7e3b3d2242c2ac97d5329f7f9a5d2a55be82",
+      "observed": {
+        "definitions": 0,
+        "validator": 0,
+        "validator_cases": 170,
+        "unit": 0,
+        "unit_cases": 247,
+        "harness": 2,
+        "harness_partial_cases": 1103
+      },
+      "artifacts_verified": 22
+    }
+  ],
+  "suffix_edges": [
+    {
+      "parent": "f8839c3ad1598d8a6e9cd68a33f95ba8019ff67e",
+      "commit": "cf203ab10c1e5979fb2f414211d42c48d7f95795",
+      "own_additions": 40
+    }
+  ],
+  "native_suffix_errors": [],
+  "scope_paths": 129,
+  "authority_mapping": "verified",
+  "frozen_helpers_manifest": "T/R identical"
+}

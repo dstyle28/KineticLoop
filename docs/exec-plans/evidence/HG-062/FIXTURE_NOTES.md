@@ -2,7 +2,8 @@
 
 verify_definitions.py is a task-owned, offline specification oracle. It reads the
 five pinned original reports as immutable data and constructs owner-neutral fixtures
-by injectively renaming owner, B/T/R/M, tree, paths and command slots. Its fixture
+by injectively renaming owner, B/T/R/M, tree, paths and host-attribution command
+slots while preserving the declared CLI action. Its fixture
 Native class is an internal model token, not production authentication. Synthetic
 ancestry, budget counters and native decoder decisions model required prerequisites;
 they never establish actual execution, decoding or an implemented runtime recognizer.
@@ -18,3 +19,9 @@ regular mode/type failures, malformed bytes and inventory cardinality/visibility
 The catalog describes fixture inputs and expected outcomes; full fresh execution
 output at stable T is separately captured. Historical producer source is never
 imported/evaluated/run; the codec attribution receives no source lookup or scan.
+
+The R1 correction adds focused original parent FAIL/NOT_RUN/native-exit0 conflict
+cases for all five forms, exact component command/reference ambiguity and wrong-role
+cases, and the same benchmark negatives through a comparison companion. Companion
+metadata covers only its explicit original artifact references; no codec source is
+read. These remain offline definition models, not production authentication.
