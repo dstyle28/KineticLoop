@@ -1,0 +1,265 @@
+{
+  "phase": "BEFORE_T_REVIEW_CORRECTION_AUDIT_ONLY",
+  "prior_R": "cf203ab10c1e5979fb2f414211d42c48d7f95795",
+  "current_source_identity": {
+    "bytes": 49718,
+    "sha256": "aedcc725a276c300855ef943af04b92c879edbc2ccc4c13267c8fb50bf05f592"
+  },
+  "reviews_preserved_exactly": [
+    {
+      "record": "docs/exec-plans/reviews/HG-062/GENERAL.json",
+      "bytes": 647,
+      "sha256": "08d0333eb891527ed120698617159166fd4bdd94b2f46381f9e9615935b8b4e5",
+      "status": "PASS",
+      "reviewed_R": "cf203ab10c1e5979fb2f414211d42c48d7f95795",
+      "references": [
+        {
+          "path": "docs/exec-plans/reviews/HG-062/general_r1/assessment.md",
+          "bytes": 3870,
+          "sha256": "7b991cc969572c112a743a44143cd468ea304aefa740f0beff4db52cc31fe3dd"
+        },
+        {
+          "path": "docs/exec-plans/reviews/HG-062/general_r1/verification.json",
+          "bytes": 2049,
+          "sha256": "64d022f505f27b074dd41f610728d279264debba96393d93b3185a83e5f369d1"
+        },
+        {
+          "path": "docs/exec-plans/reviews/HG-062/general_r1/COMMAND.json",
+          "bytes": 220,
+          "sha256": "71c4c8fe835c45a74056998a4ab6ffd04a20455871e6aefc7e4843a619bcf962"
+        },
+        {
+          "path": "docs/exec-plans/reviews/HG-062/general_r1/definitions_recheck.json",
+          "bytes": 1240,
+          "sha256": "007cf49128dc4415ec442a8d28c4d806a8e6f3aaa53a86339e49b6664c43b37d"
+        },
+        {
+          "path": "docs/exec-plans/reviews/HG-062/general_r1/hg047_boundary.json",
+          "bytes": 481,
+          "sha256": "0bc5d717199297624fcf13a88f76b6af8431a7ed42c470bd3ce30c2212b72936"
+        },
+        {
+          "path": "docs/exec-plans/reviews/HG-062/general_r1/HASHES.json",
+          "bytes": 775,
+          "sha256": "ab5f7df5d57be966a6a2c5879af8d0e698fcbf32c5c75005d8ca21ed3b506d87"
+        }
+      ]
+    },
+    {
+      "record": "docs/exec-plans/reviews/HG-062/SECURITY_DATA_BOUNDARY.json",
+      "bytes": 1829,
+      "sha256": "7a43449aaa3965fdec96b98601b2500054a8108ca2e516e3fb7ec08c8d082d90",
+      "status": "CHANGES_REQUIRED",
+      "reviewed_R": "cf203ab10c1e5979fb2f414211d42c48d7f95795",
+      "references": [
+        {
+          "path": "docs/exec-plans/reviews/HG-062/security_r1/assessment.md",
+          "bytes": 5479,
+          "sha256": "b669dfe81fe4d32da3f6537f307b458972083a000df1932f42bd3386f60b3db2"
+        },
+        {
+          "path": "docs/exec-plans/reviews/HG-062/security_r1/probe-output.json",
+          "bytes": 2261,
+          "sha256": "4410c8acf2267830971053c320c038dc1d90adb9e68b0cb9b86390195d1ebc62"
+        },
+        {
+          "path": "docs/exec-plans/reviews/HG-062/security_r1/evidence-verification.json",
+          "bytes": 3452,
+          "sha256": "aa8b97325b2c50f193eccee2ec6f26d18d264bc20dfc30ee2ae216428f7ebcc4"
+        },
+        {
+          "path": "docs/exec-plans/reviews/HG-062/security_r1/commands.json",
+          "bytes": 1324,
+          "sha256": "d64ca391c05de9e26c4cb7b14db68ea57e18ec77e3f012b7e342866e5f0ae09f"
+        }
+      ]
+    }
+  ],
+  "findings": {
+    "HG062-SEC-R1-1": "Reject bound original parent FAIL/NOT_RUN, including native-exit0 conflict, in all five forms; do not infer historical execution.",
+    "HG062-SEC-R1-2": "Require exact unique original command and role-specific reference, non-conflicting original claim, and bounded original declared action. Wrong command, wrong reference, ambiguous linkage and paired cross-role substitution reject."
+  },
+  "comparison_adjudication": "The benchmark companion is the same closed form, so the existing full benchmark conjunction applies. Wrong final T and zero codec upstream_pr reject. Metadata lookup covers explicit original companion artifacts only; no source scan. Empty final_runs is not prohibited by approved rules.",
+  "focused_case_count": 224,
+  "original_positive_forms": 5,
+  "all_focused_expected_outcomes_matched": true,
+  "reviewer_probe_after_correction": {
+    "reviewed_head_sha": "cf203ab10c1e5979fb2f414211d42c48d7f95795",
+    "probes": [
+      {
+        "name": "record-parent-FAIL",
+        "outcome": {
+          "rejected": "ValueError",
+          "reason": "bound original parent conflicting claim"
+        }
+      },
+      {
+        "name": "comparison-companion-final-T-mismatch",
+        "outcome": {
+          "rejected": "ValueError",
+          "reason": "final run identity/exit"
+        }
+      },
+      {
+        "name": "comparison-companion-codec-malformed",
+        "outcome": {
+          "rejected": "ValueError",
+          "reason": "codec PR"
+        }
+      },
+      {
+        "name": "benchmark-final-borrows-quality-command",
+        "outcome": {
+          "rejected": "ValueError",
+          "reason": "component role/reference/command linkage"
+        }
+      },
+      {
+        "name": "benchmark-zero-final-runs",
+        "outcome": {
+          "documentary_validation": "BOUND_ORIGINAL_CLAIM",
+          "semantic_validation": "UNVERIFIED_ORIGINAL_COMPUTATION",
+          "historical_execution": "UNVERIFIED_MISSING_PRODUCER_EXIT",
+          "historical_review_acceptance": "NOT_CERTIFIED",
+          "acceptance_eligible": false
+        }
+      },
+      {
+        "name": "exact-parent-nonzero",
+        "outcome": {
+          "rejected": "ValueError",
+          "reason": "parent contradiction"
+        }
+      },
+      {
+        "name": "bool-inventory-count",
+        "outcome": {
+          "rejected": "ValueError",
+          "reason": "budget nodes"
+        }
+      }
+    ]
+  },
+  "actual_pre_T_commands": [
+    {
+      "name": "focused-initial",
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python /private/tmp/hg062-focused-r1.py",
+      "cwd": "/Users/davetian/.codex/worktrees/hg062-documentary-definitions/KineticLoop",
+      "environment": {},
+      "observed_exit_code": 0,
+      "output_path": "/private/tmp/hg062-focused-r1-output.json",
+      "output_identity": {
+        "bytes": 11202,
+        "sha256": "0c7292f34858bf697659af29ac63d7e284cc1414fc84644fab0af1ecdc73b554"
+      },
+      "source_identity": null,
+      "meaning": "PRE_T_DIRTY_WORKTREE_AFFECTED_ONLY; no immutable tested-SHA acceptance; earlier records precede final role refinement"
+    },
+    {
+      "name": "reviewer-probe-initial",
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python /private/tmp/hg062-security-r1/probe.py",
+      "cwd": "/Users/davetian/.codex/worktrees/hg062-documentary-definitions/KineticLoop",
+      "environment": {
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "observed_exit_code": 0,
+      "output_path": "/private/tmp/hg062-r1-probe-after.json",
+      "output_identity": {
+        "bytes": 1447,
+        "sha256": "2fa1032a315e9828acc03c770d9162870c64a9521adff65305ee925505dec0b1"
+      },
+      "source_identity": null,
+      "meaning": "PRE_T_DIRTY_WORKTREE_AFFECTED_ONLY; no immutable tested-SHA acceptance; earlier records precede final role refinement"
+    },
+    {
+      "name": "definitions-initial",
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python docs/exec-plans/evidence/HG-062/verify_definitions.py --base 4e9c60a242d84b81b6e82b635da6c7227af68912 --tested cf203ab10c1e5979fb2f414211d42c48d7f95795 --research-only",
+      "cwd": "/Users/davetian/.codex/worktrees/hg062-documentary-definitions/KineticLoop",
+      "environment": {},
+      "observed_exit_code": 0,
+      "output_path": "/private/tmp/hg062-r1-definitions-preT.json",
+      "output_identity": {
+        "bytes": 15996,
+        "sha256": "1f6c2d07accda17e7eca496c3847948d089322af8bbdc45dc741da34318cab09"
+      },
+      "source_identity": null,
+      "meaning": "PRE_T_DIRTY_WORKTREE_AFFECTED_ONLY; no immutable tested-SHA acceptance; earlier records precede final role refinement"
+    },
+    {
+      "name": "affected-validator",
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m pytest tests/harness/test_validator.py -q -k hg062",
+      "cwd": "/Users/davetian/.codex/worktrees/hg062-documentary-definitions/KineticLoop",
+      "environment": {
+        "PYTHONPATH": ".:src:/Users/davetian/.cache/uv/archive-v0/nnPNXkWpFSNRe9Ad:/Users/davetian/.cache/uv/archive-v0/X_H5kIMi_L692EPn"
+      },
+      "observed_exit_code": 0,
+      "output_path": "/private/tmp/hg062-r1-validator-preT.log",
+      "output_identity": {
+        "bytes": 114,
+        "sha256": "32f562827f55385b529f5a9c88f716744205b121785819ec231de7f86b83c40e"
+      },
+      "source_identity": null,
+      "meaning": "PRE_T_DIRTY_WORKTREE_AFFECTED_ONLY; no immutable tested-SHA acceptance; earlier records precede final role refinement"
+    },
+    {
+      "name": "focused-final",
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python /private/tmp/hg062-focused-r1.py",
+      "cwd": "/Users/davetian/.codex/worktrees/hg062-documentary-definitions/KineticLoop",
+      "environment": {},
+      "observed_exit_code": 0,
+      "output_path": "/private/tmp/hg062-focused-r1-final-output.json",
+      "output_identity": {
+        "bytes": 11524,
+        "sha256": "bbac54b52b008e9e970d34752c5cd6bcacb52c84a6aff9fd1e8a288bddb35b36"
+      },
+      "source_identity": {
+        "bytes": 49718,
+        "sha256": "aedcc725a276c300855ef943af04b92c879edbc2ccc4c13267c8fb50bf05f592"
+      },
+      "meaning": "PRE_T_DIRTY_WORKTREE_AFFECTED_ONLY; source bytes pinned, no immutable tested-SHA acceptance"
+    },
+    {
+      "name": "definitions-final",
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python docs/exec-plans/evidence/HG-062/verify_definitions.py --base 4e9c60a242d84b81b6e82b635da6c7227af68912 --tested cf203ab10c1e5979fb2f414211d42c48d7f95795 --research-only",
+      "cwd": "/Users/davetian/.codex/worktrees/hg062-documentary-definitions/KineticLoop",
+      "environment": {},
+      "observed_exit_code": 0,
+      "output_path": "/private/tmp/hg062-r1-definitions-final-preT.json",
+      "output_identity": {
+        "bytes": 16318,
+        "sha256": "6ed5ca2d46d7c8563682061caa111448f4ba4469724ecb3c410be2d12312311b"
+      },
+      "source_identity": {
+        "bytes": 49718,
+        "sha256": "aedcc725a276c300855ef943af04b92c879edbc2ccc4c13267c8fb50bf05f592"
+      },
+      "meaning": "PRE_T_DIRTY_WORKTREE_AFFECTED_ONLY; source bytes pinned, no immutable tested-SHA acceptance"
+    },
+    {
+      "name": "reviewer-probe-final",
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python /private/tmp/hg062-security-r1/probe.py",
+      "cwd": "/Users/davetian/.codex/worktrees/hg062-documentary-definitions/KineticLoop",
+      "environment": {
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "observed_exit_code": 0,
+      "output_path": "/private/tmp/hg062-r1-probe-final.json",
+      "output_identity": {
+        "bytes": 1447,
+        "sha256": "2fa1032a315e9828acc03c770d9162870c64a9521adff65305ee925505dec0b1"
+      },
+      "source_identity": {
+        "bytes": 49718,
+        "sha256": "aedcc725a276c300855ef943af04b92c879edbc2ccc4c13267c8fb50bf05f592"
+      },
+      "meaning": "PRE_T_DIRTY_WORKTREE_AFFECTED_ONLY; source bytes pinned, no immutable tested-SHA acceptance"
+    }
+  ],
+  "dependency_recheck": {
+    "executable": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python",
+    "python": "3.12.14 (main, Aug 25 2026, 13:50:33) [Clang 22.1.3 ]",
+    "source_metadata_files_unchanged": 38,
+    "installation": "NONE"
+  },
+  "limitations": "Offline role/contradiction model only. No production recognition, original source execution, native historical computation or execution verification. Existing CLI action shapes resolve role; unknown action binding fails closed as ambiguous. Full fresh stable-T eight-check cycle and new exact-R independent reviews are still required."
+}

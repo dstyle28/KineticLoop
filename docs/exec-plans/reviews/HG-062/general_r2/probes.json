@@ -1,0 +1,153 @@
+{
+  "reviewed_head_sha": "388bc874b7d57089eed53f87ac0653cfb2b84fe7",
+  "oracle_sha256": "aedcc725a276c300855ef943af04b92c879edbc2ccc4c13267c8fb50bf05f592",
+  "meaning": "Narrow independent review of current definition oracle; no producer source executed and no historical or production execution certified",
+  "case_count": 30,
+  "cases": [
+    {
+      "case": "controller_receipt original and owner-neutral",
+      "outcome": "BOUND_ORIGINAL_CLAIM only"
+    },
+    {
+      "case": "integrity_report original and owner-neutral",
+      "outcome": "BOUND_ORIGINAL_CLAIM only"
+    },
+    {
+      "case": "comparison_report original and owner-neutral",
+      "outcome": "BOUND_ORIGINAL_CLAIM only"
+    },
+    {
+      "case": "scope_report original and owner-neutral",
+      "outcome": "BOUND_ORIGINAL_CLAIM only"
+    },
+    {
+      "case": "benchmark_index original and owner-neutral",
+      "outcome": "BOUND_ORIGINAL_CLAIM only"
+    },
+    {
+      "case": "controller_receipt FAIL",
+      "outcome": "INVALID",
+      "reason": "bound original parent conflicting claim"
+    },
+    {
+      "case": "controller_receipt NOT_RUN",
+      "outcome": "INVALID",
+      "reason": "bound original parent conflicting claim"
+    },
+    {
+      "case": "controller_receipt FAIL despite native parent0",
+      "outcome": "INVALID",
+      "reason": "bound original parent conflicting claim"
+    },
+    {
+      "case": "integrity_report FAIL",
+      "outcome": "INVALID",
+      "reason": "bound original parent conflicting claim"
+    },
+    {
+      "case": "integrity_report NOT_RUN",
+      "outcome": "INVALID",
+      "reason": "bound original parent conflicting claim"
+    },
+    {
+      "case": "integrity_report FAIL despite native parent0",
+      "outcome": "INVALID",
+      "reason": "bound original parent conflicting claim"
+    },
+    {
+      "case": "comparison_report FAIL",
+      "outcome": "INVALID",
+      "reason": "bound original parent conflicting claim"
+    },
+    {
+      "case": "comparison_report NOT_RUN",
+      "outcome": "INVALID",
+      "reason": "bound original parent conflicting claim"
+    },
+    {
+      "case": "comparison_report FAIL despite native parent0",
+      "outcome": "INVALID",
+      "reason": "bound original parent conflicting claim"
+    },
+    {
+      "case": "scope_report FAIL",
+      "outcome": "INVALID",
+      "reason": "bound original parent conflicting claim"
+    },
+    {
+      "case": "scope_report NOT_RUN",
+      "outcome": "INVALID",
+      "reason": "bound original parent conflicting claim"
+    },
+    {
+      "case": "scope_report FAIL despite native parent0",
+      "outcome": "INVALID",
+      "reason": "bound original parent conflicting claim"
+    },
+    {
+      "case": "benchmark_index FAIL",
+      "outcome": "INVALID",
+      "reason": "bound original parent conflicting claim"
+    },
+    {
+      "case": "benchmark_index NOT_RUN",
+      "outcome": "INVALID",
+      "reason": "bound original parent conflicting claim"
+    },
+    {
+      "case": "benchmark_index FAIL despite native parent0",
+      "outcome": "INVALID",
+      "reason": "bound original parent conflicting claim"
+    },
+    {
+      "case": "benchmark_index borrowed lint command+ref",
+      "outcome": "INVALID",
+      "reason": "original declared component role"
+    },
+    {
+      "case": "benchmark_index wrong final T",
+      "outcome": "INVALID",
+      "reason": "final run identity/exit"
+    },
+    {
+      "case": "benchmark_index codec PR0",
+      "outcome": "INVALID",
+      "reason": "codec PR"
+    },
+    {
+      "case": "comparison_report borrowed lint command+ref",
+      "outcome": "INVALID",
+      "reason": "original declared component role"
+    },
+    {
+      "case": "comparison_report wrong final T",
+      "outcome": "INVALID",
+      "reason": "final run identity/exit"
+    },
+    {
+      "case": "comparison_report codec PR0",
+      "outcome": "INVALID",
+      "reason": "codec PR"
+    },
+    {
+      "case": "comparison companion native nonzero",
+      "outcome": "INVALID",
+      "reason": "parent contradiction"
+    },
+    {
+      "case": "unknown declared component action",
+      "outcome": "INVALID",
+      "reason": "original declared component role"
+    },
+    {
+      "case": "empty final runs permitted by grammar",
+      "outcome": "BOUND_ORIGINAL_CLAIM",
+      "reason": null
+    },
+    {
+      "case": "parent0 stays ordinary native route",
+      "outcome": "ORDINARY_NATIVE_EXIT_BINDING_ONLY",
+      "reason": null
+    }
+  ]
+}

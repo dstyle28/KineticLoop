@@ -1,0 +1,32 @@
+{
+  "meaning": "Fresh narrow independent review probes; no author suite rerun",
+  "commands": [
+    {
+      "argv": [
+        "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python",
+        "/private/tmp/hg062-security-r1/probe.py"
+      ],
+      "environment": {
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "observed_exit_code": 0,
+      "script_sha256": "99689f1155dbdcd198e35291876a3c095f585538405ff870201bebc63219ef62",
+      "stdout_sha256": "4410c8acf2267830971053c320c038dc1d90adb9e68b0cb9b86390195d1ebc62",
+      "stdout_evidence_ref": "docs/exec-plans/reviews/HG-062/security_r1/probe-output.json"
+    },
+    {
+      "argv": [
+        "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python",
+        "/private/tmp/hg062-security-r1/verify_evidence.py"
+      ],
+      "environment": {
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "observed_exit_code": 0,
+      "script_sha256": "e7e1a2cb3e599e64360f4dad5ae32347fb4fbc3cf6da0d59217bb346a9973eb0",
+      "stdout_sha256": "aa8b97325b2c50f193eccee2ec6f26d18d264bc20dfc30ee2ae216428f7ebcc4",
+      "stdout_evidence_ref": "docs/exec-plans/reviews/HG-062/security_r1/evidence-verification.json"
+    }
+  ],
+  "environment_inspection_failure": "Initial python3 metadata read exited1: PyYAML missing; no task test ran in that attempt."
+}

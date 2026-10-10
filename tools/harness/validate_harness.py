@@ -1513,6 +1513,13 @@ HG060_ALLOWED_PATTERNS = [
     'tools/harness/validate_harness.py', 'tests/harness/test_validator.py',
     INDEX, MANIFEST, 'docs/exec-plans/governance/HG-060.yaml',
     'docs/exec-plans/evidence/HG-060/**', 'docs/exec-plans/reviews/HG-060/**']
+HG062_ALLOWED_PATTERNS = [
+    'docs/harness/HARNESS_GOVERNANCE_CONTRACT.md', 'docs/exec-plans/active/HG-058.md',
+    'tools/harness/validate_harness.py', 'tests/harness/test_validator.py',
+    INDEX, MANIFEST, 'docs/exec-plans/governance/HG-062.yaml',
+    'docs/exec-plans/evidence/HG-062/**', 'docs/exec-plans/reviews/HG-062/**']
+HG062_REQUIRED_CHECKS = {'definitions', 'validator', 'unit', 'harness', 'lint',
+                         'typecheck', 'authority', 'diff'}
 HG061_ALLOWED_PATTERNS = [
     'docs/harness/HARNESS_GOVERNANCE_CONTRACT.md', 'docs/exec-plans/active/HG-058.md',
     'tools/harness/validate_harness.py', 'tests/harness/test_validator.py',
@@ -1612,7 +1619,23 @@ def historical_semantic_projection_errors(record, changed_task_ids):
     return errors
 
 
+def historical_documentary_projection_errors(record, changed_task_ids):
+    """HG062 definitions only; documentary recognition belongs to HG058."""
+    errors = []
+    check_ids = [check['check_id'] for check in record['checks_run']]
+    if (set(check_ids) != HG062_REQUIRED_CHECKS
+            or len(check_ids) != len(HG062_REQUIRED_CHECKS)):
+        errors.append('historical-documentary-required-checks')
+    if record.get('authority_entries_added', []):
+        errors.append('historical-documentary-authority-projection')
+    if changed_task_ids or record['packets_refined']:
+        errors.append('historical-documentary-task-projection')
+    return errors
+
+
 def governance_allowed_patterns(change_id):
+    if change_id == 'HG-062':
+        return HG062_ALLOWED_PATTERNS
     if change_id == 'HG-061':
         return HG061_ALLOWED_PATTERNS
     if change_id == 'HG-060':
@@ -3967,6 +3990,8 @@ def validate(root, args):
                     errors.extend(bounded_recovery_projection_errors(record, changed_task_ids))
                 if change_id == 'HG-061':
                     errors.extend(historical_semantic_projection_errors(record, changed_task_ids))
+                if change_id == 'HG-062':
+                    errors.extend(historical_documentary_projection_errors(record, changed_task_ids))
                 args.governance_changed_task_ids = changed_task_ids
                 args.governance_base_tasks = old_tasks
                 args.governance_reviewed_tasks = replay_tasks
@@ -4177,7 +4202,7 @@ def validate(root, args):
             required = {'GENERAL'}
             if change_id in ('HG-051', 'HG-054', 'HG-057'):
                 required.update({'PROTOCOL', 'DB_CONCURRENCY', 'SECURITY_DATA_BOUNDARY'})
-            if change_id in ('HG-050', 'HG-058', 'HG-059', 'HG-060', 'HG-061'):
+            if change_id in ('HG-050', 'HG-058', 'HG-059', 'HG-060', 'HG-061', 'HG-062'):
                 required.add('SECURITY_DATA_BOUNDARY')
             old_tasks = getattr(args, 'governance_base_tasks', {})
             reviewed_tasks = getattr(args, 'governance_reviewed_tasks', tasks)

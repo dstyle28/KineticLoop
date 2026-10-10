@@ -1,0 +1,44 @@
+{
+  "meaning": "Fresh targeted reproduction and immutable author-evidence inspection; no suite rerun",
+  "commands": [
+    {
+      "argv": [
+        "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python",
+        "/private/tmp/hg062-security-r2/probe.py"
+      ],
+      "environment": {
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "observed_exit_code": 0,
+      "script_sha256": "a3391ad479aecb9fe1ae0e48e77b08a313ec251a3e0b383e1285bee7600f32b3",
+      "stdout_sha256": "ac98b3f1edcf962c3f5dc1c886c54eae77863d400ba88820230cc9044441faa1",
+      "stdout_evidence_ref": "docs/exec-plans/reviews/HG-062/security_r2/probe-output.json"
+    },
+    {
+      "argv": [
+        "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python",
+        "/private/tmp/hg062-security-r2/verify_evidence.py"
+      ],
+      "environment": {
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "observed_exit_code": 0,
+      "script_sha256": "97a59614a54646fff4cf35a3062f437e1d1714426393f6098f2d8249e001cb65",
+      "stdout_sha256": "05755bc959d91ed7055f9f1f3ab10ab5321c556e034a525499e1df110955f895",
+      "stdout_evidence_ref": "docs/exec-plans/reviews/HG-062/security_r2/evidence-verification.json"
+    },
+    {
+      "argv": [
+        "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python",
+        "/private/tmp/hg062-security-r2/boundary_verify.py"
+      ],
+      "environment": {
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "observed_exit_code": 0,
+      "script_sha256": "ba2f619cbc0ff75ab09a19a2b25fcab0a16df89b57724ab6e6dec0df1b9fb985",
+      "stdout_sha256": "04dd491332b97c4fd7eba47bc1dcfa13413e63834dd01d56435b002dd224a66e",
+      "stdout_evidence_ref": "docs/exec-plans/reviews/HG-062/security_r2/boundary-verification.json"
+    }
+  ]
+}

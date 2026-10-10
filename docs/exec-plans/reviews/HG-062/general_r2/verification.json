@@ -1,0 +1,79 @@
+{
+  "reviewed_head_sha": "388bc874b7d57089eed53f87ac0653cfb2b84fe7",
+  "base_commit": "4e9c60a242d84b81b6e82b635da6c7227af68912",
+  "tested_commit": "215ad2778090e45248a10ca83bc0efac7809ada5",
+  "check_index_sha256": "f2680d69c85e852cafd471f0ca79d475bd79d9d864f8394e66c297ca9281f0bf",
+  "checks": [
+    {
+      "check_id": "definitions",
+      "actual_command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python docs/exec-plans/evidence/HG-062/verify_definitions.py --base 4e9c60a242d84b81b6e82b635da6c7227af68912 --tested 215ad2778090e45248a10ca83bc0efac7809ada5",
+      "observed_exit": 0,
+      "artifacts_verified": 1,
+      "fixture_count": 224,
+      "original_sample_forms": [
+        "controller_receipt",
+        "integrity_report",
+        "comparison_report",
+        "scope_report",
+        "benchmark_index"
+      ]
+    },
+    {
+      "check_id": "validator",
+      "actual_command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m pytest tests/harness/test_validator.py -q -p tools.harness.parallel_observer --junitxml=/private/tmp/hg062-author-215ad2778090/validator-junit.xml",
+      "observed_exit": 0,
+      "artifacts_verified": 5,
+      "positive_collection_execution_junit_identity_count": 170
+    },
+    {
+      "check_id": "unit",
+      "actual_command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli test-unit -q -p tools.harness.parallel_observer --junitxml=/private/tmp/hg062-author-215ad2778090/unit-junit.xml",
+      "observed_exit": 0,
+      "artifacts_verified": 5,
+      "positive_collection_execution_junit_identity_count": 247
+    },
+    {
+      "check_id": "harness",
+      "actual_command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli test-harness --workers 2 --evidence-dir /private/tmp/hg062-author-215ad2778090/harness-run -q",
+      "observed_exit": 0,
+      "artifacts_verified": 7,
+      "positive_collection_execution_junit_identity_count": 1779
+    },
+    {
+      "check_id": "lint",
+      "actual_command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli lint",
+      "observed_exit": 0,
+      "artifacts_verified": 1
+    },
+    {
+      "check_id": "typecheck",
+      "actual_command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli typecheck",
+      "observed_exit": 0,
+      "artifacts_verified": 1
+    },
+    {
+      "check_id": "authority",
+      "actual_command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli check-harness",
+      "observed_exit": 0,
+      "artifacts_verified": 1
+    },
+    {
+      "check_id": "diff",
+      "actual_command": "git diff --check 4e9c60a242d84b81b6e82b635da6c7227af68912 215ad2778090e45248a10ca83bc0efac7809ada5",
+      "observed_exit": 0,
+      "artifacts_verified": 1
+    }
+  ],
+  "T_to_R": {
+    "commits": 1,
+    "own_result_modified": 1,
+    "own_evidence_additions": 35,
+    "suffix_errors": [],
+    "helpers_index_manifest_unchanged": true
+  },
+  "scope_paths": 177,
+  "old_evidence_preserved_except_declared_oracle_refinements": 117,
+  "current_index_and_changed_manifest_hashes_verified": true,
+  "result_schema_and_complete_files_changed": true,
+  "base_to_R_diff_check_exit": 0
+}

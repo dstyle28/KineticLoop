@@ -1,0 +1,911 @@
+{
+  "purpose": "BEFORE_T_DEFINITION_FIXTURE_CATALOG_ONLY",
+  "generator": "verify_definitions.py",
+  "production_runtime_acceptance": "NOT_RUN",
+  "five_owner_neutral_forms": [
+    "controller_receipt",
+    "integrity_report",
+    "comparison_report",
+    "scope_report",
+    "benchmark_index"
+  ],
+  "cases": [
+    {
+      "case": "owner-neutral-controller_receipt",
+      "expected": "BOUND_ORIGINAL_CLAIM"
+    },
+    {
+      "case": "owner-neutral-integrity_report",
+      "expected": "BOUND_ORIGINAL_CLAIM"
+    },
+    {
+      "case": "owner-neutral-comparison_report",
+      "expected": "BOUND_ORIGINAL_CLAIM"
+    },
+    {
+      "case": "owner-neutral-scope_report",
+      "expected": "BOUND_ORIGINAL_CLAIM"
+    },
+    {
+      "case": "owner-neutral-benchmark_index",
+      "expected": "BOUND_ORIGINAL_CLAIM"
+    },
+    {
+      "case": "original_controller",
+      "expected": "BOUND_ORIGINAL_CLAIM"
+    },
+    {
+      "case": "original_integrity_with_preserved_RRO_failure",
+      "expected": "BOUND_ORIGINAL_CLAIM"
+    },
+    {
+      "case": "original_comparison",
+      "expected": "BOUND_ORIGINAL_CLAIM"
+    },
+    {
+      "case": "original_scope_declared_subset",
+      "expected": "BOUND_ORIGINAL_CLAIM"
+    },
+    {
+      "case": "original_benchmark_parallel_codec_claim_only_no_companion_scan",
+      "expected": "BOUND_ORIGINAL_CLAIM"
+    },
+    {
+      "case": "owner_neutral_equivalent_each_form",
+      "expected": "BOUND_ORIGINAL_CLAIM"
+    },
+    {
+      "case": "inert_absolute_host_attribution",
+      "expected": "BOUND_ORIGINAL_CLAIM"
+    },
+    {
+      "case": "distinct_development_130_preserved",
+      "expected": "BOUND_ORIGINAL_CLAIM"
+    },
+    {
+      "case": "codec_source_identity_unverified",
+      "expected": "BOUND_ORIGINAL_CLAIM"
+    },
+    {
+      "case": "unknown_form",
+      "expected": "INVALID"
+    },
+    {
+      "case": "unknown_nested_field",
+      "expected": "INVALID"
+    },
+    {
+      "case": "wrong_scalar_type",
+      "expected": "INVALID"
+    },
+    {
+      "case": "invalid_revision_or_hash",
+      "expected": "INVALID"
+    },
+    {
+      "case": "missing_or_ambiguous_original_merge",
+      "expected": "INVALID"
+    },
+    {
+      "case": "original_merge_not_protected_first_parent",
+      "expected": "INVALID"
+    },
+    {
+      "case": "wrong_namespaced_owner",
+      "expected": "INVALID"
+    },
+    {
+      "case": "wrong_B_T_R_lineage",
+      "expected": "INVALID"
+    },
+    {
+      "case": "record_absent_R",
+      "expected": "INVALID"
+    },
+    {
+      "case": "record_or_report_changed_since_M",
+      "expected": "INVALID"
+    },
+    {
+      "case": "symlink_submodule_or_directory",
+      "expected": "INVALID"
+    },
+    {
+      "case": "missing_or_ambiguous_original_GENERAL",
+      "expected": "INVALID"
+    },
+    {
+      "case": "review_owner_or_R_mismatch",
+      "expected": "INVALID"
+    },
+    {
+      "case": "missing_direct_or_one_record_link",
+      "expected": "INVALID"
+    },
+    {
+      "case": "extra_reference_hop",
+      "expected": "INVALID"
+    },
+    {
+      "case": "original_index_hash_mismatch",
+      "expected": "INVALID"
+    },
+    {
+      "case": "changed_T_R_original_authority",
+      "expected": "INVALID"
+    },
+    {
+      "case": "duplicate_report_check_ref",
+      "expected": "INVALID"
+    },
+    {
+      "case": "command_or_T_mismatch",
+      "expected": "INVALID"
+    },
+    {
+      "case": "scope_undeclared_duplicate_or_ambiguous_basename",
+      "expected": "INVALID"
+    },
+    {
+      "case": "native_strict_decoder_denial",
+      "expected": "INVALID"
+    },
+    {
+      "case": "false_affirmative_or_nonempty_failure_collection",
+      "expected": "INVALID"
+    },
+    {
+      "case": "unauthenticated_observation_input",
+      "expected": "INVALID"
+    },
+    {
+      "case": "unfinished_native_inventory",
+      "expected": "INVALID"
+    },
+    {
+      "case": "selected_owner_or_alias",
+      "expected": "INVALID"
+    },
+    {
+      "case": "new_current_self_archival",
+      "expected": "INVALID"
+    },
+    {
+      "case": "unknown_purpose",
+      "expected": "INVALID"
+    },
+    {
+      "case": "selected_or_review_consumer",
+      "expected": "INVALID"
+    },
+    {
+      "case": "prerequisite_M3_requirement_consumer",
+      "expected": "INVALID"
+    },
+    {
+      "case": "storage_history_decoder_source_consumer",
+      "expected": "INVALID"
+    },
+    {
+      "case": "install_admit_App_release_consumer",
+      "expected": "INVALID"
+    },
+    {
+      "case": "execution_decoder_RRO_cache_reuse",
+      "expected": "INVALID"
+    },
+    {
+      "case": "each_byte_node_depth_git_entry_budget_exhausted",
+      "expected": "INVALID"
+    },
+    {
+      "case": "classification_from_PASS_or_sample_identity",
+      "expected": "INVALID"
+    },
+    {
+      "case": "missing_or_duplicate_benchmark_companion",
+      "expected": "INVALID"
+    },
+    {
+      "case": "codec_tuple_malformed_or_reused_as_source_availability",
+      "expected": "INVALID"
+    },
+    {
+      "case": "duplicate_JSON_key",
+      "expected": "INVALID"
+    },
+    {
+      "case": "nonfinite_BOM_trailing_JSON",
+      "expected": "INVALID"
+    },
+    {
+      "case": "malformed_main_storage_envelope",
+      "expected": "INVALID"
+    },
+    {
+      "case": "known_exact_parent_nonzero",
+      "expected": "INVALID"
+    },
+    {
+      "case": "known_exact_parent_interrupted",
+      "expected": "INVALID"
+    },
+    {
+      "case": "known_exact_parent_unstarted",
+      "expected": "INVALID"
+    },
+    {
+      "case": "known_exact_parent_incomplete",
+      "expected": "INVALID"
+    },
+    {
+      "case": "known_exact_parent_failure_or_skip",
+      "expected": "INVALID"
+    },
+    {
+      "case": "HG055_and_owner_neutral_observed_parent_exit0",
+      "expected": "ORDINARY_NATIVE_EXIT_BINDING_ONLY"
+    },
+    {
+      "case": "budget-blobs",
+      "expected": "INVALID"
+    },
+    {
+      "case": "budget-inclusive-blobs",
+      "expected": "BOUND_ORIGINAL_CLAIM"
+    },
+    {
+      "case": "budget-metadata_entries",
+      "expected": "INVALID"
+    },
+    {
+      "case": "budget-inclusive-metadata_entries",
+      "expected": "BOUND_ORIGINAL_CLAIM"
+    },
+    {
+      "case": "budget-raw_bytes",
+      "expected": "INVALID"
+    },
+    {
+      "case": "budget-inclusive-raw_bytes",
+      "expected": "BOUND_ORIGINAL_CLAIM"
+    },
+    {
+      "case": "budget-validator_bytes",
+      "expected": "INVALID"
+    },
+    {
+      "case": "budget-inclusive-validator_bytes",
+      "expected": "BOUND_ORIGINAL_CLAIM"
+    },
+    {
+      "case": "budget-other_bytes",
+      "expected": "INVALID"
+    },
+    {
+      "case": "budget-inclusive-other_bytes",
+      "expected": "BOUND_ORIGINAL_CLAIM"
+    },
+    {
+      "case": "budget-diff_paths",
+      "expected": "INVALID"
+    },
+    {
+      "case": "budget-inclusive-diff_paths",
+      "expected": "BOUND_ORIGINAL_CLAIM"
+    },
+    {
+      "case": "budget-diff_bytes",
+      "expected": "INVALID"
+    },
+    {
+      "case": "budget-inclusive-diff_bytes",
+      "expected": "BOUND_ORIGINAL_CLAIM"
+    },
+    {
+      "case": "budget-tree_bytes",
+      "expected": "INVALID"
+    },
+    {
+      "case": "budget-inclusive-tree_bytes",
+      "expected": "BOUND_ORIGINAL_CLAIM"
+    },
+    {
+      "case": "budget-git_operations",
+      "expected": "INVALID"
+    },
+    {
+      "case": "budget-inclusive-git_operations",
+      "expected": "BOUND_ORIGINAL_CLAIM"
+    },
+    {
+      "case": "budget-nodes",
+      "expected": "INVALID"
+    },
+    {
+      "case": "budget-inclusive-nodes",
+      "expected": "BOUND_ORIGINAL_CLAIM"
+    },
+    {
+      "case": "budget-depth",
+      "expected": "INVALID"
+    },
+    {
+      "case": "budget-inclusive-depth",
+      "expected": "BOUND_ORIGINAL_CLAIM"
+    },
+    {
+      "case": "budget-ast_depth",
+      "expected": "INVALID"
+    },
+    {
+      "case": "budget-inclusive-ast_depth",
+      "expected": "BOUND_ORIGINAL_CLAIM"
+    },
+    {
+      "case": "budget-classifier_bytes",
+      "expected": "INVALID"
+    },
+    {
+      "case": "budget-inclusive-classifier_bytes",
+      "expected": "BOUND_ORIGINAL_CLAIM"
+    },
+    {
+      "case": "budget-classifier_work",
+      "expected": "INVALID"
+    },
+    {
+      "case": "budget-inclusive-classifier_work",
+      "expected": "BOUND_ORIGINAL_CLAIM"
+    },
+    {
+      "case": "budget-classifier_aggregate",
+      "expected": "INVALID"
+    },
+    {
+      "case": "budget-inclusive-classifier_aggregate",
+      "expected": "BOUND_ORIGINAL_CLAIM"
+    },
+    {
+      "case": "caller-SELECTED_TASK",
+      "expected": "INVALID"
+    },
+    {
+      "case": "caller-SELECTED_GOVERNANCE",
+      "expected": "INVALID"
+    },
+    {
+      "case": "caller-REVIEW",
+      "expected": "INVALID"
+    },
+    {
+      "case": "caller-PREREQUISITE",
+      "expected": "INVALID"
+    },
+    {
+      "case": "caller-REQUIREMENT",
+      "expected": "INVALID"
+    },
+    {
+      "case": "caller-STORAGE",
+      "expected": "INVALID"
+    },
+    {
+      "case": "caller-HISTORY",
+      "expected": "INVALID"
+    },
+    {
+      "case": "caller-DECODER",
+      "expected": "INVALID"
+    },
+    {
+      "case": "caller-SOURCE",
+      "expected": "INVALID"
+    },
+    {
+      "case": "caller-INSTALL",
+      "expected": "INVALID"
+    },
+    {
+      "case": "caller-APP",
+      "expected": "INVALID"
+    },
+    {
+      "case": "caller-RELEASE",
+      "expected": "INVALID"
+    },
+    {
+      "case": "cache-DECODER",
+      "expected": "INVALID"
+    },
+    {
+      "case": "cache-RRO",
+      "expected": "INVALID"
+    },
+    {
+      "case": "cache-SOURCE",
+      "expected": "INVALID"
+    },
+    {
+      "case": "cache-STORAGE",
+      "expected": "INVALID"
+    },
+    {
+      "case": "cache-SELECTED",
+      "expected": "INVALID"
+    },
+    {
+      "case": "mode-160000",
+      "expected": "INVALID"
+    },
+    {
+      "case": "mode-040000",
+      "expected": "INVALID"
+    },
+    {
+      "case": "bytes-trailing",
+      "expected": "INVALID"
+    },
+    {
+      "case": "bytes-nonfinite",
+      "expected": "INVALID"
+    },
+    {
+      "case": "bytes-invalid-utf8",
+      "expected": "INVALID"
+    },
+    {
+      "case": "bytes-deep-json",
+      "expected": "INVALID"
+    },
+    {
+      "case": "bytes-oversized-json",
+      "expected": "INVALID"
+    },
+    {
+      "case": "nested-unknown",
+      "expected": "INVALID"
+    },
+    {
+      "case": "integer-token",
+      "expected": "INVALID"
+    },
+    {
+      "case": "codec-hash",
+      "expected": "INVALID"
+    },
+    {
+      "case": "codec-no-scan",
+      "expected": "INVALID"
+    },
+    {
+      "case": "duplicate-scope",
+      "expected": "INVALID"
+    },
+    {
+      "case": "ambiguous-scope-basename",
+      "expected": "INVALID"
+    },
+    {
+      "case": "false-affirmative",
+      "expected": "INVALID"
+    },
+    {
+      "case": "path-'/absolute'",
+      "expected": "INVALID"
+    },
+    {
+      "case": "path-'../up'",
+      "expected": "INVALID"
+    },
+    {
+      "case": "path-'a/./b'",
+      "expected": "INVALID"
+    },
+    {
+      "case": "path-'a\\\\b'",
+      "expected": "INVALID"
+    },
+    {
+      "case": "path-'a\\x00b'",
+      "expected": "INVALID"
+    },
+    {
+      "case": "path-'a\\nb'",
+      "expected": "INVALID"
+    },
+    {
+      "case": "report-changed",
+      "expected": "INVALID"
+    },
+    {
+      "case": "conflicting-parent",
+      "expected": "INVALID"
+    },
+    {
+      "case": "parent-skipped",
+      "expected": "INVALID"
+    },
+    {
+      "case": "parent-error",
+      "expected": "INVALID"
+    },
+    {
+      "case": "profile-version",
+      "expected": "INVALID"
+    },
+    {
+      "case": "regular-executable-mode",
+      "expected": "BOUND_ORIGINAL_CLAIM"
+    },
+    {
+      "case": "json-byte-inclusive",
+      "expected": "BOUND_ORIGINAL_CLAIM"
+    },
+    {
+      "case": "selected-display-alias",
+      "expected": "INVALID"
+    },
+    {
+      "case": "distinct-child-nonzero",
+      "expected": "BOUND_ORIGINAL_CLAIM"
+    },
+    {
+      "case": "inventory-valid-0",
+      "expected": "COMPLETE_WITH_LIMITATIONS"
+    },
+    {
+      "case": "inventory-valid-1",
+      "expected": "COMPLETE_WITH_LIMITATIONS"
+    },
+    {
+      "case": "inventory-valid-5",
+      "expected": "COMPLETE_WITH_LIMITATIONS"
+    },
+    {
+      "case": "inventory-invalid-zero-mismatch",
+      "expected": "INVALID"
+    },
+    {
+      "case": "inventory-invalid-nonzero-mismatch",
+      "expected": "INVALID"
+    },
+    {
+      "case": "inventory-invalid-bool",
+      "expected": "INVALID"
+    },
+    {
+      "case": "inventory-invalid-missing",
+      "expected": "INVALID"
+    },
+    {
+      "case": "inventory-invalid-hidden",
+      "expected": "INVALID"
+    },
+    {
+      "case": "inventory-invalid-zero-false-label",
+      "expected": "INVALID"
+    },
+    {
+      "case": "inventory-invalid-zero-semantic-label",
+      "expected": "INVALID"
+    },
+    {
+      "case": "inventory-invalid-nonzero-semantic-label",
+      "expected": "INVALID"
+    },
+    {
+      "case": "inventory-invalid-integer-eligibility",
+      "expected": "INVALID"
+    },
+    {
+      "case": "inventory-invalid-native",
+      "expected": "INVALID"
+    },
+    {
+      "case": "inventory-invalid-typed",
+      "expected": "INVALID"
+    },
+    {
+      "case": "controller-parent-not-child",
+      "expected": "INVALID"
+    },
+    {
+      "case": "controller-interrupted",
+      "expected": "INVALID"
+    },
+    {
+      "case": "controller-false-test-only",
+      "expected": "INVALID"
+    },
+    {
+      "case": "controller-host-control",
+      "expected": "INVALID"
+    },
+    {
+      "case": "integrity-errors",
+      "expected": "INVALID"
+    },
+    {
+      "case": "integrity-U",
+      "expected": "INVALID"
+    },
+    {
+      "case": "comparison-false",
+      "expected": "INVALID"
+    },
+    {
+      "case": "comparison-missing-run",
+      "expected": "INVALID"
+    },
+    {
+      "case": "comparison-fields",
+      "expected": "INVALID"
+    },
+    {
+      "case": "comparison-duplicate-companion",
+      "expected": "INVALID"
+    },
+    {
+      "case": "scope-requirement-PASS",
+      "expected": "INVALID"
+    },
+    {
+      "case": "benchmark-final-T",
+      "expected": "INVALID"
+    },
+    {
+      "case": "benchmark-command",
+      "expected": "INVALID"
+    },
+    {
+      "case": "benchmark-development-T",
+      "expected": "INVALID"
+    },
+    {
+      "case": "benchmark-artifact",
+      "expected": "INVALID"
+    },
+    {
+      "case": "benchmark-roundtrip-duplicate",
+      "expected": "INVALID"
+    },
+    {
+      "case": "original-parent-controller_receipt-FAIL",
+      "expected": "INVALID"
+    },
+    {
+      "case": "original-parent-controller_receipt-NOT_RUN",
+      "expected": "INVALID"
+    },
+    {
+      "case": "original-parent-controller_receipt-FAIL-native0",
+      "expected": "INVALID"
+    },
+    {
+      "case": "original-parent-integrity_report-FAIL",
+      "expected": "INVALID"
+    },
+    {
+      "case": "original-parent-integrity_report-NOT_RUN",
+      "expected": "INVALID"
+    },
+    {
+      "case": "original-parent-integrity_report-FAIL-native0",
+      "expected": "INVALID"
+    },
+    {
+      "case": "original-parent-comparison_report-FAIL",
+      "expected": "INVALID"
+    },
+    {
+      "case": "original-parent-comparison_report-NOT_RUN",
+      "expected": "INVALID"
+    },
+    {
+      "case": "original-parent-comparison_report-FAIL-native0",
+      "expected": "INVALID"
+    },
+    {
+      "case": "original-parent-scope_report-FAIL",
+      "expected": "INVALID"
+    },
+    {
+      "case": "original-parent-scope_report-NOT_RUN",
+      "expected": "INVALID"
+    },
+    {
+      "case": "original-parent-scope_report-FAIL-native0",
+      "expected": "INVALID"
+    },
+    {
+      "case": "original-parent-benchmark_index-FAIL",
+      "expected": "INVALID"
+    },
+    {
+      "case": "original-parent-benchmark_index-NOT_RUN",
+      "expected": "INVALID"
+    },
+    {
+      "case": "original-parent-benchmark_index-FAIL-native0",
+      "expected": "INVALID"
+    },
+    {
+      "case": "benchmark-binding-final-borrows-quality-command",
+      "expected": "INVALID"
+    },
+    {
+      "case": "comparison-companion-binding-final-borrows-quality-command",
+      "expected": "INVALID"
+    },
+    {
+      "case": "benchmark-binding-final-borrows-quality-command-and-ref",
+      "expected": "INVALID"
+    },
+    {
+      "case": "comparison-companion-binding-final-borrows-quality-command-and-ref",
+      "expected": "INVALID"
+    },
+    {
+      "case": "benchmark-binding-quality-borrows-harness-command-and-ref",
+      "expected": "INVALID"
+    },
+    {
+      "case": "comparison-companion-binding-quality-borrows-harness-command-and-ref",
+      "expected": "INVALID"
+    },
+    {
+      "case": "benchmark-binding-final-borrows-other-harness-command",
+      "expected": "INVALID"
+    },
+    {
+      "case": "comparison-companion-binding-final-borrows-other-harness-command",
+      "expected": "INVALID"
+    },
+    {
+      "case": "benchmark-binding-quality-borrows-other-quality-command",
+      "expected": "INVALID"
+    },
+    {
+      "case": "comparison-companion-binding-quality-borrows-other-quality-command",
+      "expected": "INVALID"
+    },
+    {
+      "case": "benchmark-binding-quality-borrows-harness-command",
+      "expected": "INVALID"
+    },
+    {
+      "case": "comparison-companion-binding-quality-borrows-harness-command",
+      "expected": "INVALID"
+    },
+    {
+      "case": "benchmark-binding-final-wrong-existing-reference",
+      "expected": "INVALID"
+    },
+    {
+      "case": "comparison-companion-binding-final-wrong-existing-reference",
+      "expected": "INVALID"
+    },
+    {
+      "case": "benchmark-binding-quality-wrong-existing-reference",
+      "expected": "INVALID"
+    },
+    {
+      "case": "comparison-companion-binding-quality-wrong-existing-reference",
+      "expected": "INVALID"
+    },
+    {
+      "case": "benchmark-binding-final-check-FAIL",
+      "expected": "INVALID"
+    },
+    {
+      "case": "comparison-companion-binding-final-check-FAIL",
+      "expected": "INVALID"
+    },
+    {
+      "case": "benchmark-binding-quality-check-NOT_RUN",
+      "expected": "INVALID"
+    },
+    {
+      "case": "comparison-companion-binding-quality-check-NOT_RUN",
+      "expected": "INVALID"
+    },
+    {
+      "case": "benchmark-binding-final-command-ambiguous",
+      "expected": "INVALID"
+    },
+    {
+      "case": "comparison-companion-binding-final-command-ambiguous",
+      "expected": "INVALID"
+    },
+    {
+      "case": "benchmark-binding-quality-reference-ambiguous",
+      "expected": "INVALID"
+    },
+    {
+      "case": "comparison-companion-binding-quality-reference-ambiguous",
+      "expected": "INVALID"
+    },
+    {
+      "case": "benchmark-binding-codec-zero-PR",
+      "expected": "INVALID"
+    },
+    {
+      "case": "comparison-companion-binding-codec-zero-PR",
+      "expected": "INVALID"
+    },
+    {
+      "case": "comparison-companion-benchmark-final-T",
+      "expected": "INVALID"
+    },
+    {
+      "case": "comparison-companion-benchmark-command",
+      "expected": "INVALID"
+    },
+    {
+      "case": "comparison-companion-benchmark-development-T",
+      "expected": "INVALID"
+    },
+    {
+      "case": "comparison-companion-benchmark-artifact",
+      "expected": "INVALID"
+    },
+    {
+      "case": "comparison-companion-benchmark-roundtrip-duplicate",
+      "expected": "INVALID"
+    },
+    {
+      "case": "comparison-companion-original-parent-FAIL",
+      "expected": "INVALID"
+    },
+    {
+      "case": "benchmark-empty-final-runs-not-prohibited",
+      "expected": "BOUND_ORIGINAL_CLAIM"
+    },
+    {
+      "case": "form-extra-controller_receipt",
+      "expected": "INVALID"
+    },
+    {
+      "case": "form-missing-controller_receipt",
+      "expected": "INVALID"
+    },
+    {
+      "case": "form-extra-integrity_report",
+      "expected": "INVALID"
+    },
+    {
+      "case": "form-missing-integrity_report",
+      "expected": "INVALID"
+    },
+    {
+      "case": "form-extra-comparison_report",
+      "expected": "INVALID"
+    },
+    {
+      "case": "form-missing-comparison_report",
+      "expected": "INVALID"
+    },
+    {
+      "case": "form-extra-scope_report",
+      "expected": "INVALID"
+    },
+    {
+      "case": "form-missing-scope_report",
+      "expected": "INVALID"
+    },
+    {
+      "case": "form-extra-benchmark_index",
+      "expected": "INVALID"
+    },
+    {
+      "case": "form-missing-benchmark_index",
+      "expected": "INVALID"
+    },
+    {
+      "case": "bytes-node-exhaustion",
+      "expected": "INVALID"
+    }
+  ],
+  "count": 224
+}
