@@ -133,7 +133,7 @@ class Native:
 
 def classify(raw, c, catalog):
     require(c['purpose'] == 'GLOBAL_ARCHIVAL_GOVERNANCE_INVENTORY', 'caller purpose')
-    require(c['owner'] not in c['selected_aliases'], 'selected owner alias')
+    require(not {c['owner'], c['D']}.intersection(c['selected_aliases']), 'selected owner alias')
     require(c['cache_kind'] == 'DOCUMENTARY_ONLY' and c['profile_version'] == catalog['draft_version'], 'profile/cache isolation')
     require(c['native_complete'] is True, 'unfinished native inventory')
     require(c['decoder'] == 'NATIVE_ALLOWED', 'native decoder denial')
@@ -484,6 +484,7 @@ def fixture_matrix(contexts, catalog):
         run('path-' + repr(path),mutate=lambda c,r,p=path:r['files_changed'].append(p))
     run('report-changed', raw_transform=lambda b:b+b' ')
     run('conflicting-parent', mutate=lambda c,r:c['observations'].extend([Native(tuple_for(c),'COMPLETED',0,TOKEN),Native(tuple_for(c),'COMPLETED',1,TOKEN)]))
+    run('selected-display-alias', mutate=lambda c,r:c['selected_aliases'].append(c['D']))
     run('distinct-child-nonzero', mutate=lambda c,r:c['observations'].append(Native(tuple_for(c)[:-1]+('other-report',),'INTERRUPTED',130,TOKEN)),expected='BOUND_ORIGINAL_CLAIM')
     for count in [0,1,5]:
         require(inventory([dict(OBS) for _ in range(count)], count)['documentary_unverified_count']==count,'inventory cardinality')

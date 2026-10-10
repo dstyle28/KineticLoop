@@ -29,7 +29,7 @@ CHECKS = {
 }
 state_path = Path('/private/tmp/hg062-worker-state.json')
 state = json.loads(state_path.read_text())
-state.update(T=TESTED, R=None, C=None, phase='corrective cycle: eight fresh checks running', scratch=str(SCRATCH), check_results={}, current_failures=[])
+state.update(T=TESTED, R=None, C=None, phase='eight fresh checks running', scratch=str(SCRATCH), check_results={}, current_failures=[])
 state.pop('failed_check', None)
 state_path.write_text(json.dumps(state, indent=2) + '\n')
 for name, argv in CHECKS.items():
