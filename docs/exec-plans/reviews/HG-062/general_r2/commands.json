@@ -1,0 +1,41 @@
+{
+  "reviewed_head_sha": "388bc874b7d57089eed53f87ac0653cfb2b84fe7",
+  "cwd": "/Users/davetian/.codex/worktrees/hg062-documentary-definitions/KineticLoop",
+  "commands": [
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python /private/tmp/hg062-general-r2/verify.py",
+      "attempt": 1,
+      "observed_exit": 1,
+      "diagnostic": "Reviewer preservation allowlist omitted the documented pre-T FIXTURE_NOTES.md refinement; no author execution failure."
+    },
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python /private/tmp/hg062-general-r2/verify.py",
+      "attempt": 2,
+      "observed_exit": 0,
+      "output": "verification.json",
+      "script_sha256": "a8f0395d3594fbf9157f9d4155db091b81f795574cbe58438e498dec6e057b0f"
+    },
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python /private/tmp/hg062-general-r2/probe.py",
+      "observed_exit": 0,
+      "output": "probes.json",
+      "script_sha256": "c813e82c1de70620d137ea7b4929b892b0552a5d84a57c80d59980950dc39410"
+    },
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python - (inline preparation/prior-review binding verification)",
+      "observed_exit": 0,
+      "checks": [
+        "exact REVIEW_INPUTS SHA and every one of ten input hashes",
+        "prior two reviews and every referenced evidence pin",
+        "clean worktree"
+      ]
+    }
+  ],
+  "not_run": [
+    "whole author suites",
+    "root final audits",
+    "installed review/install/admission",
+    "App/DB gates",
+    "publication/merge"
+  ]
+}

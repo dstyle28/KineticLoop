@@ -1,33 +1,15 @@
 {
   "task_identity": "harness-governance-v0.1/HG-062",
-  "reviewed_head_sha": "cf203ab10c1e5979fb2f414211d42c48d7f95795",
+  "reviewed_head_sha": "388bc874b7d57089eed53f87ac0653cfb2b84fe7",
   "review_type": "SECURITY_DATA_BOUNDARY",
-  "status": "CHANGES_REQUIRED",
-  "findings": [
-    {
-      "id": "HG062-SEC-R1-1",
-      "classification": "BLOCKER",
-      "priority": "P2",
-      "title": "Reject failure on the bound original parent check",
-      "file": "docs/exec-plans/evidence/HG-062/verify_definitions.py",
-      "line": 165,
-      "detail": "The uniquely bound original check result is ignored. Replacing it with FAIL in the owner-neutral scope fixture still returns BOUND_ORIGINAL_CLAIM. This misses required original-field parent contradiction handling; Native-only failure tests do not cover this input. Reject bound failure/conflicting claims and add pre-T negative coverage without inferring verified execution."
-    },
-    {
-      "id": "HG062-SEC-R1-2",
-      "classification": "BLOCKER",
-      "priority": "P2",
-      "title": "Bind benchmark component commands to the corresponding check role",
-      "file": "docs/exec-plans/evidence/HG-062/verify_definitions.py",
-      "line": 198,
-      "detail": "The command helper accepts any unique original governance command. A final harness run borrowing the original lint command is accepted after synthetic immutable rebinding, contrary to BINDING_RULES lines149\u2013153. Bind the corresponding original harness/quality check and reference; add a wrong-role existing-command fixture."
-    }
-  ],
+  "status": "PASS",
+  "findings": [],
   "evidence_refs": [
-    "docs/exec-plans/reviews/HG-062/security_r1/assessment.md",
-    "docs/exec-plans/reviews/HG-062/security_r1/probe-output.json",
-    "docs/exec-plans/reviews/HG-062/security_r1/evidence-verification.json",
-    "docs/exec-plans/reviews/HG-062/security_r1/commands.json"
+    "docs/exec-plans/reviews/HG-062/security_r2/assessment.md",
+    "docs/exec-plans/reviews/HG-062/security_r2/probe-output.json",
+    "docs/exec-plans/reviews/HG-062/security_r2/evidence-verification.json",
+    "docs/exec-plans/reviews/HG-062/security_r2/boundary-verification.json",
+    "docs/exec-plans/reviews/HG-062/security_r2/commands.json"
   ],
   "review_contract_version": "v0.2"
 }
