@@ -1,0 +1,9 @@
+{"scope": "HG063_ONLY", "changed_functions": ["governance_allowed_patterns", "validate"], "plain_files": 79, "bytes": 1343541}
+Traceback (most recent call last):
+  File "/Users/davetian/.codex/worktrees/hg063-plain-archival-definitions/KineticLoop/docs/exec-plans/evidence/HG-063/verify_definitions.py", line 219, in <module>
+    binding=verify_pins();verify_scope(args.tested,args.preflight);verify_git_bindings(binding)
+                                                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/davetian/.codex/worktrees/hg063-plain-archival-definitions/KineticLoop/docs/exec-plans/evidence/HG-063/verify_definitions.py", line 157, in verify_git_bindings
+    assert observed['check'] in native_index['checks']
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError

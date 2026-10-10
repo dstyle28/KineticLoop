@@ -1,0 +1,14 @@
+Traceback (most recent call last):
+  File "/Users/davetian/.codex/worktrees/hg063-plain-archival-definitions/KineticLoop/docs/exec-plans/evidence/HG-063/verify_definitions.py", line 210, in <module>
+    binding=verify_pins();verify_scope(args.tested,args.preflight);verify_git_bindings(binding)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/davetian/.codex/worktrees/hg063-plain-archival-definitions/KineticLoop/docs/exec-plans/evidence/HG-063/verify_definitions.py", line 174, in verify_scope
+    assert (ROOT / path).read_bytes() == git('show', BASE + ':' + path)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/davetian/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/pathlib.py", line 1019, in read_bytes
+    with self.open(mode='rb') as f:
+         ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/davetian/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/pathlib.py", line 1013, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/Users/davetian/.codex/worktrees/hg063-plain-archival-definitions/KineticLoop/tools/harness/local_ci_controller.py'

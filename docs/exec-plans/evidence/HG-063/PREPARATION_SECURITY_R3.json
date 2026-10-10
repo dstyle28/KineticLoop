@@ -1,0 +1,563 @@
+{
+  "review_type": "SECURITY_DATA_BOUNDARY",
+  "review_scope": "FRESH_FULL_CONSOLIDATED_PLAIN_DEFINITION_PRE_DISPATCH_R3",
+  "verdict": "PASS_FOR_CONSOLIDATED_DEFINITION_DISPATCH",
+  "reviewed_at_utc": "2026-10-10T23:07:41.758538+00:00",
+  "authority_revision": "161744c5760561349bdeb17d628e38220640c95b",
+  "candidate_manifest": {
+    "path": "/private/tmp/hg058-plain-rule-r3/PREPARATION_MANIFEST.json",
+    "bytes": 20186,
+    "sha256": "830c545b077fbf121b50b658f826578a8c7a226cc55fda3362c5d8a266fb91bc"
+  },
+  "candidate_handoff": {
+    "path": "/private/tmp/hg058-plain-rule-r3/HANDOFF.md",
+    "bytes": 4093,
+    "sha256": "0e730c7c494c997c25f352d5cfdb4b281c8d071907112e2a088a98f8f23cd5b3"
+  },
+  "original_author_receipt": {
+    "path": "/private/tmp/hg058-plain-rule-r3/DEFINITION_CHECK_RECEIPT.json",
+    "bytes": 10526,
+    "sha256": "a4655c1d6fc489afd2b3ca51de99a409c329577a8922ee1912608c603438e587"
+  },
+  "candidate_files_count": 70,
+  "candidate_files_exact_pins": {
+    "evidence": {
+      "path": "/private/tmp/hg058-plain-full-security-r3/PINS.json",
+      "bytes": 25598,
+      "sha256": "63e9e1a4e2f24b94e699faa2c717994f840d73f3cd754fc983054fc94930bd3e"
+    },
+    "field": "candidate"
+  },
+  "external_inputs": [
+    {
+      "path": "/private/tmp/hg058-plain-rule/PREPARATION_MANIFEST.json",
+      "sha256": "b21b5ad3399b7c041016bfa623b2cafd3118813bcc523140a4af329b0d39e2b7",
+      "bytes": 4126,
+      "authority": "READ_ONLY_RESEARCH_OR_UNAPPROVED_PROPOSAL"
+    },
+    {
+      "path": "/private/tmp/hg058-plain-adjudication/INVENTORY.json",
+      "sha256": "a369ea3b17d10a0785a9ea5faad9b7d6d600e4b6cd06d6187d0fc9157882d77c",
+      "bytes": 251923,
+      "authority": "READ_ONLY_RESEARCH_OR_UNAPPROVED_PROPOSAL"
+    },
+    {
+      "path": "/private/tmp/hg058-plain-adjudication/AUTHORITY.json",
+      "sha256": "2dad6e034cdc50d76554345430f4134048b30e2c3f03ad8db7c89f153be6e1a9",
+      "bytes": 1841,
+      "authority": "READ_ONLY_RESEARCH_OR_UNAPPROVED_PROPOSAL"
+    },
+    {
+      "path": "/private/tmp/hg058-plain-adjudication/ORIGINAL_GUARDS.json",
+      "sha256": "207e6349ac3ed198fb3db6b94c36d5207f951db04ebeab3543e713c908cabba7",
+      "bytes": 175198,
+      "authority": "READ_ONLY_RESEARCH_OR_UNAPPROVED_PROPOSAL"
+    },
+    {
+      "path": "/private/tmp/hg058-plain-decision/ROOT_DISPOSITION.json",
+      "sha256": "651c45e3c07e5f4b458dac2480d44c22af1077e56f63fae010f705ab0ea5222b",
+      "bytes": 6008,
+      "authority": "ROOT_PREPARATION_GRANT"
+    },
+    {
+      "path": "/private/tmp/hg058-lineage-adjudication/AUTHORITY.json",
+      "sha256": "13c361ccc093fed996ac1b1a49924babc85ede6a649c318fce6520f084b296ac",
+      "bytes": 13166,
+      "authority": "READ_ONLY_RESEARCH_OR_UNAPPROVED_PROPOSAL"
+    },
+    {
+      "path": "/private/tmp/hg058-lineage-adjudication/PROPOSAL.md",
+      "sha256": "9202b1c53b1132b33fa6bbfb7e65e1faca2edaf34dce44c940ad13cb1f2a8829",
+      "bytes": 4727,
+      "authority": "READ_ONLY_RESEARCH_OR_UNAPPROVED_PROPOSAL"
+    },
+    {
+      "path": "/private/tmp/hg058-plain-final-rule/PREPARATION_MANIFEST.json",
+      "sha256": "e6c03cc57085b4597ee42935e5a2e5f1826d4c7308807b106377903671f9fa86",
+      "bytes": 10589,
+      "authority": "READ_ONLY_PRIOR_EVIDENCE"
+    },
+    {
+      "path": "/private/tmp/hg058-lineage-adjudication/HUMAN_APPROVAL.json",
+      "sha256": "35d70635947de2f952a8db73fbedc0f20a9e267f8fa58002242009d27aaf6cf2",
+      "bytes": 1221,
+      "authority": "APPROVED_PREPARATION_ONLY"
+    },
+    {
+      "path": "/private/tmp/hg058-lineage-adjudication/ROOT_FINDING.json",
+      "sha256": "8be14897c9c8ad447b4d54047b94775b537b245fd656c285bf00e55ba0fab5ff",
+      "bytes": 3101,
+      "authority": "READ_ONLY_PRIOR_EVIDENCE"
+    },
+    {
+      "path": "/private/tmp/hg058-plain-lineage-rule/PREPARATION_MANIFEST.json",
+      "sha256": "264bb81e13b726ee3b4db8e8630a9986870c7289fb044ab934123a90acef073f",
+      "bytes": 11473,
+      "authority": "READ_ONLY_HISTORICAL_INPUT_NOT_CURRENT_PASS"
+    },
+    {
+      "path": "/private/tmp/hg058-plain-lineage-rule/ORIGINAL_BINDINGS.json",
+      "sha256": "e102d0931a34567cdd44b8910927750e364c9e85f4ebf6c78177332daddb9b47",
+      "bytes": 385635,
+      "authority": "READ_ONLY_HISTORICAL_INPUT_NOT_CURRENT_PASS"
+    },
+    {
+      "path": "/private/tmp/hg058-plain-full-general-r1/GENERAL_DRAFT_REVIEW.json",
+      "sha256": "0c7aad94152fa4c7ca16f9abff8563803064bc6df65456b5862c5ff8fd1229d8",
+      "bytes": 25034,
+      "authority": "READ_ONLY_HISTORICAL_INPUT_NOT_CURRENT_PASS"
+    },
+    {
+      "path": "/private/tmp/hg058-plain-full-security-r1/SECURITY_DRAFT_REVIEW.json",
+      "sha256": "b1e4e4f80e2341a5f617a8417be74473a93ac096a9a9853fd3da1253b59ba0e4",
+      "bytes": 23971,
+      "authority": "READ_ONLY_HISTORICAL_INPUT_NOT_CURRENT_PASS"
+    },
+    {
+      "path": "/private/tmp/hg058-plain-full-general-r1/independent_probes.py",
+      "sha256": "76fb71e56fa58ea4459a2da4d4d5d6a08aed4f4654c2ac0777d1a7a304ec5840",
+      "bytes": 2516,
+      "authority": "READ_ONLY_HISTORICAL_INPUT_NOT_CURRENT_PASS"
+    },
+    {
+      "path": "/private/tmp/hg058-plain-full-general-r1/independent_probes.json",
+      "sha256": "d380b8b8cb0ff47255bc70dcbc1c2ce677603627cb9d176fa09e643eabae7fc0",
+      "bytes": 2786,
+      "authority": "READ_ONLY_HISTORICAL_INPUT_NOT_CURRENT_PASS"
+    },
+    {
+      "path": "/private/tmp/hg058-plain-full-security-r1/reproduce_findings.py",
+      "sha256": "3b0def3335fd340d592fda062fadbd12f9814830c1885adb961d29e754a767fd",
+      "bytes": 1466,
+      "authority": "READ_ONLY_HISTORICAL_INPUT_NOT_CURRENT_PASS"
+    },
+    {
+      "path": "/private/tmp/hg058-plain-full-security-r1/reproduce_findings.stdout",
+      "sha256": "f8a205900ce7a04f0ecc7d885827715ed7123c0e65e32677671c5bbc3f4c2b82",
+      "bytes": 1043,
+      "authority": "READ_ONLY_HISTORICAL_INPUT_NOT_CURRENT_PASS"
+    },
+    {
+      "path": "/private/tmp/hg058-plain-full-security-r1/EVIDENCE_STORAGE_POLICY.md",
+      "sha256": "6c7027b54d4c5cec7bc59c1be83a99ed10deb0ca2cd6a2ff203ffb99c0a8d23d",
+      "bytes": 24241,
+      "authority": "READ_ONLY_HISTORICAL_INPUT_NOT_CURRENT_PASS"
+    },
+    {
+      "path": "/private/tmp/hg058-plain-rule-r2/PREPARATION_MANIFEST.json",
+      "sha256": "23636a1a8fdaabd6740ec406268c3bced8d3623037edec2c6036fd63a4a44b19",
+      "bytes": 18052,
+      "authority": "IMMUTABLE_FAILED_REVIEW_OR_PRIOR_INPUT_NOT_CURRENT_PASS"
+    },
+    {
+      "path": "/private/tmp/hg058-plain-full-general-r2/GENERAL_DRAFT_REVIEW.json",
+      "sha256": "c4c7b92388ed9878b93df3ea672c0f34884a01a1ea2ecbc07435fcac6ec98a93",
+      "bytes": 33184,
+      "authority": "IMMUTABLE_FAILED_REVIEW_OR_PRIOR_INPUT_NOT_CURRENT_PASS"
+    },
+    {
+      "path": "/private/tmp/hg058-plain-full-security-r2/SECURITY_DRAFT_REVIEW.json",
+      "sha256": "33eebbfae96a988e4f68d86c6ac83166dbb31adf5bb2e395e1c0d5dcf1457918",
+      "bytes": 37740,
+      "authority": "IMMUTABLE_FAILED_REVIEW_OR_PRIOR_INPUT_NOT_CURRENT_PASS"
+    },
+    {
+      "path": "/private/tmp/hg058-plain-full-general-r2/independent_probes.py",
+      "sha256": "685f497d79febd61138ae0ce682ca57c596a7c74de8e96ea8708d6f27578cd29",
+      "bytes": 3030,
+      "authority": "IMMUTABLE_FAILED_REVIEW_OR_PRIOR_INPUT_NOT_CURRENT_PASS"
+    },
+    {
+      "path": "/private/tmp/hg058-plain-full-general-r2/independent_probes.json",
+      "sha256": "03a1d620ee78b405434dd6cf2c30b7ae3185cd2dc70f421fcb84221571698942",
+      "bytes": 3414,
+      "authority": "IMMUTABLE_FAILED_REVIEW_OR_PRIOR_INPUT_NOT_CURRENT_PASS"
+    },
+    {
+      "path": "/private/tmp/hg058-plain-full-security-r2/probes.py",
+      "sha256": "1172bd3537adaa18e361b860cc90c4b5316198099b4a3066ee005d276460fd9a",
+      "bytes": 2613,
+      "authority": "IMMUTABLE_FAILED_REVIEW_OR_PRIOR_INPUT_NOT_CURRENT_PASS"
+    },
+    {
+      "path": "/private/tmp/hg058-plain-full-security-r2/PROBE_RESULTS.json",
+      "sha256": "399b0168d686eb3e4db29e31ae76bc6da5a2eb7e2c13990733f0cad470f0413f",
+      "bytes": 145143,
+      "authority": "IMMUTABLE_FAILED_REVIEW_OR_PRIOR_INPUT_NOT_CURRENT_PASS"
+    }
+  ],
+  "current_authority_pins": [
+    {
+      "document_id": "DOC-PROTOCOL-V1.2",
+      "path": "05_KineticLoop_Protocol_v1.2_FROZEN.md",
+      "sha256": "00bf3eb2e0e2e00867d114b42e147a2341d98454f08629c849ebf0b4c0c4916c",
+      "status": "FROZEN"
+    },
+    {
+      "document_id": "DOC-DB-V0.2",
+      "path": "04_KineticLoop_DB_Schema_Design_v0.2_FROZEN.md",
+      "sha256": "2158a80bdc0e16eaf9c2cd835f704bdc2f346565dc35cb0c1fc1a8c00a1b8eda",
+      "status": "FROZEN"
+    },
+    {
+      "document_id": "DOC-INTEGRATION-V0.1",
+      "path": "12_KineticLoop_Integration_Spec_v0.1.md",
+      "sha256": "a91bf2eac9a64b70fc9cce1b7215478cfe139778cfc625ccd80840eef54cf426",
+      "status": "CURRENT"
+    },
+    {
+      "document_id": "DOC-ACCEPTANCE-GATES-V1.2.2",
+      "path": "09_KineticLoop_Acceptance_and_Release_Gates_v1.2.2.md",
+      "sha256": "c61819aef5509963b0ead8682545b7258c1da0b2360138b479157b5a2b1e7091",
+      "status": "CURRENT"
+    },
+    {
+      "document_id": "DOC-PLAN-V0.6-HARNESS",
+      "path": "06_KineticLoop_Project_Plan_v0.6_HARNESS_HARDENED.md",
+      "sha256": "295969fd95a096d547f2455c9c19f87f4264a85f1a3733f9d0a76aa43d0cb426",
+      "status": "CURRENT"
+    },
+    {
+      "document_id": "DOC-HARNESS-OPERATING-V0.2",
+      "path": "docs/harness/HARNESS_OPERATING_MODEL.md",
+      "sha256": "53b86499e3848e044e9ef0309a786ab2d06899d7dedd0e29786b9e85f3203769",
+      "status": "CURRENT"
+    },
+    {
+      "document_id": "DOC-THREAD-RESULT-V0.3",
+      "path": "docs/harness/THREAD_RESULT_CONTRACT.md",
+      "sha256": "050cd74ed18871de14df173ef2ac29636e5566d4324a0dbb482c26876dc991a2",
+      "status": "CURRENT"
+    },
+    {
+      "document_id": "DOC-THREAD-REVIEW-V0.2",
+      "path": "docs/harness/THREAD_REVIEW_CONTRACT.md",
+      "sha256": "003a6cae9c4e7f30a1c7f83874681c01e429c6d7d00bd4ea15834dd74de44228",
+      "status": "CURRENT"
+    },
+    {
+      "document_id": "DOC-MERGE-GATE-V0.3",
+      "path": "docs/harness/MERGE_GATE.md",
+      "sha256": "da0d35825e8bda1b82575a5299423225f319c09ade9d689a3405a2e19ab0c845",
+      "status": "CURRENT"
+    },
+    {
+      "document_id": "DOC-HARNESS-NEGATIVE-V0.1",
+      "path": "docs/harness/HARNESS_NEGATIVE_TEST_MATRIX.md",
+      "sha256": "ba5a0301d05aa0005fdf18b06830ab0bb28040e75161edf97aea45c3056f3f18",
+      "status": "CURRENT"
+    },
+    {
+      "document_id": "DOC-HARNESS-GOVERNANCE-V0.1",
+      "path": "docs/harness/HARNESS_GOVERNANCE_CONTRACT.md",
+      "sha256": "6cddd9d4c0a604365445b6a246f3264f8e4b18d1c8d6482605ab6d7a2e35e9a2",
+      "status": "CURRENT"
+    },
+    {
+      "document_id": "DOC-WORKFLOW-V0.3",
+      "path": "KineticLoop_Harness_Development_Workflow_v0.3.md",
+      "sha256": "c64d6a3594ed4b66825ec739e525ae94e4e24cfa9166e1134a0fe6fc0302af6c",
+      "status": "CURRENT"
+    },
+    {
+      "document_id": "DOC-BACKLOG-V0.2",
+      "path": "KineticLoop_Harness_Backlog_v0.2.json",
+      "sha256": "9e21b8dfea771b45c584bf57c17079159acaee7dcf21fb8aa506b0b01728ebd2",
+      "status": "CURRENT"
+    },
+    {
+      "document_id": "DOC-M3-CLOSURE-V0.1",
+      "path": "docs/harness/M3_CLOSURE_CONTRACT.md",
+      "sha256": "6c66efdbf5b39ce92e088c92af042042121c01bbfc0521af7865a8c291714649",
+      "status": "CURRENT"
+    },
+    {
+      "path": "CURRENT_REQUIREMENT_SET.json",
+      "sha256": "c7ce1793c0b5fcbdec99afc8742e33b60e42cb633eacf9424ae84c4639dfa750"
+    },
+    {
+      "path": "HISTORICAL_TASK_ID_MAP.json",
+      "sha256": "1b5acd3e339e86175f39999a9388b7dcd0c436dd02d32dbe29e0cd9dcff04253"
+    },
+    {
+      "path": "FROZEN_BASELINE.json",
+      "sha256": "bb8cd79942d3ca735e38e0363d8f56c5c45bbd79210a6618d29704aac3dd04df"
+    },
+    {
+      "path": "KineticLoop_Acceptance_Spec_v1.2.2.json",
+      "sha256": "32481bd6eb29fe0d8ce1e5ec3cb9b90821743cc5708343e4695a446f51e78892"
+    },
+    {
+      "path": "KineticLoop_Integration_Acceptance_v0.1.json",
+      "sha256": "1b4ea126ed5cc8c45adde29a4db45fec96e9949267b21baf47934b4af69bf473"
+    },
+    {
+      "path": "KineticLoop_Harness_Traceability_v0.3.json",
+      "sha256": "9246f23c2bd6b48ca1fe4bb2b95cd3f887669e8535a778514c8d0e9f98d7f353"
+    },
+    {
+      "path": "KineticLoop_Evidence_Manifest_v0.1.json",
+      "sha256": "d042e477f0224d843390b5abd1d94ca376278da390db7e7aed99a192c9a60e99"
+    },
+    {
+      "path": "THREAD_RESULT.schema.json",
+      "sha256": "4fd9ad4dd0dcd21186e349386f86ac05fac9d2023f72663cb5961746736171fa"
+    },
+    {
+      "path": "THREAD_REVIEW.schema.json",
+      "sha256": "71d40acfcc1cae40912254cf7da1970c6cdcaf20f8e9f898868f218ac9a053a0"
+    },
+    {
+      "path": "tools/harness/validate_harness.py",
+      "sha256": "9b709b35f9fed80c951d6104cf6708eab87826186f323077a8cc1025201f1bdf"
+    },
+    {
+      "path": "HARNESS_CHANGE.schema.json",
+      "sha256": "831b8aa88e158d08f3a0d7c1ca7fc679fd7f8c6d1cae95190360a9378a08d628"
+    },
+    {
+      "path": "INTEGRATION_RECORD.schema.json",
+      "sha256": "7397a11f0ebf6cdb80a6b220d226cf02828887e870ba5fbdf967bc73df00114a"
+    },
+    {
+      "path": "MILESTONE_CLOSURE.schema.json",
+      "sha256": "f0594ca9566f6b3a51b540e68ec4f0c4275042bf34fbdbdcdd9d5aa99fb2775b"
+    },
+    {
+      "path": "HISTORICAL_EVIDENCE_MAPPING.schema.json",
+      "sha256": "602a3cc03bbfc13859bc5ff87da77cc636dd925871b89349b55ae42b3d3feced"
+    },
+    {
+      "path": "REVIEW_SOURCE_DECLARATIONS.schema.json",
+      "sha256": "3a803a8a6074739fa9a5240a3e48cf80d32162f3d40312eb4443aa9d337c6837"
+    },
+    {
+      "path": "docs/harness/REVIEW_SOURCE_DECLARATIONS.json",
+      "sha256": "81e432996ee065be60bd6462cc90977cacd81f29d1fa6babe2621a4e212d27c6"
+    }
+  ],
+  "additional_authority_pins": [
+    {
+      "path": "/Users/davetian/Personal_Projects/KineticLoop/AGENTS.md",
+      "bytes": 3350,
+      "sha256": "31ab3baa35945abfc1f3779968b0e232d7fda1fed70180ab5c786ede6ba99134"
+    },
+    {
+      "path": "/Users/davetian/Personal_Projects/KineticLoop/.agents/skills/pr-merge-reviewer/SKILL.md",
+      "bytes": 797,
+      "sha256": "c27a461eb52816ee967e1a97b1df6e39ec86ece6475f4cd3c250338f9ebda7a3"
+    },
+    {
+      "path": "/Users/davetian/Personal_Projects/KineticLoop/.agents/skills/protocol-guardian/SKILL.md",
+      "bytes": 825,
+      "sha256": "b30907f34f79002b8114f83eaae9cc30802b1897cc05f0642b864261cb0b7346"
+    },
+    {
+      "path": "/Users/davetian/Personal_Projects/KineticLoop/docs/exec-plans/active/HG-058.md",
+      "bytes": 22312,
+      "sha256": "a62e7a65df04e840e107febff4c49e7f9bf0a891a3081a29169ab7d2364a6eaf"
+    },
+    {
+      "path": "/Users/davetian/Personal_Projects/KineticLoop/docs/harness/EVIDENCE_STORAGE_POLICY.md",
+      "bytes": 24241,
+      "sha256": "6c7027b54d4c5cec7bc59c1be83a99ed10deb0ca2cd6a2ff203ffb99c0a8d23d"
+    }
+  ],
+  "findings": [],
+  "prior_finding_dispositions": [
+    {
+      "ids": [
+        "R2-G1",
+        "SEC-R2-1",
+        "G2",
+        "SEC-2"
+      ],
+      "status": "CLOSED_FOR_EXACT_REVIEWED_R3",
+      "evidence": "inventory now accepts original immutable bytes/native-reader premises and calls observe within the same operation. Exact original ordered checks, uniquely parsed profile, original revision/producer claims, parsed component values and immutable delivery metadata establish expected output independently. Optional candidate_outputs cannot establish any expected fact. Own D5/D4/mixed-native coordinated permutations and SOURCE_T/REPORT_T/Z/count/M/tree/parent substitutions all deny; original 282-tuple/native6/gap7 enumeration remains separate and complete. Hidden-zero, omitted native/gap/original records, unknown keys/types and fabricated acceptance deny. No caller-created trusted token, output hash, cache or new trust constructor introduced."
+    },
+    {
+      "ids": [
+        "R2-G2"
+      ],
+      "status": "CLOSED_FOR_EXACT_REVIEWED_R3",
+      "evidence": "typed removes exactly one required terminal slash for directory claims and none for path claims. Both lexical role and whole-form tests deny repeated trailing slashes and empty/dot/dot-dot components. Paths remain inert claims with no lookup."
+    },
+    {
+      "ids": [
+        "R2-N1"
+      ],
+      "status": "CLOSED_FOR_EXACT_REVIEWED_R3",
+      "evidence": "DECISION_MATRIX names exact_current_catalog_relation_counterexamples_denied rather than a stale numeric count."
+    },
+    {
+      "ids": [
+        "G1",
+        "SEC-1"
+      ],
+      "status": "CLOSED_PRESERVED_AND_REVERIFIED",
+      "evidence": "PLAIN_LITERAL_28 v16 retains exact EXPLICIT_ZERO_EXIT_CLAIM. Fresh definition tests deny nonzero130/1/1000000, unknown, Boolean, 00 and 0.0; output never manufactures exit0 from those forms."
+    },
+    {
+      "ids": [
+        "G3",
+        "SEC-3"
+      ],
+      "status": "CLOSED_PRESERVED_AND_REVERIFIED",
+      "evidence": "All seven conjunctive documents agree on UNVERIFIED_RECORD_REVISION_EXECUTION for this plain form. Closed 13-kind relation vocabulary matches executable schema; HG061/HG062 distinct semantics remain unchanged. Cross-document tests passed."
+    },
+    {
+      "ids": [
+        "G4",
+        "SEC-4"
+      ],
+      "status": "CLOSED_PRESERVED_AND_REVERIFIED",
+      "evidence": "Read every complete production and checked phase/role relations. All76 phases are positive, including three SOURCE_T suites. Both repeated harness ratios bind terminal counts. Fixed DB sections, SHA-256 and partial contract identifiers remain literals. All71 relation instances and represented-prose coverage tests passed. Distinct incomplete/prior DB component counts retain separate purposes, without invented equality."
+    },
+    {
+      "ids": [
+        "G5"
+      ],
+      "status": "CLOSED_PRESERVED_AND_REVERIFIED",
+      "evidence": "All39 packaged records exactly reconstruct original decoded source with unchanged external source pin. Each current plain file is <=202919 bytes and all70 total1183922 bytes, within unchanged256KiB/16MiB storage caps. The1MiB other-blob read bound is explicitly separate."
+    }
+  ],
+  "full_review_coverage": {
+    "productions": 33,
+    "phases": 76,
+    "relation_instances": 71,
+    "relation_kinds": 13,
+    "original_binding_rows": 39,
+    "pin_instances_verified": 889,
+    "unique_git_blobs_verified": 153,
+    "original_ordered_mandatory_tuples": 282,
+    "native_controls": 6,
+    "documentary_entries": 276,
+    "explicit_gap_entries": 7,
+    "original_authority_indices_and_schemas": "MATCHED",
+    "original_record_check_ref_command_order": "ALL39_EXACT",
+    "normal_B_T_R_L_C_ancestry": "VERIFIED_WHERE_APPLICABLE",
+    "HG004_T_to_M_ancestry": "ACTUAL_EXIT1_PRESERVED",
+    "HG004_original_GENERAL": "ABSENCE_SEPARATE_FROM_LINEAGE",
+    "HG004_tree_or_source_head_equivalence": "NOT_CERTIFIED",
+    "binding_package_original_source_sha256": "e102d0931a34567cdd44b8910927750e364c9e85f4ebf6c78177332daddb9b47",
+    "binding_package_decoded_identity": "EXACT_MATCH",
+    "candidate_file_max_bytes": 202919,
+    "candidate_total_bytes": 1183922
+  },
+  "checks": {
+    "new_definition_tests": {
+      "observed_exit": 0,
+      "unique_identities": 255,
+      "receipt": {
+        "path": "/private/tmp/hg058-plain-full-security-r3/TEST_RECEIPT.json",
+        "bytes": 39917,
+        "sha256": "92d07546172b18b7c3d77a75470ee626a261987ab1958becfc53e33d19115aa7"
+      }
+    },
+    "new_independent_boundary_probes": {
+      "cases": 54,
+      "result": "ALL_EXPECTED",
+      "script": {
+        "path": "/private/tmp/hg058-plain-full-security-r3/probes.py",
+        "bytes": 6588,
+        "sha256": "8c726d1b3cd307c0c07e5a6626b09b6686f9f2704be172becc24410cf29d6ab7"
+      },
+      "evidence": {
+        "path": "/private/tmp/hg058-plain-full-security-r3/PROBES.json",
+        "bytes": 6339,
+        "sha256": "c728ad7fb4e7604a8b3cb75437e35316e0fff1549e7105daa6b68b9f9fb4313d"
+      }
+    },
+    "independent_complete_inventory": {
+      "path": "/private/tmp/hg058-plain-full-security-r3/INVENTORY.json",
+      "bytes": 390,
+      "sha256": "b30df5d702bf7f550c4c663ee0057449dbabdc7981c7b537620e88ff45d5a604"
+    },
+    "original_binding_and_tuple_audit": {
+      "path": "/private/tmp/hg058-plain-full-security-r3/ORIGINAL_AUDIT.json",
+      "bytes": 130894,
+      "sha256": "cbc53fd1c277ebcda52c7e6f67a2c36c5efa93b2c9aa2d0af7aae40db74b6147"
+    },
+    "final_pins_author_receipt_and_repository": {
+      "path": "/private/tmp/hg058-plain-full-security-r3/FINAL_CHECKS.json",
+      "bytes": 2311,
+      "sha256": "fb994d5023babfb59074d4ba6b9168be5142617a889cad1a3e260acc4429f3d5"
+    }
+  },
+  "security_assessment": [
+    "Original-observation inputs, not output values, establish exact correspondence. FixtureContext/GUARDS/native enumerations remain explicit synthetic premises only; no production provenance has been demonstrated by those markers.",
+    "Untrusted candidate output is checked for exact builtin type, dict key set, sequence order, scalar values, byte/node/depth bounds. Own exact boundary checks accept depth64/nodes262144/compared1MiB and deny the next unit. UTF8 byte accounting, cycles and hostile custom/subclass values deny without executing their equality/iteration hooks.",
+    "Mandatory/native/gap enumerations were independently obtained from actual immutable governance records, native output indices and failed-ancestry metadata, then supplied separately to the complete reference inventory. No result-derived omission supplies the expected set.",
+    "Finite whole-form grammar has no report/source execution, interpolation, body-pointer lookup, network or decoder-error fallback. Numeric/path/UUID/environment values confer no authority. Unknown/ambiguous forms and native contradictions deny.",
+    "Review absence requires original indexed duty and true canonical absence; extant invalid reviews do not qualify. Additional lineage branch preserves failed native ancestry and exact M/T parent/tree identities, never source-head trust or equivalence.",
+    "Global archival inventory only; five mandatory dimensions are BOUND_ORIGINAL_CLAIM, UNVERIFIED_ORIGINAL_COMPUTATION, UNVERIFIED_RECORD_REVISION_EXECUTION, NOT_CERTIFIED and acceptance_eligible=false. No prior original PASS becomes fresh acceptance."
+  ],
+  "preserved_boundaries": [
+    "No selected/prerequisite/review freshness/full REVIEW_RECORD_ONLY, native evidence, eight declared-source/four-caller, decoder, storage/history/reencoding, budget, M3, requirement, installed controller, admission, App or release guard weakening.",
+    "HG047 original strict RRO failure and HG058 original first-commit storage FAIL remain historical failures. Existing HG058 frozen3965 continuation and resource regrant obligations remain.",
+    "No frozen Protocol/DB, Evidence Admission, T1-T8 atomic boundaries, S51/S01 lock order, provider trust, production activation or executable-shadow change.",
+    "Existing classifier256KiB/1024/1MiB, semantic32blobs/32MiB/64Git and applicable native/source budgets remain conjunctive; storage limits stay256KiB plain/16MiB aggregate."
+  ],
+  "review_actions": {
+    "candidate_and_repository_writes": false,
+    "historical_source_body_commands_old_gates_drivers_executed": false,
+    "DB_App_install_admission_executed": false,
+    "nested_agents_or_chat_messages": false,
+    "PR_worktree_governance_allocation": false,
+    "writes_only_under": "/private/tmp/hg058-plain-full-security-r3",
+    "repository_head_after": "161744c5760561349bdeb17d628e38220640c95b",
+    "repository_porcelain_after": ""
+  },
+  "limits_and_required_next_steps": [
+    "This verdict approves exact-manifest consolidated definition dispatch only. It is not task/runtime/merge/release PASS and does not close old original execution/review results.",
+    "The complete candidate still needs the separately required fresh GENERAL review. A new governance task must incorporate the definitions under an actual protected-base grant, execute its real checks, obtain exact-SHA independent reviews and pass normal root install/admission/App/fullDB/cleanup/hosted/merge gates.",
+    "HG058 implementation may resume only after actual normal governance merge, installed readiness and explicit resource regrant. Production native readers must derive every binding premise; fixture constructors and flags cannot become runtime trust APIs."
+  ],
+  "evidence_files": [
+    {
+      "path": "/private/tmp/hg058-plain-full-security-r3/FINAL_CHECKS.json",
+      "bytes": 2311,
+      "sha256": "fb994d5023babfb59074d4ba6b9168be5142617a889cad1a3e260acc4429f3d5"
+    },
+    {
+      "path": "/private/tmp/hg058-plain-full-security-r3/INVENTORY.json",
+      "bytes": 390,
+      "sha256": "b30df5d702bf7f550c4c663ee0057449dbabdc7981c7b537620e88ff45d5a604"
+    },
+    {
+      "path": "/private/tmp/hg058-plain-full-security-r3/ORIGINAL_AUDIT.json",
+      "bytes": 130894,
+      "sha256": "cbc53fd1c277ebcda52c7e6f67a2c36c5efa93b2c9aa2d0af7aae40db74b6147"
+    },
+    {
+      "path": "/private/tmp/hg058-plain-full-security-r3/PINS.json",
+      "bytes": 25598,
+      "sha256": "63e9e1a4e2f24b94e699faa2c717994f840d73f3cd754fc983054fc94930bd3e"
+    },
+    {
+      "path": "/private/tmp/hg058-plain-full-security-r3/PROBES.json",
+      "bytes": 6339,
+      "sha256": "c728ad7fb4e7604a8b3cb75437e35316e0fff1549e7105daa6b68b9f9fb4313d"
+    },
+    {
+      "path": "/private/tmp/hg058-plain-full-security-r3/TEST_RECEIPT.json",
+      "bytes": 39917,
+      "sha256": "92d07546172b18b7c3d77a75470ee626a261987ab1958becfc53e33d19115aa7"
+    },
+    {
+      "path": "/private/tmp/hg058-plain-full-security-r3/audit.py",
+      "bytes": 7540,
+      "sha256": "ffa2f10e68bd8d42f0ba77f842ba963169b26a1f6beabbb555635007614713fd"
+    },
+    {
+      "path": "/private/tmp/hg058-plain-full-security-r3/final_checks.py",
+      "bytes": 2466,
+      "sha256": "8683a2a05e2d59fe72bd72d7b473f6c4f7fb034cb7b9bbe2046e6d244b42550f"
+    },
+    {
+      "path": "/private/tmp/hg058-plain-full-security-r3/probes.py",
+      "bytes": 6588,
+      "sha256": "8c726d1b3cd307c0c07e5a6626b09b6686f9f2704be172becc24410cf29d6ab7"
+    }
+  ]
+}

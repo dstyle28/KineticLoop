@@ -1,0 +1,176 @@
+{
+  "authority": "PROSPECTIVE_PLAIN_FORM_DEFINITION_ONLY",
+  "exclusive_caller": "GLOBAL_ARCHIVAL_GOVERNANCE_INVENTORY",
+  "entry_identity": [
+    "namespaced_owner",
+    "check_id",
+    "base_commit",
+    "record_tested_commit",
+    "declared_command",
+    "report_ref",
+    "validation_revision"
+  ],
+  "mandatory_dimensions": {
+    "documentary_validation": [
+      "BOUND_ORIGINAL_CLAIM"
+    ],
+    "semantic_validation": [
+      "UNVERIFIED_ORIGINAL_COMPUTATION"
+    ],
+    "historical_execution": [
+      "UNVERIFIED_RECORD_REVISION_EXECUTION"
+    ],
+    "historical_review_acceptance": [
+      "NOT_CERTIFIED"
+    ],
+    "acceptance_eligible": [
+      false
+    ]
+  },
+  "historical_execution_meaning": "No execution certification at original recordT; does not falsely assert every producer exit missing. Native exact-zero tuples never use this observation. HG061/HG062 output values unchanged.",
+  "purpose_enums": [
+    "CONTENT_REVISION_OR_SCOPE_CLAIM",
+    "EXPLICIT_NON_EXECUTION_COMPOSITE",
+    "FINAL_RERUN_ASSERTION",
+    "FINAL_REVISION_EXIT_ATTRIBUTION",
+    "ORIGINAL_CHECK_CLAIM",
+    "OTHER_REPORT_REVISION_CLAIM",
+    "POST_TEST_DIAGNOSTIC"
+  ],
+  "limitation_enums": [
+    "CONTENT_REVISION_REUSE",
+    "DISTINCT_ORIGINAL_REPORT_REVISIONS",
+    "EXPECTED_REJECTION_NOT_MERGE_GATE_PASS",
+    "INCOMPLETE_COMPONENT",
+    "MISSING_ORIGINAL_REVIEW",
+    "NO_NATIVE_RECORD_REVISION_EXECUTION_CERTIFICATION",
+    "NO_SELECTED_ACCEPTANCE",
+    "ORIGINAL_PASS_LABEL_IS_CLAIM",
+    "POST_TEST_PRODUCER_REVISION",
+    "PRIOR_DB_ASSERTION",
+    "RECORD_REVISION_EXECUTION_UNVERIFIED",
+    "REUSE_NOT_VALIDATED",
+    "UNVERIFIED_COMPUTATION",
+    "UNVERIFIED_FINAL_RERUN_ASSERTION",
+    "ORIGINAL_TESTED_DELIVERY_LINEAGE_NOT_ESTABLISHED"
+  ],
+  "revision_claim_roles": {
+    "REPORT_T": "distinct original report revision claim, no source lookup/rebinding",
+    "SOURCE_T": "content-revision claim distinct from recordT, no source lookup/reuse certification",
+    "PRODUCER_Z": "independently bound full post-test producer revision",
+    "PRODUCER_Z_PREFIX": "exact abbreviated spelling of independently bound Z; never a lookup pointer"
+  },
+  "exit_attribution": {
+    "kind_enums": [
+      "TRANSCRIBED_EXIT_ZERO_AT_OTHER_PRODUCER",
+      "TRANSCRIBED_EXIT_ZERO_AT_RECORD_REVISION"
+    ],
+    "value": 0,
+    "producer": "exact full separately attributed revision",
+    "execution_certified": false,
+    "normal_native_exit0": "ordinary native path, zero documentary count, separate native oracle remains mandatory"
+  },
+  "components": {
+    "role_enums": [
+      "CURRENT_HARNESS_ASSERTION",
+      "CURRENT_UNIT_ASSERTION",
+      "INCOMPLETE_FULL_INVOCATION",
+      "PRIOR_DB_ASSERTION"
+    ],
+    "state_enums": [
+      "REPORTED_PASS",
+      "INCOMPLETE",
+      "REPORTED_PRIOR_PASS"
+    ],
+    "unknown_revision": "UNSPECIFIED_IN_ORIGINAL_REPORT",
+    "unknown_revision_rule": "Never substitute recordT, planned values or prior source revision",
+    "counts": "typed positive integers 1..1000000, original claims; no actual execution count certification",
+    "reason": "DOCKER_API_DENIED where the closed original report states it",
+    "execution_certified": false
+  },
+  "inventory": {
+    "mandatory_tuple_set": "all durable tuples discovered by native inventory, not caller-selected subset",
+    "documentary_unverified_count": "exact nonnegative integer, never Boolean; consumed documentary tuples only",
+    "ordinary_native_tuples_count": 0,
+    "missing_or_duplicate_or_extra_or_unresolved_tuple": "DENY_COMPLETE_INVENTORY",
+    "independent_native_guard_failure": "DENY_COMPLETE_INVENTORY",
+    "nonzero_limitations_visible": true,
+    "historical_execution_semantics_review_certified": false,
+    "acceptance_eligible": false,
+    "lineage_gap_count": "exact nonnegative non-Boolean integer per affected consumed documentary tuple; zero iff no independently enumerated affected tuple",
+    "mandatory_lineage_gap_tuple_set": "independently enumerated native binding-gap tuples, not derived from observation output; must match consumed gap entries exactly",
+    "mandatory_native_tuple_set": "independent exact native-reader tuple enumeration; never inferred from missing entries/native ordinals",
+    "inseparable_original_observations": "Original immutable report bytes plus independently derived existing native facts are uniquely parsed and emitted inside inventory; original record order and exact typed attribution are authoritative. Candidate outputs never supply expected provenance.",
+    "emitted_observations": "Exact internally derived ordered report outputs, alongside counts and limitations; no reconsumption as original facts or success cache",
+    "candidate_outputs": "Optional untrusted exact corroboration only; bounded value/type/key/order comparison against newly derived original observations; all coordinated permutations and welltyped substitutions DENY"
+  },
+  "unknown_output_field_enum_or_fabricated_acceptance": "DENY",
+  "result_does_not_certify": [
+    "task_PASS",
+    "requirement_PASS",
+    "review_PASS",
+    "MERGED",
+    "selected_acceptance",
+    "execution",
+    "storage_history",
+    "installation_admission",
+    "App_release"
+  ],
+  "delivery_lineage": {
+    "normal_branch": null,
+    "affected_branch": {
+      "limitation": "ORIGINAL_TESTED_DELIVERY_LINEAGE_NOT_ESTABLISHED",
+      "B": "exact original record base",
+      "T": "exact original record tested commit",
+      "original_delivery": "independently bound original protected delivery M",
+      "C": "exact current validation revision",
+      "tested_tree": "full immutable T tree object identity",
+      "delivery_tree": "full immutable M tree object identity",
+      "tested_parents": "ordered actual full parent commit identities at T",
+      "delivery_parents": "ordered actual full parent commit identities at M",
+      "observed_ancestry_exit": 1,
+      "tested_delivery_ancestor": false,
+      "equivalence_certified": false,
+      "source_head_role": "NOT_USED_FOR_RUNTIME_BINDING"
+    },
+    "meaning": "Explicit archival delivery-lineage gap only; never ancestry/equivalence/integration/execution/review/acceptance proof"
+  },
+  "entry_schema": {
+    "exact_keys": [
+      "entry",
+      "documentary_validation",
+      "semantic_validation",
+      "historical_execution",
+      "historical_review_acceptance",
+      "acceptance_eligible",
+      "purpose",
+      "limitations",
+      "revision_claims",
+      "exit_attribution",
+      "delivery_lineage"
+    ],
+    "dimensions": "exact mandatory dimension values/types; unknown field/enum, Boolean-for-integer or fabricated certification DENY",
+    "purpose": "exact closed check ordinal purpose from SLOT_ROLES, not just any allowed enum",
+    "limitations": "exact ordered closed per-ordinal limits plus no-native-execution and lineage limit as applicable; no missing/extra/duplicate/unknown limit",
+    "revision_claims": "exact role-defined keys; separately attributed full revisions differ from recordT, producer prefix exactly matches separately bound full Z",
+    "exit_attribution": "null unless exact post-test/final-T exit role; then exact keys/kind/producer/int0/execution_certified=false",
+    "delivery_lineage": "null or exact affected_branch keys, values and same entry B/T/C, full named object metadata; gap predicate remains false"
+  },
+  "report_schema": {
+    "exact_keys": [
+      "component_claims",
+      "profile",
+      "entries",
+      "native_ordinals",
+      "lineage_gap_count",
+      "documentary_unverified_count",
+      "acceptance_eligible",
+      "review_acceptance_certified",
+      "covered_tuples"
+    ],
+    "native_capture_profile": "NATIVE_CAPTURE_PATH has no documentary/component claims; every tuple independently native",
+    "partition": "covered tuples exactly partition in original order into entries and native_ordinals; native tuples exactly equal independently enumerated mandatory native tuple set; documentary complement exactly equals mandatory minus native; all globally unique",
+    "components": "exact finite ordered component role fields/types/counts, revision rules and execution_certified=false",
+    "counts": "exact non-Boolean nonnegative integers per consumed documentary/gap tuple; native zero documentary"
+  }
+}

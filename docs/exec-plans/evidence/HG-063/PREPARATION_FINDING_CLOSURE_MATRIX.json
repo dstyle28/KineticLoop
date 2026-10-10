@@ -1,0 +1,63 @@
+{
+  "status": "R3_AUTHOR_CORRECTIONS_PENDING_INDEPENDENT_CLOSURE",
+  "R2_GENERAL_sha256": "c4c7b92388ed9878b93df3ea672c0f34884a01a1ea2ecbc07435fcac6ec98a93",
+  "R2_SECURITY_sha256": "33eebbfae96a988e4f68d86c6ac83166dbb31adf5bb2e395e1c0d5dcf1457918",
+  "independently_closed_at_R2": [
+    "G1",
+    "G3",
+    "G4",
+    "G5",
+    "SEC-1",
+    "SEC-3",
+    "SEC-4"
+  ],
+  "remaining_findings": [
+    {
+      "ids": [
+        "G2",
+        "SEC-2",
+        "R2-G1",
+        "SEC-R2-1"
+      ],
+      "author_disposition": "IMPLEMENTED_PENDING_R3_REVIEW",
+      "change": "Inseparable original observation and inventory; optional untrusted output corroboration matches exact freshly derived profile/order/typed values/immutable delivery facts; no new trusted wrapper/token/allowlist",
+      "fixtures": [
+        "test_D5_coordinated_covered_and_entry_identity_permutation_rejects",
+        "test_D4_composite_and_ordinary_command_coordinated_swap_rejects",
+        "test_mixed_native_documentary_coordinated_ordinal_swap_rejects",
+        "test_welltyped_SOURCE_T_substitution_in_every_entry_rejects",
+        "test_welltyped_positive_component_count_substitution_rejects",
+        "test_welltyped_original_delivery_and_tree_substitution_rejects",
+        "test_welltyped_actual_parent_metadata_substitution_rejects",
+        "test_welltyped_distinct_REPORT_T_substitution_rejects",
+        "test_welltyped_producer_full_prefix_and_exit_substitution_rejects",
+        "test_other_known_profile_cannot_replace_unique_parsed_profile",
+        "test_outputs_alone_flags_dataclasses_and_wrong_original_input_shape_do_not_supply_binding",
+        "test_exact_output_correspondence_existing_byte_and_depth_exhaustion_denies"
+      ]
+    },
+    {
+      "ids": [
+        "R2-G2"
+      ],
+      "author_disposition": "IMPLEMENTED_PENDING_R3_REVIEW",
+      "change": "Directory removes exactly one required terminal slash; ordinary path removes none before empty/dot/dotdot component validation, inert only",
+      "fixtures": [
+        "test_exact_one_directory_slash_and_no_path_trailing_empty_components"
+      ]
+    },
+    {
+      "ids": [
+        "R2-N1"
+      ],
+      "author_disposition": "IMPLEMENTED_PENDING_R3_REVIEW",
+      "change": "Count-independent exact-current-catalog navigation label",
+      "fixtures": [
+        "test_navigation_relation_label_matches_exact_current_catalog"
+      ]
+    }
+  ],
+  "new_direction_required": false,
+  "all_six_approvals": "RESOLVED_UNCHANGED",
+  "fresh_R3_reviews": "NOT_RUN"
+}

@@ -583,3 +583,71 @@ history rewrite or retrospective PASS is authorized. All HG058 fresh author
 acceptance/reviews/final audits remain required. Root retains complete installed
 bundle review/install, exact admission, App/unit/harness/fullDB, cleanup, live
 hosted gates and normal protected merge. No DB/App executor is reserved here.
+
+
+## HG063 consolidated plain historical archival definitions
+
+HG063 is definitions-only governance under its byte-pinned
+`docs/exec-plans/evidence/HG-063/PACKET.md`. Its exact nine write patterns, eight
+checks (definitions, validator, unit, harness, lint, typecheck, authority, diff),
+empty new-authority/product projection and fresh exact-R GENERAL plus
+SECURITY_DATA_BOUNDARY reviews are mandatory. `packets_refined` remains [] under
+the unchanged KL-only schema; its summary/files name the HG058 refinement.
+
+The seven byte-identical reviewed documents in `docs/exec-plans/evidence/HG-063/`
+are incorporated conjunctively as the prospective plain archival definition:
+DEFINITION_CONTRACT.md, BINDING_RULES.md, OUTPUT_TYPES.json, PLAIN_GRAMMAR.json,
+TEMPLATE_CATALOG.json, SLOT_ROLES.json and DECISION_MATRIX.json.
+DELIVERY_PROVENANCE.json binds their source and delivery identities. Preparation
+status text inside these preserved bytes is historical context, not current
+implementation, review or merge status. Actual normal HG063 merge activates only
+this prospective rule. Draft reviews and preparation checks confer no task PASS.
+ROWS, RECONSTRUCTION_SAMPLES, SEMANTIC_ROLE_AUDIT and the lossless BINDING_PACKAGE
+with 39 small binding records are immutable research fixtures, not runtime owner,
+filename, profile, revision or hash allowlists. The original oversized binding
+source stays external at its pinned hash; canonical decoded identity is preserved.
+The task-local executable oracle and FixtureContext are synthetic definition
+premises only, never a production trust constructor, API or evidence reader.
+
+Only the reviewed closed 33 whole plain-text productions, 76 phases and 71
+relations apply, with 39 original research bindings, six native controls, 276
+documentary claim tuples and seven explicit lineage-gap claims. The original
+indexed duty/absence/record/review/report/protected-delivery bindings, exact command
+and check ordinals, whole body grammar, native completion and independent guards
+apply conjunctively. Unknown, ambiguous, malformed, tampered, contradictory,
+failed, interrupted, unstarted or exhausted inputs deny as defined. HG004's actual
+T-to-original-delivery ancestry remains integer exit1/false with original parent
+and tree objects, separately from missing GENERAL. No source-head substitution,
+synthetic R/review, equivalence or historical PASS follows.
+
+Only GLOBAL_ARCHIVAL_GOVERNANCE_INVENTORY consumes these plain observations.
+The five dimensions remain BOUND_ORIGINAL_CLAIM,
+UNVERIFIED_ORIGINAL_COMPUTATION, UNVERIFIED_RECORD_REVISION_EXECUTION,
+NOT_CERTIFIED and acceptance_eligible=false. Typed per-entry limitations and exact
+documentary_unverified_count/lineage_gap_count remain visible; native controls
+contribute no documentary entry. Explicit noncertifying inventory completion is
+never historical computation/execution/review, current task/requirement,
+release/admission or acceptance PASS. HG061/HG062 forms and output enums are unchanged.
+
+Original immutable report bytes and independently derived native facts/check order
+feed one bounded observation-and-inventory operation. Unique parsed profile,
+revision, component, exit, delivery, parent and tree values retain exact original
+correspondence. Arbitrary output, expected hash, token, cache or forgeable trusted
+class supplies no provenance. Optional candidate output is untrusted corroboration
+only, compared with exact builtin type/value/key/array-order bounded equality.
+Independent mandatory/native/gap enumeration proves a complete disjoint exact
+partition and cardinality. Unknown-key/dimension/ordinal/caller checks, inert paths
+with exactly one required directory slash, finite read/parse/compare/depth/work
+bounds and all selected/native/review/freshness/full RRO/source/cache/storage/
+history/M3/admission/release guards remain mandatory. No source or body command is
+executed, imported or evaluated. Storage budgets and all HG059/060/061/062 meanings
+are unchanged; no production classifier/controller/schema/workflow change occurs.
+
+This continuation trigger supersedes earlier HG059/060/061/062 triggers: HG058 may
+resume only after actual normal HG063 merge, complete installed readiness under
+LOCAL_DB_CI.md and root resource regrant. Until then clean3965 remains frozen;
+DB/App is free and unreserved. Preserve first-parent3965, original auditbase9700
+versus live protected base, first5da0FAIL, every map/source pin/failure and all
+existing eight-source/four-caller/nine-metadata requirements. Root owns complete
+installation review/install, exact admission, App/fullDB/cleanup/live gates and
+normal protected merge. HG063 grants no runtime lease or old PR99/102 disposition.

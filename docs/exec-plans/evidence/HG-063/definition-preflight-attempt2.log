@@ -1,0 +1,9 @@
+{"scope": "HG063_ONLY", "changed_functions": ["governance_allowed_patterns", "validate"], "plain_files": 74, "bytes": 1330393}
+Traceback (most recent call last):
+  File "/Users/davetian/.codex/worktrees/hg063-plain-archival-definitions/KineticLoop/docs/exec-plans/evidence/HG-063/verify_definitions.py", line 210, in <module>
+    binding=verify_pins();verify_scope(args.tested,args.preflight);verify_git_bindings(binding)
+                                                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/davetian/.codex/worktrees/hg063-plain-archival-definitions/KineticLoop/docs/exec-plans/evidence/HG-063/verify_definitions.py", line 134, in verify_git_bindings
+    assert row['ref'] in review['evidence_refs'] or (row['review_reference_kind'] == 'CANONICAL_RECORD_HOP' and path in review['evidence_refs'])
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError
