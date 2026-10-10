@@ -1,0 +1,17 @@
+{
+  "tested_commit": "de3d4d3427b975798bd7428bfdb3d952acfa6c5d",
+  "actual_harness_exit_code": 4,
+  "reason": "pytest-xdist code was present in supplied temporary dependency cache but .dist-info entry point metadata had been cleaned; -n was unavailable. Harness execution was unstarted after preflight failure.",
+  "retained_successful_same_T_checks": [
+    "definitions",
+    "validator",
+    "unit"
+  ],
+  "later_checks_unstarted_in_this_attempt": [
+    "lint",
+    "typecheck",
+    "authority",
+    "diff"
+  ],
+  "retry": "Same immutable T; existing intact user uv cache supplied xdist3.8.0 and execnet2.1.2 without installation. Exact separate retry command/environment retained in CHECK_INDEX."
+}

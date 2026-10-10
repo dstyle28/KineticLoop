@@ -380,3 +380,122 @@ T -> fresh commands -> truthful R -> fresh GENERAL/SECURITY -> final audits is
 mandatory; root retains installed review/install, exact admission, App/fullDB,
 cleanup, hosted gates and normal merge. All prior HG059/storage/release boundaries
 remain enforced. Definitions PASS supplies no HG058/product/review/merge PASS.
+
+## HG061 historical semantic report definitions
+
+HG061 is definitions-only governance under its byte-pinned PACKET.md,
+INITIAL_FORM.md and AUTHORITY_MAPPING.md in docs/exec-plans/evidence/HG-061/.
+Its literal scope, exactly eight checks (definitions, validator, unit, harness,
+lint, typecheck, authority, diff), no new authority/product projection and fresh
+GENERAL plus SECURITY_DATA_BOUNDARY reviews are enforced. packets_refined stays []
+under the unchanged KL-only schema; summary/files name the HG058 packet refinement.
+All source declarations, codecs, storage/history, classifier, controller, schema,
+frozen and product behavior remain unchanged. No runtime recognizer is installed.
+
+The following normative initial form defines a narrow global archival observation,
+separate from historical process execution. It prospectively refines HG060's global
+inventory definition for this closed form only. Original PASS labels remain claims.
+A VERIFIED observation certifies coherent tree facts and exposes missing historical
+exit capture; it never supplies selected task/governance check PASS, prerequisite
+execution, review PASS, M3, requirement, storage/history, controller admission or
+release success. No generic success Boolean may cross that boundary. No task/path/
+hash/date exception or invented historical machine declaration is authorized.
+
+# HG061 initial historical-semantic form — normative definition input
+
+This appendix resolves the dispatch definition point in AUTHORITY_MAPPING.md. It is a prospective closed compatibility profile, not a claim that an original nine-predicate machine declaration existed. The implementation belongs to HG058 after HG061 normal merge. Unknown forms fail closed; extend this profile only through separately reviewed governance. The original HG044 pins in AUTHORITY_MAPPING.md are provenance and regression samples, never runtime success conditions.
+
+## Immutable eligibility and corroboration
+
+Resolve the historical namespaced owner O, display identifier D, B, T, result R, original GENERAL review and containing original merged delivery M through existing governance record/review contracts and protected-prerequisite history. Require B ancestor T ancestor R ancestor M ancestor current candidate base. Read the governance record/report at the current candidate and M and require byte identity; read source and indexed authorities at T and R with identical source/authority bytes unless an original valid review-only suffix explicitly permits the particular artifact. The original result and review may postdate T. The report, original result and original reviews must already exist at M. Current candidate additions cannot create eligibility, and selected owner O cannot take this route. Existing original review validity/suffix rules remain required; this profile does not repair original reviews.
+
+Require unique original scope check in the original governance record. Its declared command must tokenize without shell expansion as exactly an interpreter path followed by one canonical owner-evidence .py source path; no flags/operators/substitutions/extra operands. The interpreter path is an attribution string, never executed. The sole reference must identify the regular unchanged report. Bind B/T/owner to the record, source literals, report and independent review evidence; all mismatches reject.
+
+Original authority recognition is conjunctive, using only these recognized structures, not arbitrary prose interpretation:
+1. Original indexed validator contains one top-level governance_allowed_patterns function whose first executable statement after an optional docstring is one direct branch comparing change_id == D and returning a literal list. Each resolved top-level string constant must have a unique binding with no reassignment. Its seven ordinary paths (literals or single top-level string constants) equal the source allowed set; the remaining three entries are exactly owner evidence/review /** patterns and the owner governance .yaml path. No arbitrary glob/alias/expression resolution. The profile requires seven distinct ordinary paths and these three owned entries, with a complete set comparison.
+2. Original indexed validator has a unique top-level prefix guard with parameters root, base, reviewed; it reads B and reviewed PROJECT_PLAN through git show and returns [] exactly on after.split(marker,1)[0] == before + '\n', otherwise one literal diagnostic. Its separate marker guard requires marker count == 1. The marker, plan path and LF suffix must equal the source parameters. Function names/diagnostic literals may vary; ambiguity or additional semantic conditions in the prefix guard reject. Permit only an optional docstring in this three-statement guard; parse recognized expressions structurally, never execute them.
+3. Original governance known_limitations contain the exact declaration `Synthetic isolated Git fixture data is validator input only, never actual project completion evidence. Existing canonical M1/M2/integration/provenance validator functions are byte-identical.` as a complete limitation item (surrounding whitespace only may normalize). Original GENERAL assessment is explanatory read-only provenance, not an executable eligibility condition or prose oracle; the literal limitation and structured inventory/audit supply the defined corroboration. The original GENERAL review must bind R and explicitly reference the regular inventory and structured audit. The inventory has changed_existing, added and unchanged_hashes; selected six names are absent from changed_existing/added and present in unchanged_hashes with lowercase 64-hex SHA256 equal to recomputed T spans. Names in each list/map are unique. Extra inventory entries describe the independent review's preservation superset; they are not additional report predicates. The declaration is a literal supported legacy form, not a semantic parser or an owner exception.
+4. The original indexed closure contract contains the literal two-sentence declaration `a later governance PR may create \`<instance-path>\` only after all prerequisites and fresh integrated executions exist. <owner-token> creates no instance.` Match after folding ASCII whitespace between words, retaining punctuation/backticks/path bytes. owner-token is D with hyphens removed, derived rather than whitelisted. instance-path must equal the source absence path and be a canonical .json path below docs/exec-plans/milestones/. This closed declarative form supplies the non-creation authority; unrelated prose is not parsed.
+5. Original referenced structured review audit binds base=B,tested=T,reviewed=R and has literal true checks record_identity_revisions_status, path_mode_scope, tested_ancestry_and_suffix, no_actual_closure, only_legacy_function_edits_are_dispatch_scope and committed_plan_prefix. Its status is the original PASS claim. Validate existing raw review hash/reference integrity; no current caller-provided audit. Its changed_path_count is the original review B..R count, not the report's B..T count: never conflate them. These historical assertions are corroboration only; the new verifier independently recomputes the nine tree predicates.
+
+The literal declarations above are a closed legacy syntax, not a hash/date/task exemption. A coherent owner-neutral fixture with a different O/D/B/T/R/M, marker, ordinary paths, instance path, six function names and references qualifies under the same structure and all original authority checks. Altered parameters without matching independently original authorities reject. O, D, fixed sample hashes and task number must never decide success.
+
+## Source recognition as data
+
+Require a complete recognized AST skeleton for the original audit. Ignore only comments, one optional module docstring and location attributes; retain statement order, operators, calls, comprehension targets and assignment structure. No extra executable statement, assignment or binding is accepted. The skeleton consists solely of:
+- imports ast, hashlib, json, subprocess and from pathlib import Path;
+- root=Path.cwd(), base=<B literal>, head=subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip(); old=check_output(['git','show',base+':'+<validator-path>],text=True), new=(root/<validator-path>).read_text();
+- one undecorated synchronous functions(text) containing lines=text.splitlines(keepends=True) and the exact dict comprehension n.name to ''.join(lines[n.lineno-1:n.end_lineno]) over ast.parse(text).body filtered by isinstance(n,ast.FunctionDef);
+- before,after=functions(old),functions(new); preserved=<six distinct identifier strings>; checks={name:before[name]==after[name] for name in preserved}; changed=check_output(['git','diff','--name-only',base,head],text=True).splitlines(); allowed=<seven distinct canonical path string set>;
+- checks['scope']=all(p in allowed or p.startswith(<owned-evidence-prefix>) or p.startswith(<owned-review-prefix>) or p==<owned-governance-path> for p in changed);
+- old_plan=check_output(['git','show',base+':'+<plan-path>],text=True); new_plan=(root/<plan-path>).read_text(); checks['plan_prefix']=new_plan.split(<marker>,1)[0]==old_plan+'\n'; checks['no_instance']=not (root/<instance-path>).exists();
+- report=dict(base_commit=base,tested_commit=head,checks=checks,changed=changed,status='PASS' if all(checks.values()) else 'FAIL',preserved_function_sha256={n:hashlib.sha256(after[n].encode()).hexdigest() for n in preserved});
+- p=root/f'<owned-evidence-prefix>scope-{head[:7]}.json'; assert not p.exists(); p.write_text(json.dumps(report,indent=2)+'\n'); print(report['status']); raise SystemExit(0 if all(checks.values()) else 1).
+
+Every abbreviated check_output above means exactly subprocess.check_output; unqualified or aliased calls reject. Each base/path expression is exactly BinOp(Name('base'), Add, Constant(':' + path)), where the constant is one already literal string in the parsed AST. The notation does not permit evaluating arbitrary concatenation. Variable names above are fixed syntax, paths/owner/marker/B/preserved literals are parameter slots. This skeleton is recognized without running any call, importing original modules or evaluating expressions. A command AST does not establish that it ran, that its workspace matched T, or that it produced the report. Independent original authority conjunction is mandatory even when the whole skeleton matches.
+
+## Types, bytes and limits
+
+Report strict UTF-8 JSON, no BOM, duplicate keys, nonfinite values or trailing non-whitespace; exactly base_commit,tested_commit,checks,changed,status,preserved_function_sha256. B/T are lowercase full Git commit strings; status exactly PASS as original claim; checks exactly six selected names plus scope,plan_prefix,no_instance, all actual JSON true booleans. Hash map exactly six selected names to lowercase64hex. changed is a duplicate-free list of canonical relative path strings, no NUL, backslash, CR/LF, absolute paths or dot traversal; it must equal the complete byte-order-sorted B..T changed-path set, not a subset. Six names cannot collide with scope/plan_prefix/no_instance. Reject empty marker, path or names.
+
+Use immutable regular Git blobs only (100644/100755); reject symlink/submodule/tree inputs. Resolve full revisions to commits and use argv Git, no shell, no working-tree substitution. Use bounded NUL-separated diff with --no-renames and no external diff/textconv; deletions/renames contribute all affected path names. Reject paths not representable by this profile. No-instance means no Git tree entry of any mode at that exact T path. Report/path/source/authority references retain existing storage decoding and reference guards.
+
+Recompute preserved spans using strict UTF-8 LF-only validator source, no CR/NUL/BOM. Each selected name must occur exactly once as top-level synchronous FunctionDef at B and T; a same-name async or duplicate top-level definition rejects. Ignore decorators in span comparison as explicitly limited assertion; do not claim their preservation/runtime equivalence. Span is full def line through end_lineno retaining LF and EOF state; compare bytes and hash T bytes. Plan files use same byte rules, require exactly one marker at T and compare its prefix bytes to full B plan bytes plus one LF. No normalized whitespace semantic equality.
+
+Existing source classifier budgets remain 256KiB candidate,1024 work and1MiB aggregate; this route cannot use a raised classifier limit to make source admissible. Separately cap immutable semantic verification to 32 unique bound blobs, 32MiB aggregate raw bytes, 4MiB per validator blob, 1MiB per other blob, 4096 diff paths, 1MiB diff output, 262144 AST nodes and depth256 per validator; audit source uses existing smaller classifier budgets. JSON/YAML parsing uses depth64 and262144 aggregate scalar/container nodes under byte caps. Maximum64 Git read/diff/revision operations per report; deduplicate same object reads. Exhaustion is INVALID/explicit bounded diagnostic, not VERIFIED or fallback. No unbounded recursion, external network, subprocess source execution or generic expression interpreter. Caches must bind immutable object IDs and profile version, never path/owner alone, and cannot waive selected freshness or existing inventory budgets.
+
+## Outcomes and required decision matrix
+
+Only a fully coherent archived report whose sole missing execution fact is the unrecorded observed command exit may produce semantic_validation=VERIFIED, historical_execution=UNVERIFIED_MISSING_EXIT, acceptance_eligible=false. Execution contradictions refer to this exact owner/check/B/T/declared-command/report binding; superseded executions and unrelated checks remain preserved separate facts, never silently reassigned to this report. Missing original source/authority/lineage, known nonzero/failure/skip/error/interruption, known unstarted execution, incomplete observed capture or conflicting observations make semantic_validation=INVALID with truthful diagnostic; coincidentally true tree predicates never override these. Missing old exit must not become exit0 or fresh command observation. No new fact retroactively repairs original captures.
+
+HG058 must implement positives for the immutable pinned regression and coherent owner-neutral equivalent, and negatives covering each eligibility/conjunction/structure/type/bound/byte/caller boundary above. Mutation cases include weakened source equality/all, inserted assignments/calls, unmatched original scope, invented review linkage, hash/path omission/excess, false values, known interruption/unstarted, same-owner selection, new candidate self-archival, ambiguous AST/duplicates, symlink inputs, limits, and a true semantic report routed to any selected check/review/M3/storage-history/admission consumer. No generic success Boolean crosses the caller boundary. HG061 verifies these are unambiguous definitions and preserves runtime; implementation tests await HG058.
+
+### HG061 required implementation decision matrix and caller separation
+
+This matrix is normative for SAME HG058's later implementation and tests. HG061
+checks definitions and immutable research facts only; none of these rows asserts
+that the future production recognizer ran or passed.
+
+| Case | Required global observation | Acceptance consumers |
+|---|---|---|
+| Unchanged pinned original report, complete original governed/review conjunction, all nine recomputed predicates, only observed old exit absent | VERIFIED / UNVERIFIED_MISSING_EXIT / acceptance_eligible=false | No execution PASS |
+| Coherent owner-neutral equivalent with different governed owner, paths, marker, six names and original references | Same observation under identical structural rules | No owner exemption or execution PASS |
+| New or modified candidate claim self-designates archival | INVALID | Reject |
+| Selected historical owner requests its own report route | INVALID | Selected command/exit, freshness and reviews remain required |
+| True tree predicates but known interrupted, unstarted, failed, nonzero, skipped, erroneous, incomplete or conflicting bound execution | INVALID with truthful diagnostic | Reject; preserve each distinct execution |
+| Status-only report, unsupported form/fields, false/empty/unknown predicates, ambiguous definitions/keys, omitted/excess hashes or paths | INVALID | Reject |
+| Missing or unmatched original scope/declaration/review linkage, changed authority, weakened equality/all or inserted statements/calls | INVALID | Reject |
+| Nonregular/missing/oversized blobs, bad byte/path encodings, parser/Git bounds exhausted or decoder failure | INVALID with bounded diagnostic | Reject; no fallback |
+| Otherwise true semantic observation routed to selected check, prerequisite, review, M3, requirement, storage/history or admission | Ineligible by caller role | Reject; no generic success conversion |
+
+Only the global archival governance inventory caller may request this semantic
+observation. Selected task/governance checks, all review consumers, M3, requirements,
+compact decoding, storage/history and admission must retain existing evidence
+readers and never consume it as success. A caller cannot relabel purpose based on
+report status, command source, path or content. The four HG059 source-availability
+callers remain their separate declared role with all eight HG060 tuples unchanged.
+
+### Same HG058 continuation after HG061 normal merge
+
+This entry requirement supersedes the earlier HG059/HG060 continuation trigger:
+HG058 remains frozen at 3965cac382d333bd97f6c67fec8ecbe805b5932f until actual normal
+HG061 merge and coordinator regrant of harness_core, harness_governance,
+harness_validator, evidence_storage and trusted_local_ci_controller. DB/App is not
+reserved. Continue SAME HG058 by normal forward merge retaining first-parent3965,
+all old maps/source pins and failures; no rebase/squash/imported HG056 ancestry.
+Original auditbase9700a1b95d05c856897f74f125cfdf6fb3f6e646 remains distinct from the
+actual live HARNESS_CHANGE base. All retained-map base-advance/original/history
+proofs, nine ordinary metadata preservation rules and prior interruptions remain.
+First-commit FAIL never changes; prospective repaired-candidate acceptance is new.
+
+HG058 alone implements this closed form within its existing literal write scope,
+under unchanged 256KiB candidate / 1024-work / 1MiB aggregate classifier budgets and
+the semantic-specific bounds above. Exact original HG044 mapping/pins are read-only
+regression/provenance inputs, never runtime exemptions or old exit inference.
+Prepare all positive/negative matrix cases before stable T; then execute the full
+existing HG058 author checks freshly with actual command/exits and required
+collection/execution/JUnit identities. Preserve selected/freshness/RRO/M3/admission
+and all source, storage, production/shadow boundaries. Fresh result R and independent
+GENERAL/SECURITY reviews precede final audits. Root retains complete installed
+bundle review, install, exact admission, App/unit/harness/fullDB, cleanup, hosted
+gates and normal merge. Definitions PASS does not confer any of those facts.

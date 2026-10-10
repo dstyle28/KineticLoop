@@ -1,0 +1,68 @@
+{
+  "original_T": "de3d4d3427b975798bd7428bfdb3d952acfa6c5d",
+  "original_R": "1f45cd8f55868ba31526ad4a02b9e07427b4bc9b",
+  "original_C": "93a922a86dabb231dcd784ca48cad9f9f3842190",
+  "failure": "governance-tested-stale-change:HARNESS_DOCUMENT_MANIFEST.json",
+  "cause": "Result R incorrectly added manifest entries after T; the unchanged tested-suffix rule permits only own governance record and evidence additions.",
+  "executions": [
+    {
+      "check": "compact_audit",
+      "exit_code": 0,
+      "refs": [
+        "docs/exec-plans/evidence/HG-061/superseded-93a922a86dab-final/compact_audit.log.json",
+        "docs/exec-plans/evidence/HG-061/superseded-93a922a86dab-final/compact_audit-command.json.json"
+      ],
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python tools/harness/compact_evidence.py audit --base ebee712b591d14c165007cd3d56d89cb14ea1487 --head 93a922a86dabb231dcd784ca48cad9f9f3842190 --identity HG-061",
+      "output_sha256": "34b442cd4b8049b3db1136a454c94857ec1ecf1143cc881b82f0bfef8244bef8"
+    },
+    {
+      "check": "ci_pr",
+      "exit_code": 1,
+      "refs": [
+        "docs/exec-plans/evidence/HG-061/superseded-93a922a86dab-final/ci_pr.log.json",
+        "docs/exec-plans/evidence/HG-061/superseded-93a922a86dab-final/ci_pr-command.json.json"
+      ],
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli check-harness --ci-pr-base ebee712b591d14c165007cd3d56d89cb14ea1487 --ci-pr-head 93a922a86dabb231dcd784ca48cad9f9f3842190",
+      "output_sha256": "ca4380126793c0f72fed86bcc1fc0a13e93b2ea2df3e68400a9e0d1f1b6cf2f5"
+    }
+  ],
+  "immutable_original_pointers": [
+    {
+      "revision": "1f45cd8f55868ba31526ad4a02b9e07427b4bc9b",
+      "path": "docs/exec-plans/governance/HG-061.yaml",
+      "blob": "52922ab1cfadadf85693bef77b72ce2e1bc31068",
+      "bytes": 12235,
+      "sha256": "3ddf4d0f84f3b3253ec0694f972562c252a755e6724228c1e3b608b1eb721ca5"
+    },
+    {
+      "revision": "1f45cd8f55868ba31526ad4a02b9e07427b4bc9b",
+      "path": "docs/exec-plans/evidence/HG-061/checks-de3d4d3427b9/CHECK_INDEX.json",
+      "blob": "4259c6e7b351ce4ec4ab0050aefd52eed159d1f3",
+      "bytes": 58838,
+      "sha256": "21b48556ee4701aef8d3bbcbf2e54c6b81bf0708e6b6643059dbfc5aca21b211"
+    },
+    {
+      "revision": "93a922a86dabb231dcd784ca48cad9f9f3842190",
+      "path": "docs/exec-plans/reviews/HG-061/GENERAL.json",
+      "blob": "2168b95557062cc3f55402844c85e5147fa594dc",
+      "bytes": 506,
+      "sha256": "22eaf42f99bdf32a0c1130d6b21c919ed0fa1574f1a4f291441d453029f69f20"
+    },
+    {
+      "revision": "93a922a86dabb231dcd784ca48cad9f9f3842190",
+      "path": "docs/exec-plans/reviews/HG-061/SECURITY_DATA_BOUNDARY.json",
+      "blob": "c2363fa31cf73a789033c5ea328120214012146b",
+      "bytes": 502,
+      "sha256": "839915c10980f0a98b7225ca1019e367dd6051e4137cf08d527575a76c4244c1"
+    },
+    {
+      "revision": "93a922a86dabb231dcd784ca48cad9f9f3842190",
+      "path": "HARNESS_DOCUMENT_MANIFEST.json",
+      "blob": "41efc76c0257190a708470821afe717eeae04520",
+      "bytes": 101116,
+      "sha256": "cbce8797fe0a8f81d2e2f9dcb3d12b7d13957864b84401b9abd760fcbd2980b5"
+    }
+  ],
+  "preservation": "All original commits, records, reviews, evidence and failure retained in ancestry; pointers only, no copied bulk original records. No original check/review/install approval becomes current acceptance.",
+  "correction": "New stable T incorporates preparation; remove only own mutable result manifest registration before T, preserve immutable entries, freeze manifest through result/review suffix. Fresh eight author checks and fresh reviews required."
+}

@@ -1,0 +1,370 @@
+{
+  "reviewed_head_sha": "1f45cd8f55868ba31526ad4a02b9e07427b4bc9b",
+  "base_commit": "ebee712b591d14c165007cd3d56d89cb14ea1487",
+  "tested_commit": "de3d4d3427b975798bd7428bfdb3d952acfa6c5d",
+  "status": "PASS",
+  "changed_paths": 72,
+  "runtime_modified_existing_functions": [
+    "governance_allowed_patterns",
+    "validate"
+  ],
+  "index_hashes_verified": 30,
+  "manifest_entries_verified": 488,
+  "check_index_sha256": "21b48556ee4701aef8d3bbcbf2e54c6b81bf0708e6b6643059dbfc5aca21b211",
+  "author_checks": {
+    "definitions": {
+      "exit_code": 0,
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python docs/exec-plans/evidence/HG-061/verify_definitions.py --base ebee712b591d14c165007cd3d56d89cb14ea1487 --tested de3d4d3427b975798bd7428bfdb3d952acfa6c5d",
+      "environment": {
+        "PYTHONPATH": "/Users/davetian/.codex/worktrees/hg061-semantic-definitions/KineticLoop:/Users/davetian/.codex/worktrees/hg061-semantic-definitions/KineticLoop/src:/private/tmp/kl080-uv-cache/archive-v0/pMDaJUI6sj_futnY:/private/tmp/kl080-uv-cache/archive-v0/_eUbZQqhbuQIXsBR"
+      }
+    },
+    "validator": {
+      "exit_code": 0,
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m pytest tests/harness/test_validator.py -q -p tools.harness.parallel_observer --junitxml=/private/tmp/hg061-author-de3d4d3427b9/validator-junit.xml",
+      "environment": {
+        "PYTHONPATH": "/Users/davetian/.codex/worktrees/hg061-semantic-definitions/KineticLoop:/Users/davetian/.codex/worktrees/hg061-semantic-definitions/KineticLoop/src:/private/tmp/kl080-uv-cache/archive-v0/pMDaJUI6sj_futnY:/private/tmp/kl080-uv-cache/archive-v0/_eUbZQqhbuQIXsBR",
+        "KINETICLOOP_HARNESS_ROOT": "/Users/davetian/.codex/worktrees/hg061-semantic-definitions/KineticLoop",
+        "KINETICLOOP_HARNESS_WORKERS": "1",
+        "KINETICLOOP_HARNESS_OBSERVER": "/private/tmp/hg061-author-de3d4d3427b9/validator-execution.json"
+      }
+    },
+    "unit": {
+      "exit_code": 0,
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli test-unit -q -p tools.harness.parallel_observer --junitxml=/private/tmp/hg061-author-de3d4d3427b9/unit-junit.xml",
+      "environment": {
+        "PYTHONPATH": "/Users/davetian/.codex/worktrees/hg061-semantic-definitions/KineticLoop:/Users/davetian/.codex/worktrees/hg061-semantic-definitions/KineticLoop/src:/private/tmp/kl080-uv-cache/archive-v0/pMDaJUI6sj_futnY:/private/tmp/kl080-uv-cache/archive-v0/_eUbZQqhbuQIXsBR",
+        "KINETICLOOP_HARNESS_ROOT": "/Users/davetian/.codex/worktrees/hg061-semantic-definitions/KineticLoop",
+        "KINETICLOOP_HARNESS_WORKERS": "1",
+        "KINETICLOOP_HARNESS_OBSERVER": "/private/tmp/hg061-author-de3d4d3427b9/unit-execution.json"
+      }
+    },
+    "harness": {
+      "exit_code": 0,
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli test-harness --workers 2 --evidence-dir /private/tmp/hg061-author-de3d4d3427b9-dependency-retry/harness-run -q",
+      "environment": {
+        "PYTHONPATH": "/Users/davetian/.codex/worktrees/hg061-semantic-definitions/KineticLoop:/Users/davetian/.codex/worktrees/hg061-semantic-definitions/KineticLoop/src:/Users/davetian/.cache/uv/archive-v0/nnPNXkWpFSNRe9Ad:/Users/davetian/.cache/uv/archive-v0/X_H5kIMi_L692EPn"
+      }
+    },
+    "lint": {
+      "exit_code": 0,
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli lint",
+      "environment": {
+        "PYTHONPATH": "/Users/davetian/.codex/worktrees/hg061-semantic-definitions/KineticLoop:/Users/davetian/.codex/worktrees/hg061-semantic-definitions/KineticLoop/src:/Users/davetian/.cache/uv/archive-v0/nnPNXkWpFSNRe9Ad:/Users/davetian/.cache/uv/archive-v0/X_H5kIMi_L692EPn"
+      }
+    },
+    "typecheck": {
+      "exit_code": 0,
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli typecheck",
+      "environment": {
+        "PYTHONPATH": "/Users/davetian/.codex/worktrees/hg061-semantic-definitions/KineticLoop:/Users/davetian/.codex/worktrees/hg061-semantic-definitions/KineticLoop/src:/Users/davetian/.cache/uv/archive-v0/nnPNXkWpFSNRe9Ad:/Users/davetian/.cache/uv/archive-v0/X_H5kIMi_L692EPn"
+      }
+    },
+    "authority": {
+      "exit_code": 0,
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli check-harness",
+      "environment": {
+        "PYTHONPATH": "/Users/davetian/.codex/worktrees/hg061-semantic-definitions/KineticLoop:/Users/davetian/.codex/worktrees/hg061-semantic-definitions/KineticLoop/src:/Users/davetian/.cache/uv/archive-v0/nnPNXkWpFSNRe9Ad:/Users/davetian/.cache/uv/archive-v0/X_H5kIMi_L692EPn"
+      }
+    },
+    "diff": {
+      "exit_code": 0,
+      "command": "git diff --check ebee712b591d14c165007cd3d56d89cb14ea1487 de3d4d3427b975798bd7428bfdb3d952acfa6c5d",
+      "environment": {
+        "PYTHONPATH": "/Users/davetian/.codex/worktrees/hg061-semantic-definitions/KineticLoop:/Users/davetian/.codex/worktrees/hg061-semantic-definitions/KineticLoop/src:/Users/davetian/.cache/uv/archive-v0/nnPNXkWpFSNRe9Ad:/Users/davetian/.cache/uv/archive-v0/X_H5kIMi_L692EPn"
+      }
+    }
+  },
+  "test_identity_verification": {
+    "validator": {
+      "collected": 167,
+      "started": 167,
+      "passed_calls": 167,
+      "passed_phases": 501,
+      "junit_cases": 167,
+      "worker_collections": 1,
+      "nodeids_sha256": "3a1d124a136ca7fc57643a8bd0351f8daa45861b362c7eb8c0725dd318b8bd10"
+    },
+    "unit": {
+      "collected": 247,
+      "started": 247,
+      "passed_calls": 247,
+      "passed_phases": 741,
+      "junit_cases": 247,
+      "worker_collections": 1,
+      "nodeids_sha256": "56b899af5f42258cc7d61015e5119cfcf94dac04f93e8db54734c1ad4d7569e7"
+    },
+    "harness": {
+      "collected": 1776,
+      "started": 1776,
+      "passed_calls": 1776,
+      "passed_phases": 5328,
+      "junit_cases": 1776,
+      "worker_collections": 2,
+      "nodeids_sha256": "c85437159549616b1e700817de57218613b35d3486b585addadd06fa0d9d4422"
+    }
+  },
+  "lossless_envelopes": [
+    {
+      "path": "docs/exec-plans/evidence/HG-061/checks-de3d4d3427b9/definitions.json",
+      "envelope_sha256": "6a1390cf5df2fe64a873d2dc7b108511a5a69549b8709566ae8ac37e767d8011",
+      "raw_sha256": "4d11652480975d44f8cc4d56fcee86791a0a09907202e7f525d5affb912a1020",
+      "raw_bytes": 1801,
+      "exit_code": 0,
+      "tested_commit": "de3d4d3427b975798bd7428bfdb3d952acfa6c5d"
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-061/checks-de3d4d3427b9/validator.json",
+      "envelope_sha256": "b067cc6b40ac38bec9aa50cc015e264fa4660c54a786903e8f08300484d2ea56",
+      "raw_sha256": "e0c914e68fd3cb2efb322a9061fd9172b806e2533781ff1acd8c748ef310ac39",
+      "raw_bytes": 355,
+      "exit_code": 0,
+      "tested_commit": "de3d4d3427b975798bd7428bfdb3d952acfa6c5d"
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-061/checks-de3d4d3427b9/validator-collection.log.json",
+      "envelope_sha256": "590503621499b0af53f20b75b67f34c5cc91f29b14822bf5f2b87adf23351e5b",
+      "raw_sha256": "972e535e7638d9c639db6a678716057ea66a457bd800a6a47b1d8de6ecb2c5e9",
+      "raw_bytes": 17550,
+      "exit_code": 0,
+      "tested_commit": "de3d4d3427b975798bd7428bfdb3d952acfa6c5d"
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-061/checks-de3d4d3427b9/validator-collection.json.json",
+      "envelope_sha256": "81cade633f0e898f9a6ca48d340a485fa74b08a8aa80939a343bbddbcd856f90",
+      "raw_sha256": "18e63e629977382edfa43886c4976e8702c0f2d5f69fd06ad136616cb1caf8e5",
+      "raw_bytes": 19139,
+      "exit_code": 0,
+      "tested_commit": "de3d4d3427b975798bd7428bfdb3d952acfa6c5d"
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-061/checks-de3d4d3427b9/validator-execution.json.json",
+      "envelope_sha256": "a527e9aadf3601a9f751ffbd1fe47c93627fbf3190df571f517f5ed3e0605c27",
+      "raw_sha256": "6914374ccb83e4870b492193e486ed4067bd6844a78ab9744bc5ae23c80e108f",
+      "raw_bytes": 164889,
+      "exit_code": 0,
+      "tested_commit": "de3d4d3427b975798bd7428bfdb3d952acfa6c5d"
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-061/checks-de3d4d3427b9/validator-junit.xml.json",
+      "envelope_sha256": "24506cbc5f62118cea08d21f5bc6402c9f6c61a710d916358607a886b6bb61dc",
+      "raw_sha256": "77a0fcd75f403df172c9cbc2fee1741f2b3125df8711aacee15e69e0dfc10055",
+      "raw_bytes": 24303,
+      "exit_code": 0,
+      "tested_commit": "de3d4d3427b975798bd7428bfdb3d952acfa6c5d"
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-061/checks-de3d4d3427b9/unit.json",
+      "envelope_sha256": "1fc1a2fde9202486c32042ee275c9c127134ae6f8cd3d00038a44f6c4a3936a7",
+      "raw_sha256": "aa7b5d10b7c394d2f16a9d50f15943b28ba35c8f161a28669e6e8fd3e4edbcb7",
+      "raw_bytes": 433,
+      "exit_code": 0,
+      "tested_commit": "de3d4d3427b975798bd7428bfdb3d952acfa6c5d"
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-061/checks-de3d4d3427b9/unit-collection.log.json",
+      "envelope_sha256": "84585e41d66ce46d449308f5bf8d718c2f49b5bc1ba9f0e9ca76836782743feb",
+      "raw_sha256": "1e9c8ff393979c35f5b49c59f3590232aa4ef480d49e90ccd603cd7708f3dce5",
+      "raw_bytes": 24068,
+      "exit_code": 0,
+      "tested_commit": "de3d4d3427b975798bd7428bfdb3d952acfa6c5d"
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-061/checks-de3d4d3427b9/unit-collection.json.json",
+      "envelope_sha256": "a50e11dd3d5c1fce174c47e0d33305e73c32f79fd9ca8039190297bbb201839f",
+      "raw_sha256": "aa44ef95cbd9dfea6a741f359cb2c8884c51e7d9c1909eed35d63d526de16280",
+      "raw_bytes": 26433,
+      "exit_code": 0,
+      "tested_commit": "de3d4d3427b975798bd7428bfdb3d952acfa6c5d"
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-061/checks-de3d4d3427b9/unit-execution.json.json",
+      "envelope_sha256": "0ac56a1bf8ae6ed5f7a0858890d96f0ab9fe64bd1c5d3ec6c2370b589e1af23f",
+      "raw_sha256": "4ea96cf2a0b17e4376f910465925d21b1efb8dea61d52ff7e9b47f906ab7cbf3",
+      "raw_bytes": 235713,
+      "exit_code": 0,
+      "tested_commit": "de3d4d3427b975798bd7428bfdb3d952acfa6c5d"
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-061/checks-de3d4d3427b9/unit-junit.xml.json",
+      "envelope_sha256": "e2a52d051696b07f7461de446668bab5835f7a7bab968757cb4f1a4255a260a5",
+      "raw_sha256": "22e8b91a2beb7d31ce23ddd72a1101730e0a75393ae3e785c8f05fabe66aff5f",
+      "raw_bytes": 34550,
+      "exit_code": 0,
+      "tested_commit": "de3d4d3427b975798bd7428bfdb3d952acfa6c5d"
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-061/checks-de3d4d3427b9/harness.json",
+      "envelope_sha256": "93e1dfd108e8e1d6f8868e8eba672621126d19c2824434cbe886f58c412fd5b9",
+      "raw_sha256": "ba5932fe779087d9377f254c3a7eb1022a7f420d867a9a8c21f1476d77b0d878",
+      "raw_bytes": 2179,
+      "exit_code": 0,
+      "tested_commit": "de3d4d3427b975798bd7428bfdb3d952acfa6c5d"
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-061/checks-de3d4d3427b9/harness-collection.json.json",
+      "envelope_sha256": "deb8657ddecb01571ec13a1b4e27a896f9ddf400a6bd1759b9ac4d2243052fee",
+      "raw_sha256": "fc9ea86ec1ce02fe4c9474a9e776b6d23034c531190d30dbeaf149fc0f5aa829",
+      "raw_bytes": 3354637,
+      "exit_code": 0,
+      "tested_commit": "de3d4d3427b975798bd7428bfdb3d952acfa6c5d"
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-061/checks-de3d4d3427b9/harness-collection.log.json",
+      "envelope_sha256": "f1180e49a22e8da0d7807afcd38f8fc57e8fea9f42d0fcaae0c3edb3699f4485",
+      "raw_sha256": "951ee9babfa2ea60db3bebcd12dd28d8f19b34362690ace7d3c6a52c8fad6eb1",
+      "raw_bytes": 1216,
+      "exit_code": 0,
+      "tested_commit": "de3d4d3427b975798bd7428bfdb3d952acfa6c5d"
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-061/checks-de3d4d3427b9/harness-execution.json.json",
+      "envelope_sha256": "bc08ce6b3ad57d03ee6279d6c866434a4f6e633df980a347214a2d0a190c6b1a",
+      "raw_sha256": "93a7aa544540126fab27f4f55ac95bf1cd12b1f5a0eb2ad03781bb9d398e1b94",
+      "raw_bytes": 20854283,
+      "exit_code": 0,
+      "tested_commit": "de3d4d3427b975798bd7428bfdb3d952acfa6c5d"
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-061/checks-de3d4d3427b9/harness-junit.xml.json",
+      "envelope_sha256": "10330ccaf9f515caee5540ebe7f52408f8618facdd1fe68450d026812b229d10",
+      "raw_sha256": "5c71a5ec79f548ac410a6b233049ec7fbd0061b3af5852dcb33ea261180dd76a",
+      "raw_bytes": 3586104,
+      "exit_code": 0,
+      "tested_commit": "de3d4d3427b975798bd7428bfdb3d952acfa6c5d"
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-061/checks-de3d4d3427b9/harness-manifest.json.json",
+      "envelope_sha256": "63156692beb10a74b800254978c857830995b8937d750c2b7a4f6d6dabb9a138",
+      "raw_sha256": "c48f33befd0c8aef903a53eff0ea646d69be206bb1547566e81938cf4a8d2362",
+      "raw_bytes": 2132,
+      "exit_code": 0,
+      "tested_commit": "de3d4d3427b975798bd7428bfdb3d952acfa6c5d"
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-061/checks-de3d4d3427b9/harness-pytest.log.json",
+      "envelope_sha256": "54a97e4d5a6f1ca265722ec70a2ade6880dababe375aface77ed4f4c02b5eadb",
+      "raw_sha256": "ba5932fe779087d9377f254c3a7eb1022a7f420d867a9a8c21f1476d77b0d878",
+      "raw_bytes": 2179,
+      "exit_code": 0,
+      "tested_commit": "de3d4d3427b975798bd7428bfdb3d952acfa6c5d"
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-061/checks-de3d4d3427b9/lint.json",
+      "envelope_sha256": "8604c0674e509cf152774bee370ab7f814f546f18576aa341c2f16283efece33",
+      "raw_sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "raw_bytes": 19,
+      "exit_code": 0,
+      "tested_commit": "de3d4d3427b975798bd7428bfdb3d952acfa6c5d"
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-061/checks-de3d4d3427b9/typecheck.json",
+      "envelope_sha256": "3f8bde78807c704342d1db30d3764514263ff8b41586a24c0488218f4442a351",
+      "raw_sha256": "bad84ae458ed0b1339e9ee07060b39569951bea401de790a17ecace58d345afb",
+      "raw_bytes": 45,
+      "exit_code": 0,
+      "tested_commit": "de3d4d3427b975798bd7428bfdb3d952acfa6c5d"
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-061/checks-de3d4d3427b9/authority.json",
+      "envelope_sha256": "3471eca459d4c36e774cdf594e53d4cd07a60b47e6ca6419de76160844ea180a",
+      "raw_sha256": "575c27614271c1c49c6a8e1968a2a6c79b664c9c880dde43ec8113846e575f94",
+      "raw_bytes": 38,
+      "exit_code": 0,
+      "tested_commit": "de3d4d3427b975798bd7428bfdb3d952acfa6c5d"
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-061/checks-de3d4d3427b9/diff.json",
+      "envelope_sha256": "b1ac1c713d4c5a45d18b3d2dbfa91c655936dea8c9934ffc38a2794b6f1e6386",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "raw_bytes": 0,
+      "exit_code": 0,
+      "tested_commit": "de3d4d3427b975798bd7428bfdb3d952acfa6c5d"
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-061/superseded-078adf6c365a/definitions-command.json.json",
+      "envelope_sha256": "99218906976649643d5362e0513c1ab94cda6a043f782ebc49944a9053334e57",
+      "raw_sha256": "485fc0ace342c31230f6bbc71e698e10f119de246fdebb1bd109caba6946ba42",
+      "raw_bytes": 1098,
+      "exit_code": 1,
+      "tested_commit": "078adf6c365a79b28159a75c6fcc801af3ab8427"
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-061/superseded-078adf6c365a/definitions.log.json",
+      "envelope_sha256": "66c5013524ffe178333d1a2af02fbe0235721565fc1f8891fb19bb7382b97b29",
+      "raw_sha256": "9dd95a1e83f8621d1fe6294e345758c78bf2b29aebaedd533192a27f840cf111",
+      "raw_bytes": 463,
+      "exit_code": 1,
+      "tested_commit": "078adf6c365a79b28159a75c6fcc801af3ab8427"
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-061/superseded-de3d4d3427b9-harness-preflight/collection.log.json",
+      "envelope_sha256": "be2b8d83c429ddbda630d82188384e73a415b81d1963d3045ee25208052318c7",
+      "raw_sha256": "428195284746036091d19002d5418f00ad78e06bf8f7c8cafb5cd529d84572c5",
+      "raw_bytes": 301,
+      "exit_code": 4,
+      "tested_commit": "de3d4d3427b975798bd7428bfdb3d952acfa6c5d"
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-061/superseded-de3d4d3427b9-harness-preflight/harness-command.json.json",
+      "envelope_sha256": "32ce0b661b3dc20948286bb036b1fff95095ff53c1812c35ef3085dee833b86a",
+      "raw_sha256": "7cfbd194a75d0008769a20540ce45cc11583ed5726e531fd293ed3a50d2b653e",
+      "raw_bytes": 1038,
+      "exit_code": 4,
+      "tested_commit": "de3d4d3427b975798bd7428bfdb3d952acfa6c5d"
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-061/superseded-de3d4d3427b9-harness-preflight/harness.log.json",
+      "envelope_sha256": "83ba836d49b51a69f984749724b798dad08777317c0cbcef1995c729400124fa",
+      "raw_sha256": "428195284746036091d19002d5418f00ad78e06bf8f7c8cafb5cd529d84572c5",
+      "raw_bytes": 301,
+      "exit_code": 4,
+      "tested_commit": "de3d4d3427b975798bd7428bfdb3d952acfa6c5d"
+    },
+    {
+      "path": "docs/exec-plans/evidence/HG-061/superseded-de3d4d3427b9-harness-preflight/manifest.json.json",
+      "envelope_sha256": "c2082cb15c8e098ebc0c15b9e2c1e4241c243cb9882fe350903a632c13ea81d8",
+      "raw_sha256": "0199fe2b6903bf9a924d080d77f3dd559852c7b869d747992ac1b3684a4c9160",
+      "raw_bytes": 678,
+      "exit_code": 4,
+      "tested_commit": "de3d4d3427b975798bd7428bfdb3d952acfa6c5d"
+    }
+  ],
+  "preserved_failed_attempts": {
+    "superseded-078adf6c365a": {
+      "tested_commit": "078adf6c365a79b28159a75c6fcc801af3ab8427",
+      "definitions_exit_code": 1,
+      "reason": "Definition text phrase spans a line break; verifier literal assertion failed. Historical or runtime semantics did not execute.",
+      "unstarted_checks": [
+        "validator",
+        "unit",
+        "harness",
+        "lint",
+        "typecheck",
+        "authority",
+        "diff"
+      ],
+      "output_ref": "docs/exec-plans/evidence/HG-061/superseded-078adf6c365a/definitions.log.json",
+      "command_metadata_ref": "docs/exec-plans/evidence/HG-061/superseded-078adf6c365a/definitions-command.json.json"
+    },
+    "superseded-de3d4d3427b9-harness-preflight": {
+      "tested_commit": "de3d4d3427b975798bd7428bfdb3d952acfa6c5d",
+      "actual_harness_exit_code": 4,
+      "reason": "pytest-xdist code was present in supplied temporary dependency cache but .dist-info entry point metadata had been cleaned; -n was unavailable. Harness execution was unstarted after preflight failure.",
+      "retained_successful_same_T_checks": [
+        "definitions",
+        "validator",
+        "unit"
+      ],
+      "later_checks_unstarted_in_this_attempt": [
+        "lint",
+        "typecheck",
+        "authority",
+        "diff"
+      ],
+      "retry": "Same immutable T; existing intact user uv cache supplied xdist3.8.0 and execnet2.1.2 without installation. Exact separate retry command/environment retained in CHECK_INDEX."
+    }
+  },
+  "review_diff_check_observed_exit": 0,
+  "limits": "Review verifies recorded observations. No original HG044 source execution/import, test rerun, DB/App/controller/install/admission/PR/merge occurred; root gates remain NOT_RUN/unclaimed."
+}
