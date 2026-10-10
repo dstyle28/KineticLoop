@@ -1,7 +1,7 @@
 change_identity: harness-governance-v0.1/HG-062
 display_change_id: HG-062
 base_commit: 4e9c60a242d84b81b6e82b635da6c7227af68912
-tested_commit: f8839c3ad1598d8a6e9cd68a33f95ba8019ff67e
+tested_commit: 215ad2778090e45248a10ca83bc0efac7809ada5
 change_status: PASS
 summary: HG062 definitions-only unverified historical documentary forms and HG058 prospective refinement. All eight
   fresh author checks pass at exact T with positive identity equality; original historical semantics, producer execution
@@ -26,11 +26,38 @@ files_changed:
 - docs/exec-plans/evidence/HG-062/PREPARATION_CHECKS.json
 - docs/exec-plans/evidence/HG-062/PREPARATION_CHECKS_R3.json
 - docs/exec-plans/evidence/HG-062/PRE_T_PROBES.json
+- docs/exec-plans/evidence/HG-062/R1_CORRECTION_AUDIT.json
 - docs/exec-plans/evidence/HG-062/REFINEMENTS.md
 - docs/exec-plans/evidence/HG-062/REVIEW_INPUTS.json
 - docs/exec-plans/evidence/HG-062/RULE_PROPOSAL.md
 - docs/exec-plans/evidence/HG-062/SECURITY_REVIEW_R3.md
 - docs/exec-plans/evidence/HG-062/capture_result.py
+- docs/exec-plans/evidence/HG-062/checks-215ad2778090/03cbb09d08f471ab87101b3b623da61e9881b840399efd6570dc37a6d0bf10ac.gz
+- docs/exec-plans/evidence/HG-062/checks-215ad2778090/1b4288f5f4ffbb1187968b915d4f486fb5150b4e5ee2c3d7451b76f0116ec8a9.gz
+- docs/exec-plans/evidence/HG-062/checks-215ad2778090/2b53c27751d8bf63a2ed02fe0359c887c2d223a9a0c99a8ae2eb4e038786664b.gz
+- docs/exec-plans/evidence/HG-062/checks-215ad2778090/36f466fe68861c454a13e138d8679676949010c381a13ad2b23d32da578c9343.gz
+- docs/exec-plans/evidence/HG-062/checks-215ad2778090/48daf3b19ae30958675266e58f24a0f20b226ef9291d8e4ea384001558149cb2.gz
+- docs/exec-plans/evidence/HG-062/checks-215ad2778090/8e0a23ac4534d74f8cfbd152ea026840c2ffc5866e3176f1e0fb2c229ed64020.gz
+- docs/exec-plans/evidence/HG-062/checks-215ad2778090/CHECK_INDEX.json
+- docs/exec-plans/evidence/HG-062/checks-215ad2778090/b19b134429f9bb3b0483a74f634fa1998165b71b222b753f4443c63fe3a738c4.gz
+- docs/exec-plans/evidence/HG-062/checks-215ad2778090/b430d373169276d57ce24b3d5a4852ede06e1bb46daa890448ca2c508c63c653.gz
+- docs/exec-plans/evidence/HG-062/checks-215ad2778090/da89d145a8c33077ff8b5b71311fe46af21666d87eba34853d42cb05aff65546.gz
+- docs/exec-plans/evidence/HG-062/checks-215ad2778090/definitions.json
+- docs/exec-plans/evidence/HG-062/checks-215ad2778090/f5fb345c16e7d6fce9e2ca1b7fb49a2e583b15e584991731ab223f85391f29f4.gz
+- docs/exec-plans/evidence/HG-062/checks-215ad2778090/f9511003cbce380841dbc530195257394f722da8bfbe416ffd09ebb038a4d484.gz
+- docs/exec-plans/evidence/HG-062/checks-215ad2778090/fb6916710f9cd3d38177400aa90b7194a9249c1843099c288583c0299300503b.gz
+- docs/exec-plans/evidence/HG-062/checks-215ad2778090/harness-execution.json.json
+- docs/exec-plans/evidence/HG-062/checks-215ad2778090/harness-junit.xml.json
+- docs/exec-plans/evidence/HG-062/checks-215ad2778090/harness-manifest.json.json
+- docs/exec-plans/evidence/HG-062/checks-215ad2778090/harness-pytest.log.json
+- docs/exec-plans/evidence/HG-062/checks-215ad2778090/harness.json
+- docs/exec-plans/evidence/HG-062/checks-215ad2778090/unit-collection.log.json
+- docs/exec-plans/evidence/HG-062/checks-215ad2778090/unit-execution.json.json
+- docs/exec-plans/evidence/HG-062/checks-215ad2778090/unit-junit.xml.json
+- docs/exec-plans/evidence/HG-062/checks-215ad2778090/unit.json
+- docs/exec-plans/evidence/HG-062/checks-215ad2778090/validator-execution.json.json
+- docs/exec-plans/evidence/HG-062/checks-215ad2778090/validator-junit.xml.json
+- docs/exec-plans/evidence/HG-062/checks-215ad2778090/validator.json
 - docs/exec-plans/evidence/HG-062/checks-f8839c3ad159/1d6d7927e7f7b2fbaab37bd62a5a5c4f857daf9719efe17df6656a8192fe8473.gz
 - docs/exec-plans/evidence/HG-062/checks-f8839c3ad159/1ed41a36365b6953a9d0c16bfa33d8c0c0a7399c39f3dd23e9925fa320e63cf6.gz
 - docs/exec-plans/evidence/HG-062/checks-f8839c3ad159/2c85d7de9282c55c1a87e4c5bab0b8aa23291126212c34c5b6e4686d211d74d3.gz
@@ -51,6 +78,10 @@ files_changed:
 - docs/exec-plans/evidence/HG-062/checks-f8839c3ad159/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855.gz
 - docs/exec-plans/evidence/HG-062/checks-f8839c3ad159/eb27cf057b903081be1ae57ecd87af85d69b55e15f6b285d8136cf575669d6c6.gz
 - docs/exec-plans/evidence/HG-062/checks-f8839c3ad159/ecf31bccd69ec5eb0d1a29bb55fac144b9ade2e7faff77d52074abc77d769674.gz
+- docs/exec-plans/evidence/HG-062/checks-f8839c3ad159/fresh-215ad2778090-authority.json
+- docs/exec-plans/evidence/HG-062/checks-f8839c3ad159/fresh-215ad2778090-diff.json
+- docs/exec-plans/evidence/HG-062/checks-f8839c3ad159/fresh-215ad2778090-lint.json
+- docs/exec-plans/evidence/HG-062/checks-f8839c3ad159/fresh-215ad2778090-typecheck.json
 - docs/exec-plans/evidence/HG-062/checks-f8839c3ad159/harness-execution.json.json
 - docs/exec-plans/evidence/HG-062/checks-f8839c3ad159/harness-junit.xml.json
 - docs/exec-plans/evidence/HG-062/checks-f8839c3ad159/harness-manifest.json.json
@@ -76,6 +107,8 @@ files_changed:
 - docs/exec-plans/evidence/HG-062/invalidated-a4f823f92911/ce0db61ffc0a6aed307229437fe6dd26c0f3f5cedc60600c59c1d3e5032d840f.gz
 - docs/exec-plans/evidence/HG-062/invalidated-a4f823f92911/definitions-command.json.json
 - docs/exec-plans/evidence/HG-062/invalidated-a4f823f92911/definitions.log.json
+- docs/exec-plans/evidence/HG-062/invalidated-a4f823f92911/fresh-215ad2778090-validator-collection.json.json
+- docs/exec-plans/evidence/HG-062/invalidated-a4f823f92911/fresh-215ad2778090-validator-collection.log.json
 - docs/exec-plans/evidence/HG-062/invalidated-a4f823f92911/fresh-f8839c3ad159-validator-collection.json.json
 - docs/exec-plans/evidence/HG-062/invalidated-a4f823f92911/fresh-f8839c3ad159-validator-collection.log.json
 - docs/exec-plans/evidence/HG-062/invalidated-a4f823f92911/invalidated-f54b7e3b3d22-validator-validator-collection.json.json
@@ -109,6 +142,9 @@ files_changed:
 - docs/exec-plans/evidence/HG-062/invalidated-f54b7e3b3d22/definitions-definitions-command.json.json
 - docs/exec-plans/evidence/HG-062/invalidated-f54b7e3b3d22/definitions-definitions.log.json
 - docs/exec-plans/evidence/HG-062/invalidated-f54b7e3b3d22/ffa2bed3ebcdc2199ae61c2642f2d22a982001e7a8882724468b05ba7201df76.gz
+- docs/exec-plans/evidence/HG-062/invalidated-f54b7e3b3d22/fresh-215ad2778090-harness-collection.json.json
+- docs/exec-plans/evidence/HG-062/invalidated-f54b7e3b3d22/fresh-215ad2778090-harness-collection.log.json
+- docs/exec-plans/evidence/HG-062/invalidated-f54b7e3b3d22/fresh-215ad2778090-unit-collection.json.json
 - docs/exec-plans/evidence/HG-062/invalidated-f54b7e3b3d22/fresh-f8839c3ad159-harness-collection.json.json
 - docs/exec-plans/evidence/HG-062/invalidated-f54b7e3b3d22/fresh-f8839c3ad159-harness-collection.log.json
 - docs/exec-plans/evidence/HG-062/invalidated-f54b7e3b3d22/fresh-f8839c3ad159-unit-collection.json.json
@@ -134,46 +170,58 @@ files_changed:
 - docs/exec-plans/evidence/HG-062/verify_definitions.py
 - docs/exec-plans/evidence/HG-062/verify_preparation.py
 - docs/exec-plans/governance/HG-062.yaml
+- docs/exec-plans/reviews/HG-062/GENERAL.json
+- docs/exec-plans/reviews/HG-062/SECURITY_DATA_BOUNDARY.json
+- docs/exec-plans/reviews/HG-062/general_r1/COMMAND.json
+- docs/exec-plans/reviews/HG-062/general_r1/HASHES.json
+- docs/exec-plans/reviews/HG-062/general_r1/assessment.md
+- docs/exec-plans/reviews/HG-062/general_r1/definitions_recheck.json
+- docs/exec-plans/reviews/HG-062/general_r1/hg047_boundary.json
+- docs/exec-plans/reviews/HG-062/general_r1/verification.json
+- docs/exec-plans/reviews/HG-062/security_r1/assessment.md
+- docs/exec-plans/reviews/HG-062/security_r1/commands.json
+- docs/exec-plans/reviews/HG-062/security_r1/evidence-verification.json
+- docs/exec-plans/reviews/HG-062/security_r1/probe-output.json
 - docs/harness/HARNESS_GOVERNANCE_CONTRACT.md
 - tests/harness/test_validator.py
 - tools/harness/validate_harness.py
 checks_run:
 - check_id: definitions
   command: /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python docs/exec-plans/evidence/HG-062/verify_definitions.py
-    --base 4e9c60a242d84b81b6e82b635da6c7227af68912 --tested f8839c3ad1598d8a6e9cd68a33f95ba8019ff67e
+    --base 4e9c60a242d84b81b6e82b635da6c7227af68912 --tested 215ad2778090e45248a10ca83bc0efac7809ada5
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-062/checks-f8839c3ad159/definitions.json
+  evidence_ref: docs/exec-plans/evidence/HG-062/checks-215ad2778090/definitions.json
 - check_id: validator
   command: /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m pytest tests/harness/test_validator.py
-    -q -p tools.harness.parallel_observer --junitxml=/private/tmp/hg062-author-f8839c3ad159/validator-junit.xml
+    -q -p tools.harness.parallel_observer --junitxml=/private/tmp/hg062-author-215ad2778090/validator-junit.xml
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-062/checks-f8839c3ad159/validator.json
+  evidence_ref: docs/exec-plans/evidence/HG-062/checks-215ad2778090/validator.json
 - check_id: unit
   command: /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli test-unit -q -p tools.harness.parallel_observer
-    --junitxml=/private/tmp/hg062-author-f8839c3ad159/unit-junit.xml
+    --junitxml=/private/tmp/hg062-author-215ad2778090/unit-junit.xml
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-062/checks-f8839c3ad159/unit.json
+  evidence_ref: docs/exec-plans/evidence/HG-062/checks-215ad2778090/unit.json
 - check_id: harness
   command: /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli test-harness --workers
-    2 --evidence-dir /private/tmp/hg062-author-f8839c3ad159/harness-run -q
+    2 --evidence-dir /private/tmp/hg062-author-215ad2778090/harness-run -q
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-062/checks-f8839c3ad159/harness.json
+  evidence_ref: docs/exec-plans/evidence/HG-062/checks-215ad2778090/harness.json
 - check_id: lint
   command: /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli lint
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-062/checks-f8839c3ad159/lint.json
+  evidence_ref: docs/exec-plans/evidence/HG-062/checks-f8839c3ad159/fresh-215ad2778090-lint.json
 - check_id: typecheck
   command: /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli typecheck
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-062/checks-f8839c3ad159/typecheck.json
+  evidence_ref: docs/exec-plans/evidence/HG-062/checks-f8839c3ad159/fresh-215ad2778090-typecheck.json
 - check_id: authority
   command: /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli check-harness
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-062/checks-f8839c3ad159/authority.json
+  evidence_ref: docs/exec-plans/evidence/HG-062/checks-f8839c3ad159/fresh-215ad2778090-authority.json
 - check_id: diff
-  command: git diff --check 4e9c60a242d84b81b6e82b635da6c7227af68912 f8839c3ad1598d8a6e9cd68a33f95ba8019ff67e
+  command: git diff --check 4e9c60a242d84b81b6e82b635da6c7227af68912 215ad2778090e45248a10ca83bc0efac7809ada5
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-062/checks-f8839c3ad159/diff.json
+  evidence_ref: docs/exec-plans/evidence/HG-062/checks-f8839c3ad159/fresh-215ad2778090-diff.json
 frozen_impact: NONE
 authority_entries_added: []
 known_limitations:
@@ -183,8 +231,8 @@ known_limitations:
   SAME HG058 after actual normal HG062 merge and coordinator regrant.
 - All eight checks ran freshly at exact tested_commit. CHECK_INDEX records actual argv/environment/exits and complete
   positive collection/execution/JUnit identity equality. No research advisory or historical execution is reused.
-- Manifest, index and helpers are frozen at T. Own mutable result is not registered in the manifest. T-to-R adds
-  only this result and new own evidence; unchanged suffix validation remains required.
+- Manifest, index and helpers are frozen at T. Own mutable result is not registered in the manifest. T-to-R updates
+  only this own result and adds new own evidence; unchanged suffix validation remains required.
 - GENERAL and SECURITY_DATA_BOUNDARY independent actual-R reviews are pending, as are final audits, installed-bundle
   review/install, exact admission, App/unit/harness/fullDB/cleanup, hosted gates and normal protected merge.
 - HG058 remains frozen3965; original auditbase9700/live-base distinction, source/map/failure history, eight tuples/four
@@ -197,5 +245,10 @@ known_limitations:
   fixture gap. Its definitions/validator170/unit247 exits0 and intentionally interrupted harness exit2 after1103
   passes, including incomplete identity diagnostics, remain in invalidated-f54b7e3b3d22/PRESERVATION.json and ancestry.
   No prior execution is reused.
+- Original R cf203ab10c1e5979fb2f414211d42c48d7f95795 and all eight author checks remain in ancestry/evidence. Actual
+  R1 GENERAL PASS and SECURITY_DATA_BOUNDARY CHANGES_REQUIRED are preserved under own reviews. The correction rejects
+  bound original parent contradictions and requires role-specific component reference/command linkage, including
+  the comparison benchmark conjunction. Prior GENERAL PASS is stale for this new R; both fresh reviews are required.
+  No old check execution supplies current acceptance.
 - No product or requirement status is promoted. packets_refined stays empty under existing KL-only schema; summary/files
   identify HG058 refinement.
