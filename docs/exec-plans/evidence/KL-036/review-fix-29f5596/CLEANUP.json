@@ -1,0 +1,288 @@
+{
+  "task_identity": "harness-backlog-v0.2/KL-036",
+  "tested_commit": "29f55969abc9dfb74ca3b107b5c68ca4717ee348",
+  "status": "FAIL",
+  "exit_code": 1,
+  "observed_tests": "6 passed, 1 failed, 1 teardown error",
+  "reason": "Immutable receipt mapping could not be pickled at spawn; premature child tracking caused teardown join assertion before namespace destruction.",
+  "manual_cleanup": "Exact validated WorkerLifecycle.destroy on own 29f5596 namespace, after the failed suite exited.",
+  "owned_namespace": "kineticloop-kl036-29f5596-17e8ad78fba3",
+  "owned_children_gone": [
+    21966,
+    21967,
+    21968,
+    21978,
+    21983,
+    21984,
+    21985,
+    21988,
+    21998,
+    21999,
+    22011,
+    22016,
+    22020,
+    22021,
+    22026,
+    22029,
+    22030
+  ],
+  "foreign_inventory_unchanged": true,
+  "after_inventory": {
+    "containers": [
+      [
+        "23aec1c45a7f",
+        "kl_3ab0_f5f2ea859c7e-postgres-1",
+        "com.docker.compose.config-hash=041d08ceae91ad46fb359c1fcac01d6390a40a8f99e3e41e6c4e1da06a880686,com.docker.compose.container-number=1,com.docker.compose.depends_on=,com.docker.compose.image=sha256:8c01ea8c847ffcc2bf748640891796b98426cb1b45e81be72c57fd81675e3d7d,com.docker.compose.oneoff=False,com.docker.compose.project.config_files=/Users/davetian/.codex/worktrees/3ab0/KineticLoop/compose.yaml,com.docker.compose.project.working_dir=/Users/davetian/.codex/worktrees/3ab0/KineticLoop,com.docker.compose.project=kl_3ab0_f5f2ea859c7e,com.docker.compose.service=postgres,com.docker.compose.version=5.5.1,desktop.docker.io/ports.scheme=v2,desktop.docker.io/ports/5432/tcp=127.0.0.1:0"
+      ],
+      [
+        "2c94d6200ae9",
+        "kineticloop-kl020-review-f0fe769-postgres-1",
+        "com.docker.compose.config-hash=041d08ceae91ad46fb359c1fcac01d6390a40a8f99e3e41e6c4e1da06a880686,com.docker.compose.container-number=1,com.docker.compose.depends_on=,com.docker.compose.image=sha256:8c01ea8c847ffcc2bf748640891796b98426cb1b45e81be72c57fd81675e3d7d,com.docker.compose.oneoff=False,com.docker.compose.project.config_files=/Users/davetian/.codex/worktrees/bd0a/KineticLoop/compose.yaml,com.docker.compose.project.working_dir=/Users/davetian/.codex/worktrees/bd0a/KineticLoop,com.docker.compose.project=kineticloop-kl020-review-f0fe769,com.docker.compose.service=postgres,com.docker.compose.version=5.5.1,desktop.docker.io/ports.scheme=v2,desktop.docker.io/ports/5432/tcp=127.0.0.1:0"
+      ],
+      [
+        "33cf0be69375",
+        "kineticloop-kl020-review-39adf29-postgres-1",
+        "com.docker.compose.config-hash=041d08ceae91ad46fb359c1fcac01d6390a40a8f99e3e41e6c4e1da06a880686,com.docker.compose.container-number=1,com.docker.compose.depends_on=,com.docker.compose.image=sha256:8c01ea8c847ffcc2bf748640891796b98426cb1b45e81be72c57fd81675e3d7d,com.docker.compose.oneoff=False,com.docker.compose.project.config_files=/Users/davetian/.codex/worktrees/bd0a/KineticLoop/compose.yaml,com.docker.compose.project.working_dir=/Users/davetian/.codex/worktrees/bd0a/KineticLoop,com.docker.compose.project=kineticloop-kl020-review-39adf29,com.docker.compose.service=postgres,com.docker.compose.version=5.5.1,desktop.docker.io/ports.scheme=v2,desktop.docker.io/ports/5432/tcp=127.0.0.1:0"
+      ],
+      [
+        "3c20c594e2e9",
+        "kineticloop-kl020-review2-39adf29-postgres-1",
+        "com.docker.compose.config-hash=041d08ceae91ad46fb359c1fcac01d6390a40a8f99e3e41e6c4e1da06a880686,com.docker.compose.container-number=1,com.docker.compose.depends_on=,com.docker.compose.image=sha256:8c01ea8c847ffcc2bf748640891796b98426cb1b45e81be72c57fd81675e3d7d,com.docker.compose.oneoff=False,com.docker.compose.project.config_files=/Users/davetian/.codex/worktrees/bd0a/KineticLoop/compose.yaml,com.docker.compose.project.working_dir=/Users/davetian/.codex/worktrees/bd0a/KineticLoop,com.docker.compose.project=kineticloop-kl020-review2-39adf29,com.docker.compose.service=postgres,com.docker.compose.version=5.5.1,desktop.docker.io/ports.scheme=v2,desktop.docker.io/ports/5432/tcp=127.0.0.1:0"
+      ],
+      [
+        "4062896b30b7",
+        "kl_kl015_96f2654cabc0-postgres-1",
+        "com.docker.compose.config-hash=041d08ceae91ad46fb359c1fcac01d6390a40a8f99e3e41e6c4e1da06a880686,com.docker.compose.container-number=1,com.docker.compose.depends_on=,com.docker.compose.image=sha256:8c01ea8c847ffcc2bf748640891796b98426cb1b45e81be72c57fd81675e3d7d,com.docker.compose.oneoff=False,com.docker.compose.project.config_files=/Users/davetian/.codex/worktrees/kl015/KineticLoop/compose.yaml,com.docker.compose.project.working_dir=/Users/davetian/.codex/worktrees/kl015/KineticLoop,com.docker.compose.project=kl_kl015_96f2654cabc0,com.docker.compose.service=postgres,com.docker.compose.version=5.5.1,desktop.docker.io/ports.scheme=v2,desktop.docker.io/ports/5432/tcp=127.0.0.1:0"
+      ],
+      [
+        "45234380c4dc",
+        "kl_79b4_88680adb7a9d-postgres-1",
+        "com.docker.compose.config-hash=041d08ceae91ad46fb359c1fcac01d6390a40a8f99e3e41e6c4e1da06a880686,com.docker.compose.container-number=1,com.docker.compose.depends_on=,com.docker.compose.image=sha256:8c01ea8c847ffcc2bf748640891796b98426cb1b45e81be72c57fd81675e3d7d,com.docker.compose.oneoff=False,com.docker.compose.project.config_files=/Users/davetian/.codex/worktrees/79b4/KineticLoop/compose.yaml,com.docker.compose.project.working_dir=/Users/davetian/.codex/worktrees/79b4/KineticLoop,com.docker.compose.project=kl_79b4_88680adb7a9d,com.docker.compose.service=postgres,com.docker.compose.version=5.5.1,desktop.docker.io/ports.scheme=v2,desktop.docker.io/ports/5432/tcp=127.0.0.1:0"
+      ],
+      [
+        "5eb274644597",
+        "kl_e94b_b59a7cbaf961-postgres-1",
+        "com.docker.compose.config-hash=041d08ceae91ad46fb359c1fcac01d6390a40a8f99e3e41e6c4e1da06a880686,com.docker.compose.container-number=1,com.docker.compose.depends_on=,com.docker.compose.image=sha256:8c01ea8c847ffcc2bf748640891796b98426cb1b45e81be72c57fd81675e3d7d,com.docker.compose.oneoff=False,com.docker.compose.project.config_files=/Users/davetian/.codex/worktrees/e94b/KineticLoop/compose.yaml,com.docker.compose.project.working_dir=/Users/davetian/.codex/worktrees/e94b/KineticLoop,com.docker.compose.project=kl_e94b_b59a7cbaf961,com.docker.compose.service=postgres,com.docker.compose.version=5.5.1,desktop.docker.io/ports.scheme=v2,desktop.docker.io/ports/5432/tcp=127.0.0.1:0"
+      ],
+      [
+        "6d97a96ce86e",
+        "kl_kl017_ad6af443f35f-postgres-1",
+        "com.docker.compose.config-hash=041d08ceae91ad46fb359c1fcac01d6390a40a8f99e3e41e6c4e1da06a880686,com.docker.compose.container-number=1,com.docker.compose.depends_on=,com.docker.compose.image=sha256:8c01ea8c847ffcc2bf748640891796b98426cb1b45e81be72c57fd81675e3d7d,com.docker.compose.oneoff=False,com.docker.compose.project.config_files=/Users/davetian/.codex/worktrees/kl017/KineticLoop/compose.yaml,com.docker.compose.project.working_dir=/Users/davetian/.codex/worktrees/kl017/KineticLoop,com.docker.compose.project=kl_kl017_ad6af443f35f,com.docker.compose.service=postgres,com.docker.compose.version=5.5.1,desktop.docker.io/ports.scheme=v2,desktop.docker.io/ports/5432/tcp=127.0.0.1:0"
+      ],
+      [
+        "7dbb799ce67b",
+        "kl_tmp_ce862d6bd17c-postgres-1",
+        "com.docker.compose.config-hash=041d08ceae91ad46fb359c1fcac01d6390a40a8f99e3e41e6c4e1da06a880686,com.docker.compose.container-number=1,com.docker.compose.depends_on=,com.docker.compose.image=sha256:8c01ea8c847ffcc2bf748640891796b98426cb1b45e81be72c57fd81675e3d7d,com.docker.compose.oneoff=False,com.docker.compose.project.config_files=/private/tmp/kl017-r5-db-review/compose.yaml,com.docker.compose.project.working_dir=/private/tmp/kl017-r5-db-review,com.docker.compose.project=kl_tmp_ce862d6bd17c,com.docker.compose.service=postgres,com.docker.compose.version=5.5.1,desktop.docker.io/ports.scheme=v2,desktop.docker.io/ports/5432/tcp=127.0.0.1:0"
+      ],
+      [
+        "c6be25413393",
+        "kl_tmp_85baf228f2f2-postgres-1",
+        "com.docker.compose.config-hash=041d08ceae91ad46fb359c1fcac01d6390a40a8f99e3e41e6c4e1da06a880686,com.docker.compose.container-number=1,com.docker.compose.depends_on=,com.docker.compose.image=sha256:8c01ea8c847ffcc2bf748640891796b98426cb1b45e81be72c57fd81675e3d7d,com.docker.compose.oneoff=False,com.docker.compose.project.config_files=/private/tmp/kl017-protocol-r5/compose.yaml,com.docker.compose.project.working_dir=/private/tmp/kl017-protocol-r5,com.docker.compose.project=kl_tmp_85baf228f2f2,com.docker.compose.service=postgres,com.docker.compose.version=5.5.1,desktop.docker.io/ports.scheme=v2,desktop.docker.io/ports/5432/tcp=127.0.0.1:0"
+      ],
+      [
+        "cd24f056f504",
+        "kineticloop-kl020-rereview-f0fe769-postgres-1",
+        "com.docker.compose.config-hash=041d08ceae91ad46fb359c1fcac01d6390a40a8f99e3e41e6c4e1da06a880686,com.docker.compose.container-number=1,com.docker.compose.depends_on=,com.docker.compose.image=sha256:8c01ea8c847ffcc2bf748640891796b98426cb1b45e81be72c57fd81675e3d7d,com.docker.compose.oneoff=False,com.docker.compose.project.config_files=/Users/davetian/.codex/worktrees/bd0a/KineticLoop/compose.yaml,com.docker.compose.project.working_dir=/Users/davetian/.codex/worktrees/bd0a/KineticLoop,com.docker.compose.project=kineticloop-kl020-rereview-f0fe769,com.docker.compose.service=postgres,com.docker.compose.version=5.5.1,desktop.docker.io/ports.scheme=v2,desktop.docker.io/ports/5432/tcp=127.0.0.1:0"
+      ],
+      [
+        "d540f5d7de6c",
+        "kl_4242_ddb0877b4b60-postgres-1",
+        "com.docker.compose.config-hash=041d08ceae91ad46fb359c1fcac01d6390a40a8f99e3e41e6c4e1da06a880686,com.docker.compose.container-number=1,com.docker.compose.depends_on=,com.docker.compose.image=sha256:8c01ea8c847ffcc2bf748640891796b98426cb1b45e81be72c57fd81675e3d7d,com.docker.compose.oneoff=False,com.docker.compose.project.config_files=/Users/davetian/.codex/worktrees/4242/KineticLoop/compose.yaml,com.docker.compose.project.working_dir=/Users/davetian/.codex/worktrees/4242/KineticLoop,com.docker.compose.project=kl_4242_ddb0877b4b60,com.docker.compose.service=postgres,com.docker.compose.version=5.5.1,desktop.docker.io/ports.scheme=v2,desktop.docker.io/ports/5432/tcp=127.0.0.1:0"
+      ],
+      [
+        "ddfee96f14d2",
+        "kl_tmp_b938a1ae92a8-postgres-1",
+        "com.docker.compose.config-hash=041d08ceae91ad46fb359c1fcac01d6390a40a8f99e3e41e6c4e1da06a880686,com.docker.compose.container-number=1,com.docker.compose.depends_on=,com.docker.compose.image=sha256:8c01ea8c847ffcc2bf748640891796b98426cb1b45e81be72c57fd81675e3d7d,com.docker.compose.oneoff=False,com.docker.compose.project.config_files=/private/tmp/kl017-general-r5-export/compose.yaml,com.docker.compose.project.working_dir=/private/tmp/kl017-general-r5-export,com.docker.compose.project=kl_tmp_b938a1ae92a8,com.docker.compose.service=postgres,com.docker.compose.version=5.5.1,desktop.docker.io/ports.scheme=v2,desktop.docker.io/ports/5432/tcp=127.0.0.1:0"
+      ],
+      [
+        "f4c44e4d9364",
+        "kl_bd0a_6c4341f7f05e-postgres-1",
+        "com.docker.compose.config-hash=041d08ceae91ad46fb359c1fcac01d6390a40a8f99e3e41e6c4e1da06a880686,com.docker.compose.container-number=1,com.docker.compose.depends_on=,com.docker.compose.image=sha256:8c01ea8c847ffcc2bf748640891796b98426cb1b45e81be72c57fd81675e3d7d,com.docker.compose.oneoff=False,com.docker.compose.project.config_files=/Users/davetian/.codex/worktrees/bd0a/KineticLoop/compose.yaml,com.docker.compose.project.working_dir=/Users/davetian/.codex/worktrees/bd0a/KineticLoop,com.docker.compose.project=kl_bd0a_6c4341f7f05e,com.docker.compose.service=postgres,com.docker.compose.version=5.5.1,desktop.docker.io/ports.scheme=v2,desktop.docker.io/ports/5432/tcp=127.0.0.1:0"
+      ],
+      [
+        "fa2a986826d1",
+        "kl_dc62_b7d95cf49da3-postgres-1",
+        "com.docker.compose.config-hash=041d08ceae91ad46fb359c1fcac01d6390a40a8f99e3e41e6c4e1da06a880686,com.docker.compose.container-number=1,com.docker.compose.depends_on=,com.docker.compose.image=sha256:8c01ea8c847ffcc2bf748640891796b98426cb1b45e81be72c57fd81675e3d7d,com.docker.compose.oneoff=False,com.docker.compose.project.config_files=/Users/davetian/.codex/worktrees/dc62/KineticLoop/compose.yaml,com.docker.compose.project.working_dir=/Users/davetian/.codex/worktrees/dc62/KineticLoop,com.docker.compose.project=kl_dc62_b7d95cf49da3,com.docker.compose.service=postgres,com.docker.compose.version=5.5.1,desktop.docker.io/ports.scheme=v2,desktop.docker.io/ports/5432/tcp=127.0.0.1:0"
+      ]
+    ],
+    "projects": [
+      "kineticloop-kl020-rereview-f0fe769",
+      "kineticloop-kl020-review-39adf29",
+      "kineticloop-kl020-review-f0fe769",
+      "kineticloop-kl020-review2-39adf29",
+      "kl_3ab0_f5f2ea859c7e",
+      "kl_4242_ddb0877b4b60",
+      "kl_79b4_88680adb7a9d",
+      "kl_bd0a_6c4341f7f05e",
+      "kl_dc62_b7d95cf49da3",
+      "kl_e94b_b59a7cbaf961",
+      "kl_kl015_96f2654cabc0",
+      "kl_kl017_ad6af443f35f",
+      "kl_tmp_85baf228f2f2",
+      "kl_tmp_b938a1ae92a8",
+      "kl_tmp_ce862d6bd17c"
+    ],
+    "volumes": [
+      "kineticloop-kl020-rereview-f0fe769_postgres-data",
+      "kineticloop-kl020-review-39adf29_postgres-data",
+      "kineticloop-kl020-review-f0fe769_postgres-data",
+      "kineticloop-kl020-review2-39adf29_postgres-data",
+      "kl_2a8a_220eb9a2f7ab_postgres-data",
+      "kl_3334_ecce81ddcb00_postgres-data",
+      "kl_3ab0_f5f2ea859c7e_postgres-data",
+      "kl_4242_ddb0877b4b60_postgres-data",
+      "kl_4a3f_06190de7f88b_postgres-data",
+      "kl_79b4_88680adb7a9d_postgres-data",
+      "kl_a365_8ca5f7134a29_postgres-data",
+      "kl_bc91_c28f16de6c34_postgres-data",
+      "kl_bd0a_6c4341f7f05e_postgres-data",
+      "kl_c4af_da840ca66926_postgres-data",
+      "kl_dc62_b7d95cf49da3_postgres-data",
+      "kl_e44f_502d0a722547_postgres-data",
+      "kl_e94b_b59a7cbaf961_postgres-data",
+      "kl_fdd1_6fcdc1d4c83b_postgres-data",
+      "kl_kl013_general_git_8k_019b68d3d6c5_postgres-data",
+      "kl_kl015_96f2654cabc0_postgres-data",
+      "kl_kl016_db_review_khm5_564fdb045bbc_postgres-data",
+      "kl_kl016_db_review_sjgw_37faee0e4b53_postgres-data",
+      "kl_kl016_final_review_2_e855e9426235_postgres-data",
+      "kl_kl016_protocol_hl0xn_7cb6a394a6c4_postgres-data",
+      "kl_kl016_protocol_revie_2fe83277ca5a_postgres-data",
+      "kl_kl016_protocol_revie_55ced0a4bca3_postgres-data",
+      "kl_kl016_protocol_revie_93d17ceee046_postgres-data",
+      "kl_kl016_protocol_revie_9cb2fb4bf35a_postgres-data",
+      "kl_kl016_protocol_revie_d6a69220653d_postgres-data",
+      "kl_kl016_review_4eg2ia_1f82b053438a_postgres-data",
+      "kl_kl017_ad6af443f35f_postgres-data",
+      "kl_kl018_security_revie_71a1ba893577_postgres-data",
+      "kl_tmp_111066e368bd_postgres-data",
+      "kl_tmp_694c65199c16_postgres-data",
+      "kl_tmp_81526aab3bb9_postgres-data",
+      "kl_tmp_856a1e16bba9_postgres-data",
+      "kl_tmp_85baf228f2f2_postgres-data",
+      "kl_tmp_a181c916e8b7_postgres-data",
+      "kl_tmp_b938a1ae92a8_postgres-data",
+      "kl_tmp_ce862d6bd17c_postgres-data",
+      "kl_tmp_ddaaa93c1c85_postgres-data",
+      "kl_tmp_e5bf8ad16890_postgres-data",
+      "kl_tmp_ea5b23a4915c_postgres-data",
+      "kl_tmp_f17e1656791b_postgres-data",
+      "kl_tmp_f6bbd0de6532_postgres-data",
+      "kl_tmp_fcb231e1df5c_postgres-data",
+      "kl_tmp_fce7f0cc8b43_postgres-data"
+    ],
+    "networks": [
+      "0a61dfbae3c5 kl_tmp_ce862d6bd17c_default",
+      "154d5f3483ea kineticloop-kl020-review2-39adf29_default",
+      "20d7717e16e0 kl_79b4_88680adb7a9d_default",
+      "618da4f341d5 kl_e94b_b59a7cbaf961_default",
+      "6346b60f394a kl_tmp_85baf228f2f2_default",
+      "6d3a0dba381b kl_4242_ddb0877b4b60_default",
+      "7c1c5bbec1df bridge",
+      "8076be614ea6 kl_kl015_96f2654cabc0_default",
+      "8990a7802ba7 kl_kl017_ad6af443f35f_default",
+      "908c5c9291f8 kl_tmp_b938a1ae92a8_default",
+      "a04a66ea1e05 host",
+      "a33d026bcdd4 kl_dc62_b7d95cf49da3_default",
+      "b34870c74b3b kineticloop-kl020-rereview-f0fe769_default",
+      "b8879b28eefc kl_3ab0_f5f2ea859c7e_default",
+      "ba4ae9c2f885 kl_bd0a_6c4341f7f05e_default",
+      "c5568c6bf23d kineticloop-kl020-review-39adf29_default",
+      "e501ccd62fb8 none",
+      "f2245af50f86 kineticloop-kl020-review-f0fe769_default"
+    ],
+    "databases": {
+      "d540f5d7de6c": [
+        "kl_4242_ddb0877b4b60_test",
+        "postgres",
+        "template0",
+        "template1"
+      ],
+      "5eb274644597": [
+        "kl_e94b_b59a7cbaf961_test",
+        "postgres",
+        "template0",
+        "template1"
+      ],
+      "f4c44e4d9364": [
+        "kl_bd0a_6c4341f7f05e_test",
+        "postgres",
+        "template0",
+        "template1"
+      ],
+      "2c94d6200ae9": [
+        "kineticloop_kl020_review_f0fe769",
+        "postgres",
+        "template0",
+        "template1"
+      ],
+      "cd24f056f504": [
+        "kineticloop_kl020_rereview_f0fe769",
+        "postgres",
+        "template0",
+        "template1"
+      ],
+      "3c20c594e2e9": [
+        "kineticloop_kl020_review2_39adf29",
+        "postgres",
+        "template0",
+        "template1"
+      ],
+      "33cf0be69375": [
+        "kineticloop_kl020_review_39adf29",
+        "postgres",
+        "template0",
+        "template1"
+      ],
+      "fa2a986826d1": [
+        "kl_dc62_b7d95cf49da3_test",
+        "postgres",
+        "template0",
+        "template1"
+      ],
+      "45234380c4dc": [
+        "kl_79b4_88680adb7a9d_test",
+        "postgres",
+        "template0",
+        "template1"
+      ],
+      "23aec1c45a7f": [
+        "kl_3ab0_f5f2ea859c7e_test",
+        "postgres",
+        "template0",
+        "template1"
+      ],
+      "4062896b30b7": [
+        "kl_kl015_96f2654cabc0_test",
+        "postgres",
+        "template0",
+        "template1"
+      ],
+      "ddfee96f14d2": [
+        "kl_tmp_b938a1ae92a8_test",
+        "postgres",
+        "template0",
+        "template1"
+      ],
+      "c6be25413393": [
+        "kl_tmp_85baf228f2f2_test",
+        "postgres",
+        "template0",
+        "template1"
+      ],
+      "7dbb799ce67b": [
+        "kl_tmp_ce862d6bd17c_test",
+        "postgres",
+        "template0",
+        "template1"
+      ],
+      "6d97a96ce86e": [
+        "kl_kl017_ad6af443f35f_test",
+        "postgres",
+        "template0",
+        "template1"
+      ]
+    }
+  },
+  "eligibility": false
+}

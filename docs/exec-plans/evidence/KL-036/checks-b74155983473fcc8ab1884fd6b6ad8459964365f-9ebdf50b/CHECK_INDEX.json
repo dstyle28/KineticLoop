@@ -1,0 +1,104 @@
+{
+  "task_identity": "harness-backlog-v0.2/KL-036",
+  "tested_commit": "b74155983473fcc8ab1884fd6b6ad8459964365f",
+  "scratch": "/private/tmp/kl036-checks-b74155983473fcc8ab1884fd6b6ad8459964365f-9ebdf50b",
+  "runs": [
+    {
+      "check_id": "harness_regressions_pass",
+      "command": "uv run kl test-harness",
+      "tested_commit": "b74155983473fcc8ab1884fd6b6ad8459964365f",
+      "status": "FAIL",
+      "actual_argv": [
+        "uv",
+        "run",
+        "kl",
+        "test-harness",
+        "--evidence-dir",
+        "/private/tmp/kl036-checks-b74155983473fcc8ab1884fd6b6ad8459964365f-9ebdf50b/harness_regressions_pass/runner"
+      ],
+      "pytest_diagnostic_options": null,
+      "exit_code": 130,
+      "wall_seconds": 116.44479712494649,
+      "collected": 1492,
+      "executed": 1492,
+      "junit": 1492,
+      "artifacts": {
+        "execution.log": "docs/exec-plans/evidence/KL-036/checks-b74155983473fcc8ab1884fd6b6ad8459964365f-9ebdf50b/harness_regressions_pass-execution.log.json",
+        "runner/collection.json": "docs/exec-plans/evidence/KL-036/checks-f478248ffc9ea2f91b37cb356ae1facc76870414-42aff63e/b741559-normalized-checks-b74155983473fcc8ab1884fd6b6ad8459964365f-9ebdf50b-harness_regressions_pass-runner-collection.json.json",
+        "runner/collection.log": "docs/exec-plans/evidence/KL-036/checks-b74155983473fcc8ab1884fd6b6ad8459964365f-9ebdf50b/harness_regressions_pass-runner-collection.log.json",
+        "runner/execution.json": "docs/exec-plans/evidence/KL-036/checks-b74155983473fcc8ab1884fd6b6ad8459964365f-9ebdf50b/harness_regressions_pass-runner-execution.json.json",
+        "runner/junit.xml": "docs/exec-plans/evidence/KL-036/checks-b74155983473fcc8ab1884fd6b6ad8459964365f-9ebdf50b/harness_regressions_pass-runner-junit.xml.json",
+        "runner/manifest.json": "docs/exec-plans/evidence/KL-036/checks-b74155983473fcc8ab1884fd6b6ad8459964365f-9ebdf50b/harness_regressions_pass-runner-manifest.json.json",
+        "runner/pytest.log": "docs/exec-plans/evidence/KL-036/checks-b74155983473fcc8ab1884fd6b6ad8459964365f-9ebdf50b/harness_regressions_pass-runner-pytest.log.json"
+      },
+      "errors": [
+        "execution-failed",
+        "harness-runner-incomplete"
+      ]
+    },
+    {
+      "check_id": "worker_identity_namespace_pu",
+      "command": "uv run pytest -q tests/unit/workflow/test_worker_reaper.py::test_identity_and_namespace",
+      "tested_commit": "b74155983473fcc8ab1884fd6b6ad8459964365f",
+      "status": "PASS",
+      "collection_exit": 0,
+      "collection_command": "uv run pytest --collect-only -q tests/unit/workflow/test_worker_reaper.py::test_identity_and_namespace",
+      "actual_argv": [
+        "uv",
+        "run",
+        "pytest",
+        "-q",
+        "tests/unit/workflow/test_worker_reaper.py::test_identity_and_namespace"
+      ],
+      "pytest_diagnostic_options": "-p tools.harness.parallel_observer -s --junitxml=/private/tmp/kl036-checks-b74155983473fcc8ab1884fd6b6ad8459964365f-9ebdf50b/worker_identity_namespace_pu/junit.xml",
+      "exit_code": 0,
+      "wall_seconds": 0.48056412511505187,
+      "collected": 1,
+      "executed": 1,
+      "junit": 1,
+      "nodeids": [
+        "tests/unit/workflow/test_worker_reaper.py::test_identity_and_namespace"
+      ],
+      "artifacts": {
+        "collection.json": "docs/exec-plans/evidence/KL-036/checks-b74155983473fcc8ab1884fd6b6ad8459964365f-9ebdf50b/worker_identity_namespace_pu-collection.json.json",
+        "collection.log": "docs/exec-plans/evidence/KL-036/checks-b74155983473fcc8ab1884fd6b6ad8459964365f-9ebdf50b/worker_identity_namespace_pu-collection.log.json",
+        "execution.json": "docs/exec-plans/evidence/KL-036/checks-b74155983473fcc8ab1884fd6b6ad8459964365f-9ebdf50b/worker_identity_namespace_pu-execution.json.json",
+        "execution.log": "docs/exec-plans/evidence/KL-036/checks-b74155983473fcc8ab1884fd6b6ad8459964365f-9ebdf50b/worker_identity_namespace_pu-execution.log.json",
+        "junit.xml": "docs/exec-plans/evidence/KL-036/checks-b74155983473fcc8ab1884fd6b6ad8459964365f-9ebdf50b/worker_identity_namespace_pu-junit.xml.json"
+      },
+      "errors": []
+    },
+    {
+      "check_id": "worker_lease_deadline_pu",
+      "command": "uv run pytest -q tests/unit/workflow/test_worker_reaper.py::test_lease_and_deadline_boundaries",
+      "tested_commit": "b74155983473fcc8ab1884fd6b6ad8459964365f",
+      "status": "PASS",
+      "collection_exit": 0,
+      "collection_command": "uv run pytest --collect-only -q tests/unit/workflow/test_worker_reaper.py::test_lease_and_deadline_boundaries",
+      "actual_argv": [
+        "uv",
+        "run",
+        "pytest",
+        "-q",
+        "tests/unit/workflow/test_worker_reaper.py::test_lease_and_deadline_boundaries"
+      ],
+      "pytest_diagnostic_options": "-p tools.harness.parallel_observer -s --junitxml=/private/tmp/kl036-checks-b74155983473fcc8ab1884fd6b6ad8459964365f-9ebdf50b/worker_lease_deadline_pu/junit.xml",
+      "exit_code": 0,
+      "wall_seconds": 0.3309129998087883,
+      "collected": 1,
+      "executed": 1,
+      "junit": 1,
+      "nodeids": [
+        "tests/unit/workflow/test_worker_reaper.py::test_lease_and_deadline_boundaries"
+      ],
+      "artifacts": {
+        "collection.json": "docs/exec-plans/evidence/KL-036/checks-b74155983473fcc8ab1884fd6b6ad8459964365f-9ebdf50b/worker_lease_deadline_pu-collection.json.json",
+        "collection.log": "docs/exec-plans/evidence/KL-036/checks-b74155983473fcc8ab1884fd6b6ad8459964365f-9ebdf50b/worker_lease_deadline_pu-collection.log.json",
+        "execution.json": "docs/exec-plans/evidence/KL-036/checks-b74155983473fcc8ab1884fd6b6ad8459964365f-9ebdf50b/worker_lease_deadline_pu-execution.json.json",
+        "execution.log": "docs/exec-plans/evidence/KL-036/checks-b74155983473fcc8ab1884fd6b6ad8459964365f-9ebdf50b/worker_lease_deadline_pu-execution.log.json",
+        "junit.xml": "docs/exec-plans/evidence/KL-036/checks-b74155983473fcc8ab1884fd6b6ad8459964365f-9ebdf50b/worker_lease_deadline_pu-junit.xml.json"
+      },
+      "errors": []
+    }
+  ]
+}

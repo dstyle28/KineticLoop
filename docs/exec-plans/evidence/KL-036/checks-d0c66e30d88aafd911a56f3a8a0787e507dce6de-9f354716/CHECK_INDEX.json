@@ -1,0 +1,50 @@
+{
+  "task_identity": "harness-backlog-v0.2/KL-036",
+  "tested_commit": "d0c66e30d88aafd911a56f3a8a0787e507dce6de",
+  "scratch": "/private/tmp/kl036-checks-d0c66e30d88aafd911a56f3a8a0787e507dce6de-9f354716",
+  "runs": [
+    {
+      "check_id": "worker_reaper_db_suite",
+      "command": "uv run pytest -q tests/db/test_worker_reaper.py",
+      "tested_commit": "d0c66e30d88aafd911a56f3a8a0787e507dce6de",
+      "status": "FAIL",
+      "collection_exit": 0,
+      "collection_command": "uv run pytest --collect-only -q tests/db/test_worker_reaper.py",
+      "actual_argv": [
+        "uv",
+        "run",
+        "pytest",
+        "-q",
+        "tests/db/test_worker_reaper.py"
+      ],
+      "pytest_diagnostic_options": "-p tools.harness.parallel_observer -s --junitxml=/private/tmp/kl036-checks-d0c66e30d88aafd911a56f3a8a0787e507dce6de-9f354716/worker_reaper_db_suite/junit.xml",
+      "exit_code": 1,
+      "wall_seconds": 32.13270612503402,
+      "collected": 7,
+      "executed": 7,
+      "junit": 7,
+      "nodeids": [
+        "tests/db/test_worker_reaper.py::test_takeover_fences_distinct_processes",
+        "tests/db/test_worker_reaper.py::test_reaper_rechecks_after_lock",
+        "tests/db/test_worker_reaper.py::test_unowned_admitted_deadline",
+        "tests/db/test_worker_reaper.py::test_reaper_atomicity_and_history",
+        "tests/db/test_worker_reaper.py::test_unknown_call_preserves_budget",
+        "tests/db/test_worker_reaper.py::test_independent_reaper_survives_worker_loss",
+        "tests/db/test_worker_reaper.py::test_reaper_cannot_reverse_t6_success"
+      ],
+      "artifacts": {
+        "collection.json": "docs/exec-plans/evidence/KL-036/checks-d0c66e30d88aafd911a56f3a8a0787e507dce6de-9f354716/worker_reaper_db_suite-collection.json.json",
+        "collection.log": "docs/exec-plans/evidence/KL-036/checks-d0c66e30d88aafd911a56f3a8a0787e507dce6de-9f354716/worker_reaper_db_suite-collection.log.json",
+        "execution.json": "docs/exec-plans/evidence/KL-036/checks-d0c66e30d88aafd911a56f3a8a0787e507dce6de-9f354716/worker_reaper_db_suite-execution.json.json",
+        "execution.log": "docs/exec-plans/evidence/KL-036/checks-d0c66e30d88aafd911a56f3a8a0787e507dce6de-9f354716/worker_reaper_db_suite-execution.log.json",
+        "junit.xml": "docs/exec-plans/evidence/KL-036/checks-d0c66e30d88aafd911a56f3a8a0787e507dce6de-9f354716/worker_reaper_db_suite-junit.xml.json"
+      },
+      "errors": [
+        "execution-failed",
+        "collection-execution-mismatch",
+        "incomplete-or-nonpassing-call",
+        "junit-mismatch"
+      ]
+    }
+  ]
+}

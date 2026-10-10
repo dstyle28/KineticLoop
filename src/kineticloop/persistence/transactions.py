@@ -87,6 +87,7 @@ _LOGICAL_TABLES = {row.logical_id: row.table_name for row in LOGICAL_RELATIONS}
 _CURSORS: WeakKeyDictionary[object, Cursor[Any]] = WeakKeyDictionary()
 _PREPARATION_TOKEN = object()
 _FIXTURE_TOKEN = object()
+_REAPER_TOKEN = object()
 _WORKFLOW_PREPARATION = frozenset(
     {"RecordProposal", "RecordDemandFeatures", "ResolveEvidence", "RecordValidation"}
 )
@@ -1829,6 +1830,12 @@ class RestrictedSqlSession:
         values: Mapping[str, Any],
         predicates: Mapping[str, Any],
     ) -> None:
+        if self.__command_kind == "ReapIntent" and self.__coordination_context.get("reaper_token") is _REAPER_TOKEN:
+            expected = self.__coordination_context.get("reaper_values", {}).get(logical_id)
+            target = self.__coordination_context.get("reaper_ids", {}).get(logical_id)
+            if (expected is None or predicates != {"subject_id": self.__subject_id, "id": target}
+                or dict(values) != expected or self.__updated_values.get(logical_id)):
+                raise GuardRequired("ReapIntent writes require exact private server-prepared targets")
         if logical_id == "S21" and self.__command_kind == "RecordProjection":
             raise GuardRequired("projection history is immutable")
         if logical_id == "S23" and self.__command_kind == "BuildManifest":
@@ -2408,6 +2415,15 @@ class RestrictedSqlSession:
             ):
                 raise GuardRequired("AcquireLease must persist its verified owner and new fence")
         if self.__command_kind == "ReapIntent":
+            if self.__coordination_context.get("reaper_token") is _REAPER_TOKEN:
+                prepared = self.__coordination_context.get("reaper_values", {})
+                ids = self.__coordination_context.get("reaper_ids", {})
+                if set(prepared) != {"S27", "S29"} or set(self.__updated_values) != {"S27", "S29"} or any(
+                    list(self.__updated_values.get(logical, [])) != [{"subject_id": self.__subject_id,
+                        "id": ids.get(logical), **values}] for logical, values in prepared.items()
+                ):
+                    raise GuardRequired("strict ReapIntent must close one exact S27/S29 chain")
+                return
             terminal = {"FAILED", "CANCELLED", "SEARCH_BUDGET_EXHAUSTED"}
             reaper_attempts = self.__coordination_context.get("reaper_attempts", {})
             reaped = {
@@ -5365,7 +5381,7 @@ class RepositoryTransaction:
         self,
         intent_id: UUID,
         *,
-        owner_id: str,
+        owner_id: str | None,
         fence: int,
         expected_deadline: datetime,
         expected_request_revision: int,
@@ -5378,13 +5394,15 @@ class RepositoryTransaction:
             raise GuardRequired("expired lease basis is exclusive to ReapIntent")
         if intent_id not in self._locked_ids.get("planning_intents", set()):
             raise GuardRequired("exact intent must be locked before reaping")
+        if owner_id is None and self._coordination_context.get("reaper_token") is not _REAPER_TOKEN:
+            raise GuardRequired("null expected owner requires authenticated private TEST reaper")
         _cursor(self).execute(
             "SELECT 1 FROM kineticloop.planning_intents intent "
             "JOIN kineticloop.planning_request_revisions request "
             "ON request.subject_id=intent.subject_id "
             "AND request.id=intent.current_request_revision_id "
             "WHERE intent.subject_id=%s AND intent.id=%s "
-            "AND intent.lease_owner=%s AND intent.fence_token=%s "
+            "AND intent.lease_owner IS NOT DISTINCT FROM %s AND intent.fence_token=%s "
             "AND intent.status IN ('ADMITTED','PENDING','RUNNING') "
             "AND intent.deadline IS NOT DISTINCT FROM %s "
             "AND request.request_revision=%s "
@@ -5407,6 +5425,90 @@ class RepositoryTransaction:
             expected_attempt_id
         )
         self._verified_fences[intent_id] = (fence, "EXPIRED", expected_attempt_id)
+
+    def _require_reaper_ingress(self, identity: ProgressIdentity) -> None:
+        self._require_subject()
+        if (self.command_kind != "ReapIntent" or type(identity) is not ProgressIdentity
+            or self._coordination_context.get("reaper_token") is not _REAPER_TOKEN):
+            raise GuardRequired("private authenticated TEST reaper entrypoint required")
+        identity.__post_init__()
+        _cursor(self).execute(
+            "SELECT s.namespace,s.policy_id,s.environment_id,b.principal_name,current_user,session_user "
+            "FROM kineticloop.subject_scopes s JOIN kineticloop.subject_principal_bindings b "
+            "ON b.subject_id=s.subject_id AND b.namespace=s.namespace WHERE s.subject_id=%s",
+            (self.subject_id,),
+        )
+        row = _cursor(self).fetchone()
+        if (self.subject_id != identity.subject_id or row is None or row[:4] != (
+            "TEST", identity.policy_id, identity.environment_id, identity.principal
+        ) or row[4] != row[5] or row[5] == identity.principal
+            or identity.policy_id != self._coordination_context["active_policy_bundle_id"]):
+            raise GuardRequired("current TEST reaper registration/policy mismatch")
+        self._coordination_context["reaper_identity"] = identity
+
+    def _reaper_historical_outcome(self, actor: str, key: str, request_hash: str) -> Mapping[str, Any] | None:
+        identity = self._coordination_context.get("reaper_identity")
+        if identity is None or identity.key != actor:
+            raise GuardRequired("authenticated reaper replay required")
+        _cursor(self).execute(
+            "SELECT request_hash,status,typed_payload FROM kineticloop.command_receipts "
+            "WHERE subject_id=%s AND command_kind='ReapIntent' AND actor_scope=%s AND client_key=%s",
+            (self.subject_id, actor, key),
+        )
+        row = _cursor(self).fetchone()
+        if row is None:
+            return None
+        if row[0] != request_hash or row[1] != "SUCCEEDED" or "outcome" not in row[2]:
+            raise IdempotencyConflict("reaper operation identity conflict")
+        self._coordination_context["reaper_historical"] = True
+        return {**row[2]["outcome"], "replayed": True, "executable": False}
+
+    def _lock_reaper_reservations(self, intent_id: UUID) -> None:
+        if self._coordination_context.get("reaper_identity") is None:
+            raise GuardRequired("authenticated reaper discovery required")
+        _cursor(self).execute("SELECT id FROM kineticloop.call_reservations "
+            "WHERE subject_id=%s AND ref_s27_id=%s AND status IN ('RESERVED','DISPATCH_INTENT','OUTCOME_UNKNOWN') "
+            "ORDER BY id", (self.subject_id, intent_id))
+        ids = [row[0] for row in _cursor(self).fetchall()]
+        if ids:
+            self.lock_reservations(ids)
+
+    def _prepare_reaper(self, request: Any) -> None:
+        from kineticloop.workflow.worker_reaper import ReapIntent, terminal_targets
+
+        c = self._coordination_context
+        if (type(request) is not ReapIntent or c.get("reaper_token") is not _REAPER_TOKEN
+            or c.get("reaper_identity") is None or not self.locked_identity("planning_attempts", request.attempt_id)
+            or c.get("reaper_attempts") != {request.intent_id: request.attempt_id}):
+            raise GuardRequired("private current reaper basis required")
+        request.__post_init__()
+        _cursor(self).execute(
+            "SELECT i.current_request_revision_id,r.request_revision,i.current_attempt_id,i.lease_owner,"
+            "i.fence_token,i.deadline,i.lease_expires_at,i.status,a.status,clock_timestamp(),p.typed_payload "
+            "FROM kineticloop.planning_intents i JOIN kineticloop.planning_request_revisions r "
+            "ON r.subject_id=i.subject_id AND r.id=i.current_request_revision_id AND r.ref_s27_id=i.id "
+            "JOIN kineticloop.planning_attempts a ON a.subject_id=i.subject_id AND a.id=i.current_attempt_id "
+            "AND a.ref_s27_id=i.id AND a.ref_s28_id=r.id JOIN kineticloop.policy_bundles p "
+            "ON p.subject_id=i.subject_id AND p.id=%s WHERE i.subject_id=%s AND i.id=%s",
+            (c["active_policy_bundle_id"], self.subject_id, request.intent_id),
+        )
+        row = _cursor(self).fetchone()
+        if row is None or row[:9] != (
+            request.request_id, request.request_revision, request.attempt_id, request.expected_owner,
+            request.fence, request.deadline, request.lease_expires_at, request.intent_status, request.attempt_status
+        ):
+            raise FenceLost("stale reaper current request/attempt/owner/status/deadline basis")
+        recovery = row[10].get("worker_recovery")
+        cancel = recovery == {"version": "kl036-v1", "lease_expiry": "CANCEL"}
+        intent_status, attempt_status = terminal_targets(request, row[9], cancel_expired_lease=cancel)
+        c["reaper_values"] = {"S27": {"status": intent_status}, "S29": {
+            "status": attempt_status, "failure_code": intent_status, "completed_at": row[9]}}
+        c["reaper_ids"] = {"S27": request.intent_id, "S29": request.attempt_id}
+
+    def _prepared_reaper(self) -> dict[str, Any]:
+        if self._coordination_context.get("reaper_token") is not _REAPER_TOKEN or not self._coordination_context.get("reaper_values"):
+            raise GuardRequired("strict server-prepared reaper values required")
+        return copy.deepcopy(self._coordination_context["reaper_values"])
 
     def permit_dispatch(
         self,
@@ -5510,6 +5612,7 @@ class RepositoryTransaction:
         fixture_identity: ProgressIdentity | None = None,
         fixture_request: Any = None,
         fixture_computed: Any = None,
+        reaper_request: Any = None,
     ) -> tuple[Mapping[str, Any], bool]:
         self._require_receipt_guard()
         self._require_command_locks(aggregate_locks or {})
@@ -5598,6 +5701,10 @@ class RepositoryTransaction:
             self.prepare_planning_progress(progress_identity, progress_request, progress_output_id)
         elif progress_request is not None or progress_identity is not None or progress_output_id is not None:
             raise GuardRequired("progress preparation belongs to its exact internal owners")
+        if self._coordination_context.get("reaper_token") is _REAPER_TOKEN:
+            self._prepare_reaper(reaper_request)
+        elif reaper_request is not None:
+            raise GuardRequired("reaper preparation requires private authenticated entrypoint")
         if self.command_kind in _WORKFLOW_PREPARATION:
             from kineticloop.persistence.deterministic_planning import _prepare_fixture
 
@@ -5637,6 +5744,8 @@ class RepositoryTransaction:
             if self.command_kind in ({"RecordSnapshot", "AdvanceAttempt"} | _WORKFLOW_PREPARATION)
             else ({"reason": execution_request.reason, "binding_id": str(execution_request.binding_id), "expected_execution_revision": execution_request.expected_execution_revision} if isinstance(execution_request, OrdinaryPause) else {})
         )
+        if self._coordination_context.get("reaper_token") is _REAPER_TOKEN:
+            event_payload = {"guard_accepted_at": self._coordination_context["reaper_values"]["S29"]["completed_at"].isoformat()}
         _cursor(self).execute(
             "INSERT INTO kineticloop.domain_events"
             "(id,subject_id,aggregate_type,aggregate_identity,event_type,aggregate_revision,ref_s02_id,typed_payload) "
@@ -5746,6 +5855,10 @@ class RepositoryTransaction:
         return object_id in self._locked_ids.get(table, set())
 
     def finish(self) -> None:
+        if self._coordination_context.get("reaper_token") is _REAPER_TOKEN and not (
+            self._first_use_completed or self._coordination_context.get("reaper_historical")
+        ):
+            raise GuardRequired("strict reaper must complete exact persistence or historical replay")
         if (self.command_kind in {"RecordSnapshot", "AdvanceAttempt"} or (
             self.command_kind in _WORKFLOW_PREPARATION
             and self._coordination_context.get("fixture_ingress_token") is _FIXTURE_TOKEN
@@ -5786,6 +5899,26 @@ def _execute_guarded_progress(
         outcome = _persist_progress(tx, identity, request, payload_hash)
         tx.finish()
         return outcome
+
+
+def _execute_guarded_reaper(connection: Connection[Any], identity: ProgressIdentity, request: Any) -> Mapping[str, Any]:
+    from kineticloop.persistence.worker_reaper import _persist_reaper
+    from kineticloop.workflow.worker_reaper import ReapIntent
+
+    if type(identity) is not ProgressIdentity or type(request) is not ReapIntent:
+        raise GuardRequired("typed authenticated TEST ReapIntent required")
+    identity.__post_init__()
+    request.__post_init__()
+    if request.subject_id != identity.subject_id:
+        raise GuardRequired("reaper subject mismatch")
+    if connection.info.transaction_status != TransactionStatus.IDLE:
+        raise TransactionStateError("reaper requires idle internal service connection")
+
+    def operation(tx: RepositoryTransaction) -> Mapping[str, Any]:
+        tx._coordination_context["reaper_token"] = _REAPER_TOKEN
+        return _persist_reaper(tx, identity, request)
+
+    return execute_command(connection, "ReapIntent", request.subject_id, operation)
 
 
 def execute_command(

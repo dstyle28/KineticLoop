@@ -1,0 +1,44 @@
+{
+  "task_identity": "harness-backlog-v0.2/KL-036",
+  "tested_commit": "c9caccb34ce459650ec90dc01797f81c5a3d4f73",
+  "scratch": "/private/tmp/kl036-checks-c9caccb34ce459650ec90dc01797f81c5a3d4f73-77646691",
+  "runs": [
+    {
+      "check_id": "reaper_stale_candidate_dc",
+      "command": "uv run pytest -q tests/db/test_worker_reaper.py::test_reaper_rechecks_after_lock",
+      "tested_commit": "c9caccb34ce459650ec90dc01797f81c5a3d4f73",
+      "status": "FAIL",
+      "collection_exit": 0,
+      "collection_command": "uv run pytest --collect-only -q tests/db/test_worker_reaper.py::test_reaper_rechecks_after_lock",
+      "actual_argv": [
+        "uv",
+        "run",
+        "pytest",
+        "-q",
+        "tests/db/test_worker_reaper.py::test_reaper_rechecks_after_lock"
+      ],
+      "pytest_diagnostic_options": "-p tools.harness.parallel_observer -s --junitxml=/private/tmp/kl036-checks-c9caccb34ce459650ec90dc01797f81c5a3d4f73-77646691/reaper_stale_candidate_dc/junit.xml",
+      "exit_code": 1,
+      "wall_seconds": 7.3163734171539545,
+      "collected": 1,
+      "executed": 1,
+      "junit": 1,
+      "nodeids": [
+        "tests/db/test_worker_reaper.py::test_reaper_rechecks_after_lock"
+      ],
+      "artifacts": {
+        "collection.json": "docs/exec-plans/evidence/KL-036/checks-c9caccb34ce459650ec90dc01797f81c5a3d4f73-77646691/reaper_stale_candidate_dc-collection.json.json",
+        "collection.log": "docs/exec-plans/evidence/KL-036/checks-c9caccb34ce459650ec90dc01797f81c5a3d4f73-77646691/reaper_stale_candidate_dc-collection.log.json",
+        "execution.json": "docs/exec-plans/evidence/KL-036/checks-c9caccb34ce459650ec90dc01797f81c5a3d4f73-77646691/reaper_stale_candidate_dc-execution.json.json",
+        "execution.log": "docs/exec-plans/evidence/KL-036/checks-c9caccb34ce459650ec90dc01797f81c5a3d4f73-77646691/reaper_stale_candidate_dc-execution.log.json",
+        "junit.xml": "docs/exec-plans/evidence/KL-036/checks-c9caccb34ce459650ec90dc01797f81c5a3d4f73-77646691/reaper_stale_candidate_dc-junit.xml.json"
+      },
+      "errors": [
+        "execution-failed",
+        "collection-execution-mismatch",
+        "incomplete-or-nonpassing-call",
+        "junit-mismatch"
+      ]
+    }
+  ]
+}

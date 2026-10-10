@@ -1,0 +1,12 @@
+{
+  "task_identity": "harness-backlog-v0.2/KL-036",
+  "tested_commit": "6a3f10ef424f41bb690d8835f952484b0ca4f87b",
+  "reviewed_head_sha": "96ebb9e0e95211fc684273e7b69a49dc11e11e87",
+  "review_record_commit": "f93364d",
+  "meaning": "All sixteen recorded commands exited successfully, but independent GENERAL and DB_CONCURRENCY reviews required corrections. This execution is preserved and superseded for readiness by the subsequent revised implementation and complete required-check execution.",
+  "required_corrections": [
+    "DB036-01: witness actual lease CAS contention after both replay preflights release their transactions",
+    "GENERAL-001: confirm stale accounting candidates through the ledger owner and keep the independent reaper processing after actual settlement wins"
+  ],
+  "final_eligibility": false
+}
