@@ -1,0 +1,28 @@
+{
+  "native_decoded_envelopes": 22,
+  "original_HG047_strict_RRO_errors": [
+    "governance-review-revision:evidence-envelope-json"
+  ],
+  "controller_assets_unchanged_except_scope_validator": [
+    "local_gate.py",
+    "github_app.py",
+    "db_ci.py",
+    "db_policy.py",
+    "db_ci_pytest.py",
+    "validate_harness.py",
+    "compact_evidence.py",
+    "gate_validate.py",
+    "gate_pytest.py",
+    "local_db/Dockerfile",
+    "local_db/entrypoint.sh"
+  ],
+  "compact_audit": {
+    "identity": "HG-063",
+    "base": "161744c5760561349bdeb17d628e38220640c95b",
+    "head": "f22a78a622caa1e461099e690583b40f5cf5b925",
+    "stored_bytes": 4777893,
+    "files": 129,
+    "errors": [],
+    "remedy": "python tools/harness/compact_evidence.py capture --help"
+  }
+}

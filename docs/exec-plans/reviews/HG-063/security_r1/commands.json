@@ -1,0 +1,31 @@
+{
+  "reviewed_head_sha": "f22a78a622caa1e461099e690583b40f5cf5b925",
+  "meaning": "Fresh independent reviewer checks; no historical execution or current merge gates certified",
+  "commands": [
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -B /private/tmp/hg063-security-r1/review_checks.py",
+      "exit_code": 0,
+      "output": "verification.json"
+    },
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -B -m unittest discover -s docs/exec-plans/evidence/HG-063 -p 'test_*.py' -v",
+      "exit_code": 0,
+      "output": "fixture_tests.log",
+      "cases": 255
+    },
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -B /private/tmp/hg063-security-r1/native_boundaries.py",
+      "exit_code": 0,
+      "output": "native_boundaries.json"
+    }
+  ],
+  "prior_attempts": [
+    {
+      "command": "review_checks.py initial reviewer version",
+      "exit_code": 1,
+      "output": "review_checks_attempt1.log",
+      "reason": "Reviewer assumed absent local_ci_controller.py; replaced with actual ASSETS enumeration. Not a candidate defect."
+    }
+  ],
+  "process_status_probe": "Sandbox denied read-only ps; not needed, not retried or escalated"
+}

@@ -1,0 +1,21 @@
+{
+  "kineticloop_evidence": "gzip-v1",
+  "payload": "docs/exec-plans/evidence/HG-063/checks-3e8b99a49d9a/6fc473abcf45cfbb24569c573267089eb7c8408b06c8df87a0bd2c348573a440.gz",
+  "stored_sha256": "f3102761b58d8e6d7f6f9b5ea07ced589dbe320bfb6acf66ce70f91a852e58b5",
+  "stored_bytes": 412113,
+  "raw_sha256": "6fc473abcf45cfbb24569c573267089eb7c8408b06c8df87a0bd2c348573a440",
+  "raw_bytes": 3587010,
+  "tested_commit": "3e8b99a49d9a3f4e7dbb77cd6a66ebf3cbbd1afa",
+  "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m pytest -p tools.harness.parallel_observer tests/harness -q -n 2 --dist load --maxprocesses 4 --max-worker-restart 0 --maxschedchunk 1 --junitxml=/private/tmp/hg063-author-3e8b99a49d9a/harness-run/junit.xml",
+  "exit_code": 0,
+  "timestamp": "2026-10-11T00:14:55.240418+00:00",
+  "test_counts": {
+    "passed": 1,
+    "skipped": 1,
+    "error": 1,
+    "deselected": 1,
+    "xfailed": 1,
+    "xpassed": 1,
+    "failed": 1
+  }
+}

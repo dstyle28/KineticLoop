@@ -1,0 +1,202 @@
+change_identity: harness-governance-v0.1/HG-063
+display_change_id: HG-063
+base_commit: 161744c5760561349bdeb17d628e38220640c95b
+tested_commit: 3e8b99a49d9a3f4e7dbb77cd6a66ebf3cbbd1afa
+change_status: PASS
+summary: HG063 definitions-only consolidated plain historical archival definitions and HG058 prospective refinement.
+  All eight fresh author checks pass at exact T with positive identity equality; original historical semantics,
+  producer execution and review acceptance remain unverified. Root reviews and gates are separate.
+packets_refined: []
+files_changed:
+- CURRENT_DOCUMENT_INDEX.json
+- HARNESS_DOCUMENT_MANIFEST.json
+- docs/exec-plans/active/HG-058.md
+- docs/exec-plans/evidence/HG-063/BINDING_PACKAGE.json
+- docs/exec-plans/evidence/HG-063/BINDING_RULES.md
+- docs/exec-plans/evidence/HG-063/DECISION_MATRIX.json
+- docs/exec-plans/evidence/HG-063/DEFINITION_CONTRACT.md
+- docs/exec-plans/evidence/HG-063/DELIVERY_PROVENANCE.json
+- docs/exec-plans/evidence/HG-063/DEPENDENCY_PROVENANCE.json
+- docs/exec-plans/evidence/HG-063/FIXTURE_IDENTITIES.json
+- docs/exec-plans/evidence/HG-063/OUTPUT_TYPES.json
+- docs/exec-plans/evidence/HG-063/PACKET.md
+- docs/exec-plans/evidence/HG-063/PLAIN_GRAMMAR.json
+- docs/exec-plans/evidence/HG-063/PREPARATION_ATTEMPT_HISTORY.md
+- docs/exec-plans/evidence/HG-063/PREPARATION_FINDING_CLOSURE_MATRIX.json
+- docs/exec-plans/evidence/HG-063/PREPARATION_GENERAL_R3.json
+- docs/exec-plans/evidence/HG-063/PREPARATION_HANDOFF.md
+- docs/exec-plans/evidence/HG-063/PREPARATION_HUMAN_APPROVAL.json
+- docs/exec-plans/evidence/HG-063/PREPARATION_INPUTS.json
+- docs/exec-plans/evidence/HG-063/PREPARATION_MANIFEST.json
+- docs/exec-plans/evidence/HG-063/PREPARATION_ROOT_DISPOSITION.json
+- docs/exec-plans/evidence/HG-063/PREPARATION_SECURITY_R3.json
+- docs/exec-plans/evidence/HG-063/PRE_T_ATTEMPTS.md
+- docs/exec-plans/evidence/HG-063/PRE_T_DELIVERY.json
+- docs/exec-plans/evidence/HG-063/RECONSTRUCTION_SAMPLES.json
+- docs/exec-plans/evidence/HG-063/ROWS.json
+- docs/exec-plans/evidence/HG-063/SEMANTIC_ROLE_AUDIT.json
+- docs/exec-plans/evidence/HG-063/SLOT_ROLES.json
+- docs/exec-plans/evidence/HG-063/TEMPLATE_CATALOG.json
+- docs/exec-plans/evidence/HG-063/affected-validator.log
+- docs/exec-plans/evidence/HG-063/binding-01.json
+- docs/exec-plans/evidence/HG-063/binding-02.json
+- docs/exec-plans/evidence/HG-063/binding-03.json
+- docs/exec-plans/evidence/HG-063/binding-04.json
+- docs/exec-plans/evidence/HG-063/binding-05.json
+- docs/exec-plans/evidence/HG-063/binding-06.json
+- docs/exec-plans/evidence/HG-063/binding-07.json
+- docs/exec-plans/evidence/HG-063/binding-08.json
+- docs/exec-plans/evidence/HG-063/binding-09.json
+- docs/exec-plans/evidence/HG-063/binding-10.json
+- docs/exec-plans/evidence/HG-063/binding-11.json
+- docs/exec-plans/evidence/HG-063/binding-12.json
+- docs/exec-plans/evidence/HG-063/binding-13.json
+- docs/exec-plans/evidence/HG-063/binding-14.json
+- docs/exec-plans/evidence/HG-063/binding-15.json
+- docs/exec-plans/evidence/HG-063/binding-16.json
+- docs/exec-plans/evidence/HG-063/binding-17.json
+- docs/exec-plans/evidence/HG-063/binding-18.json
+- docs/exec-plans/evidence/HG-063/binding-19.json
+- docs/exec-plans/evidence/HG-063/binding-20.json
+- docs/exec-plans/evidence/HG-063/binding-21.json
+- docs/exec-plans/evidence/HG-063/binding-22.json
+- docs/exec-plans/evidence/HG-063/binding-23.json
+- docs/exec-plans/evidence/HG-063/binding-24.json
+- docs/exec-plans/evidence/HG-063/binding-25.json
+- docs/exec-plans/evidence/HG-063/binding-26.json
+- docs/exec-plans/evidence/HG-063/binding-27.json
+- docs/exec-plans/evidence/HG-063/binding-28.json
+- docs/exec-plans/evidence/HG-063/binding-29.json
+- docs/exec-plans/evidence/HG-063/binding-30.json
+- docs/exec-plans/evidence/HG-063/binding-31.json
+- docs/exec-plans/evidence/HG-063/binding-32.json
+- docs/exec-plans/evidence/HG-063/binding-33.json
+- docs/exec-plans/evidence/HG-063/binding-34.json
+- docs/exec-plans/evidence/HG-063/binding-35.json
+- docs/exec-plans/evidence/HG-063/binding-36.json
+- docs/exec-plans/evidence/HG-063/binding-37.json
+- docs/exec-plans/evidence/HG-063/binding-38.json
+- docs/exec-plans/evidence/HG-063/binding-39.json
+- docs/exec-plans/evidence/HG-063/capture_result.py
+- docs/exec-plans/evidence/HG-063/checks-3e8b99a49d9a/0af9de4f0ef8deecfa585919d274b5fc3fcee6b1c5786c5f6ebc3a4b70749bfa.gz
+- docs/exec-plans/evidence/HG-063/checks-3e8b99a49d9a/470148522e112350d59437f1e1122c059999b167ea5305c041e937fd4fbf8124.gz
+- docs/exec-plans/evidence/HG-063/checks-3e8b99a49d9a/575c27614271c1c49c6a8e1968a2a6c79b664c9c880dde43ec8113846e575f94.gz
+- docs/exec-plans/evidence/HG-063/checks-3e8b99a49d9a/5da18ae69ff92af36490a510b2c1b075713202524afeacb83498a291d4becabe.gz
+- docs/exec-plans/evidence/HG-063/checks-3e8b99a49d9a/6bda51a5d2c4b1ce43bfdab6c829cbccc921df33bf3ed7ab884a68acbfa79a40.gz
+- docs/exec-plans/evidence/HG-063/checks-3e8b99a49d9a/6fc473abcf45cfbb24569c573267089eb7c8408b06c8df87a0bd2c348573a440.gz
+- docs/exec-plans/evidence/HG-063/checks-3e8b99a49d9a/7a2064af55d54dcab206c7ea9456d15b3a29affbbc7c2e2533d16c12487618be.gz
+- docs/exec-plans/evidence/HG-063/checks-3e8b99a49d9a/7a6c5aa2fcf87d4d07725f62d816918083d6166f11a00397141894c0cd770a67.gz
+- docs/exec-plans/evidence/HG-063/checks-3e8b99a49d9a/8261360ccd34148f296c811515fcd417fa136478c7c666d9fad9784324927118.gz
+- docs/exec-plans/evidence/HG-063/checks-3e8b99a49d9a/82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18.gz
+- docs/exec-plans/evidence/HG-063/checks-3e8b99a49d9a/87c69dd3e4830b7818b222421ba57df7eb75358e2e8f574809e186571e98d9c9.gz
+- docs/exec-plans/evidence/HG-063/checks-3e8b99a49d9a/CHECK_INDEX.json
+- docs/exec-plans/evidence/HG-063/checks-3e8b99a49d9a/POST_CAPTURE_VALIDATION.json
+- docs/exec-plans/evidence/HG-063/checks-3e8b99a49d9a/a7db4e44a8e77168998a7cf8376a413329899ae677b3e439e27f47ffd359e070.gz
+- docs/exec-plans/evidence/HG-063/checks-3e8b99a49d9a/aa44ef95cbd9dfea6a741f359cb2c8884c51e7d9c1909eed35d63d526de16280.gz
+- docs/exec-plans/evidence/HG-063/checks-3e8b99a49d9a/authority.json
+- docs/exec-plans/evidence/HG-063/checks-3e8b99a49d9a/b6c7ffd03bb1d47284e0550ed7ea5643562f83cdee9d19b66a358809f6e4b330.gz
+- docs/exec-plans/evidence/HG-063/checks-3e8b99a49d9a/bad84ae458ed0b1339e9ee07060b39569951bea401de790a17ecace58d345afb.gz
+- docs/exec-plans/evidence/HG-063/checks-3e8b99a49d9a/cf0308d7e44f702895d0d9d5fdb6c967de4be8056e192945a40bbc27f57bb59a.gz
+- docs/exec-plans/evidence/HG-063/checks-3e8b99a49d9a/dee64024a7c76feccec4751bba34e20d9a52f8d609d8769459603b0094bcd55b.gz
+- docs/exec-plans/evidence/HG-063/checks-3e8b99a49d9a/definitions.json
+- docs/exec-plans/evidence/HG-063/checks-3e8b99a49d9a/diff.json
+- docs/exec-plans/evidence/HG-063/checks-3e8b99a49d9a/e145e1139135e5f214f54d11b2a31c19c33e8134246a8c8497756e6164be762b.gz
+- docs/exec-plans/evidence/HG-063/checks-3e8b99a49d9a/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855.gz
+- docs/exec-plans/evidence/HG-063/checks-3e8b99a49d9a/fedfba5b30b5569b8bf3c6e96b2151e90328f25d02b81488a2ab232c5e05dde1.gz
+- docs/exec-plans/evidence/HG-063/checks-3e8b99a49d9a/fee28b83ac4dd3fa831877649441bd8ff791a88cdb38b04b140a229c6b20d59e.gz
+- docs/exec-plans/evidence/HG-063/checks-3e8b99a49d9a/harness-collection.json.json
+- docs/exec-plans/evidence/HG-063/checks-3e8b99a49d9a/harness-collection.log.json
+- docs/exec-plans/evidence/HG-063/checks-3e8b99a49d9a/harness-execution.json.json
+- docs/exec-plans/evidence/HG-063/checks-3e8b99a49d9a/harness-junit.xml.json
+- docs/exec-plans/evidence/HG-063/checks-3e8b99a49d9a/harness-manifest.json.json
+- docs/exec-plans/evidence/HG-063/checks-3e8b99a49d9a/harness-pytest.log.json
+- docs/exec-plans/evidence/HG-063/checks-3e8b99a49d9a/harness.json
+- docs/exec-plans/evidence/HG-063/checks-3e8b99a49d9a/lint.json
+- docs/exec-plans/evidence/HG-063/checks-3e8b99a49d9a/typecheck.json
+- docs/exec-plans/evidence/HG-063/checks-3e8b99a49d9a/unit-collection.json.json
+- docs/exec-plans/evidence/HG-063/checks-3e8b99a49d9a/unit-collection.log.json
+- docs/exec-plans/evidence/HG-063/checks-3e8b99a49d9a/unit-execution.json.json
+- docs/exec-plans/evidence/HG-063/checks-3e8b99a49d9a/unit-junit.xml.json
+- docs/exec-plans/evidence/HG-063/checks-3e8b99a49d9a/unit.json
+- docs/exec-plans/evidence/HG-063/checks-3e8b99a49d9a/validator-collection.json.json
+- docs/exec-plans/evidence/HG-063/checks-3e8b99a49d9a/validator-collection.log.json
+- docs/exec-plans/evidence/HG-063/checks-3e8b99a49d9a/validator-execution.json.json
+- docs/exec-plans/evidence/HG-063/checks-3e8b99a49d9a/validator-junit.xml.json
+- docs/exec-plans/evidence/HG-063/checks-3e8b99a49d9a/validator.json
+- docs/exec-plans/evidence/HG-063/definition-preflight-attempt1.log
+- docs/exec-plans/evidence/HG-063/definition-preflight-attempt2.log
+- docs/exec-plans/evidence/HG-063/definition-preflight-attempt3.log
+- docs/exec-plans/evidence/HG-063/definition-preflight-attempt4.log
+- docs/exec-plans/evidence/HG-063/definition-preflight-attempt5.log
+- docs/exec-plans/evidence/HG-063/definition-preflight-attempt6.log
+- docs/exec-plans/evidence/HG-063/definition_binding_package.py
+- docs/exec-plans/evidence/HG-063/definition_data.py
+- docs/exec-plans/evidence/HG-063/definition_oracle.py
+- docs/exec-plans/evidence/HG-063/definition_schema.py
+- docs/exec-plans/evidence/HG-063/fixture_support.py
+- docs/exec-plans/evidence/HG-063/portable-test.log
+- docs/exec-plans/evidence/HG-063/run_checks.py
+- docs/exec-plans/evidence/HG-063/test_definitions.py
+- docs/exec-plans/evidence/HG-063/test_observation_correspondence.py
+- docs/exec-plans/evidence/HG-063/test_review_corrections.py
+- docs/exec-plans/evidence/HG-063/verify_definitions.py
+- docs/exec-plans/governance/HG-063.yaml
+- docs/harness/HARNESS_GOVERNANCE_CONTRACT.md
+- tests/harness/test_validator.py
+- tools/harness/validate_harness.py
+checks_run:
+- check_id: definitions
+  command: /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python docs/exec-plans/evidence/HG-063/verify_definitions.py
+    --base 161744c5760561349bdeb17d628e38220640c95b --tested 3e8b99a49d9a3f4e7dbb77cd6a66ebf3cbbd1afa
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-063/checks-3e8b99a49d9a/definitions.json
+- check_id: validator
+  command: /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m pytest tests/harness/test_validator.py
+    -q -p tools.harness.parallel_observer --junitxml=/private/tmp/hg063-author-3e8b99a49d9a/validator-junit.xml
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-063/checks-3e8b99a49d9a/validator.json
+- check_id: unit
+  command: /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli test-unit -q -p tools.harness.parallel_observer
+    --junitxml=/private/tmp/hg063-author-3e8b99a49d9a/unit-junit.xml
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-063/checks-3e8b99a49d9a/unit.json
+- check_id: harness
+  command: /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli test-harness --workers
+    2 --evidence-dir /private/tmp/hg063-author-3e8b99a49d9a/harness-run -q
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-063/checks-3e8b99a49d9a/harness.json
+- check_id: lint
+  command: /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli lint
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-063/checks-3e8b99a49d9a/lint.json
+- check_id: typecheck
+  command: /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli typecheck
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-063/checks-3e8b99a49d9a/typecheck.json
+- check_id: authority
+  command: /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli check-harness
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-063/checks-3e8b99a49d9a/authority.json
+- check_id: diff
+  command: git diff --check 161744c5760561349bdeb17d628e38220640c95b 3e8b99a49d9a3f4e7dbb77cd6a66ebf3cbbd1afa
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/HG-063/checks-3e8b99a49d9a/diff.json
+frozen_impact: NONE
+authority_entries_added: []
+known_limitations:
+- 'The complete reviewed seven-document plain archival definition is prospective only: 33 productions, 39 research
+  bindings, six native controls, 276 documentary tuples and seven lineage-gap claims. No historical execution or
+  review is certified.'
+- HG004 actual T-to-original-delivery exit1/false and missing GENERAL remain separate historical facts. No synthetic
+  review/result, source-head substitution or equivalence is supplied.
+- The fixture oracle and FixtureContext are test-only synthetic premises, never a production trust constructor.
+  Runtime implementation belongs to HG058 only after normal HG063 merge, installed readiness and root resource regrant.
+- All eight checks ran freshly at exact T; complete positive collection/execution/JUnit identities are verified.
+  Preparation draft checks/reviews and all prior failures remain separate, unaltered facts and supply no task acceptance.
+- Manifest/index/helpers are frozen at T. T-to-R adds only own result/evidence. Root independent GENERAL and SECURITY_DATA_BOUNDARY
+  reviews, exact final audits, complete installed-bundle review/install, admission, App/fullDB/cleanup/live hosted
+  gates and protected normal merge remain pending.
+- HG058 stays frozen3965 with original auditbase9700/live-base distinction, first5da0FAIL, maps/source pins and
+  all eight-source/four-caller/nine-metadata obligations; no old PR disposition occurs here.
+- No product or requirement status is promoted. packets_refined stays empty under existing KL-only schema; summary/files
+  identify HG058 refinement.

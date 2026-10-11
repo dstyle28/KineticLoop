@@ -1,0 +1,191 @@
+{
+  "authority": "PROSPECTIVE_CONSOLIDATED_DEFINITION_INPUT",
+  "document": "strict UTF-8 LF-only full report, no BOM/NUL/CR, max256KiB",
+  "match": "all ordered literal bytes and typed slots; exactly one whole-report production; no wildcard prose",
+  "catalog": "TEMPLATE_CATALOG.json",
+  "slot_types": {
+    "OWNER_DISPLAY": {
+      "syntax": "HG-NNN canonical D transformed only by specified case/hyphen spelling",
+      "binding": "namespaced original owner display identity; never sample ID"
+    },
+    "ORIGINAL_CHECK_LABEL": {
+      "syntax": "nonempty original check label, max1024 UTF-8 bytes, no NUL/CR/LF",
+      "binding": "exact ordinal in ordered original report-ref checks"
+    },
+    "DECLARED_COMMAND": {
+      "syntax": "exact original nonempty command bytes, max4096, no NUL/CR/LF; permitted folded representation only",
+      "binding": "exact ordinal check command; inert, no expansion/execution"
+    },
+    "GIT_REVISION_CLAIM": {
+      "syntax": "40 lowercase hex",
+      "binding": "B/T iff annotated; otherwise unverified attribution, no object lookup"
+    },
+    "REVISION_ABBREVIATION_CLAIM": {
+      "syntax": "7..39 lowercase hex",
+      "binding": "unverified attribution only, never resolve or use as full Git pointer"
+    },
+    "SHA256_CLAIM": {
+      "syntax": "64 lowercase hex",
+      "binding": "unverified attribution only, never recomputed raw availability"
+    },
+    "INERT_HOST_PATH": {
+      "syntax": "absolute / or $PWD/ prefix, followed only by ASCII alphanumeric, underscore, dot, slash, @, plus, hyphen; max1024 bytes",
+      "binding": "no read/open/resolve/fetch/mount/normalization"
+    },
+    "INERT_REPO_PATH_CLAIM": {
+      "syntax": "docs/tests/tools/src/migrations relative prefix, ASCII path characters, no terminal slash, empty/dot/dot-dot component; max1024 bytes",
+      "binding": "body attribution only, never a lookup pointer"
+    },
+    "INERT_TEXT_ID": {
+      "syntax": "HG/KL display or compact identity with declared case/spelling, max80",
+      "binding": "unverified subject attribution; never task exemption or selected role"
+    },
+    "INERT_UUID_CLAIM": {
+      "syntax": "8-4-4-4-12 lowercase hex UUID",
+      "binding": "attribution only; no human approval or thread-message authorization"
+    },
+    "DATE_CLAIM": {
+      "syntax": "valid YYYY-MM-DD date, max10 bytes",
+      "binding": "attribution only, no historical cutoff"
+    },
+    "COUNTER_CLAIM": {
+      "syntax": "decimal integer 0..1000000; no sign/exponent/dot/Boolean, max7 bytes",
+      "binding": "unverified attributed claim; each occurrence independent except an enumerated relation"
+    },
+    "POSITIVE_COUNT_CLAIM": {
+      "syntax": "decimal integer 1..1000000; no sign/exponent/dot/Boolean, max7 bytes",
+      "binding": "unverified attributed claim; each occurrence independent except an enumerated relation"
+    },
+    "PERCENT_CLAIM": {
+      "syntax": "decimal integer 0..100, max3 bytes",
+      "binding": "unverified attributed claim; each occurrence independent except an enumerated relation"
+    },
+    "DURATION_CLAIM": {
+      "syntax": "finite nonnegative decimal seconds <=1000000, max32 bytes; no sign/exponent/NaN/inf/Boolean",
+      "binding": "unverified attributed claim; each occurrence independent except an enumerated relation"
+    },
+    "VERSION_CLAIM": {
+      "syntax": "2..4 decimal components separated by dots; each <=1000000, max32 bytes",
+      "binding": "unverified attributed claim; each occurrence independent except an enumerated relation"
+    },
+    "CLOCK_HOURS_CLAIM": {
+      "syntax": "decimal integer 0..277, max3 bytes",
+      "binding": "unverified attributed claim; each occurrence independent except an enumerated relation"
+    },
+    "CLOCK_SUBMINUTE_CLAIM": {
+      "syntax": "exact two decimal digits 00..59, max2 bytes",
+      "binding": "unverified attributed claim; each occurrence independent except an enumerated relation"
+    },
+    "EXPLICIT_ZERO_EXIT_CLAIM": {
+      "syntax": "exact literal 0, max1 byte; original transcribed claim only, never native parent execution proof",
+      "binding": "unverified attributed claim; each occurrence independent except an enumerated relation"
+    },
+    "INERT_ENV_LABEL": {
+      "syntax": "kl_<lowercase alphanumeric component>_<lowercase alphanumeric component> with optional _test; max128 bytes",
+      "binding": "unverified environment label only, no namespace reservation/database/Compose lookup or execution"
+    },
+    "PYTEST_PROGRESS_CLAIM": {
+      "syntax": "one or more ASCII dots, max262144 bytes",
+      "binding": "transcribed passing-item progress only; enumerated phase sum/percentage relations required; no native execution proof"
+    },
+    "INERT_REPO_DIRECTORY_CLAIM": {
+      "syntax": "same finite ASCII relative path components with exactly one required terminal slash, removed once only before component validation; max1024 bytes",
+      "binding": "inert original directory attribution only, never a lookup pointer"
+    },
+    "INERT_IPV4_CLAIM": {
+      "syntax": "four decimal octets 0..255 separated by dots, max15 bytes",
+      "binding": "inert transcribed host attribution only, never lookup/network/environment authority"
+    },
+    "INERT_PORT_CLAIM": {
+      "syntax": "decimal integer1..65535, max5 bytes",
+      "binding": "inert transcribed port only, never network/database/Compose lookup"
+    }
+  },
+  "token_properties": [
+    "literal OR slot, exclusive",
+    "slot has type,binding,max_bytes,alias, optional spelling; unknown properties deny",
+    "semantic repeated aliases agree; unrelated numeric coincidences not aliased",
+    "original report-ref check shape cardinality/order exact",
+    "slot max_bytes is the per-token cap and may not exceed the corresponding vocabulary cap"
+  ],
+  "noncertification": [
+    "BOUND_ORIGINAL_CLAIM",
+    "UNVERIFIED_ORIGINAL_COMPUTATION",
+    "UNVERIFIED_RECORD_REVISION_EXECUTION",
+    "NOT_CERTIFIED",
+    "acceptance_eligible=false"
+  ],
+  "relations": {
+    "closed_vocabulary": {
+      "same_transcribed_summary_count": {
+        "equals": "integer_alias_list_min2"
+      },
+      "same_single_report_pytest_count": {
+        "equals": "integer_alias_list_min2"
+      },
+      "same_transcribed_ratio_count": {
+        "equals": "integer_alias_list_min2"
+      },
+      "same_declared_current_harness_count": {
+        "equals": "integer_alias_list_min2"
+      },
+      "same_declared_current_unit_count": {
+        "equals": "integer_alias_list_min2"
+      },
+      "progress_sum": {
+        "parts": "progress_alias_list",
+        "equals": "integer_alias"
+      },
+      "progress_percent": {
+        "parts": "progress_alias_list",
+        "percentages": "percent_alias_list",
+        "total": "integer_alias"
+      },
+      "collection_total": {
+        "collected": "integer_alias",
+        "passed": "integer_alias",
+        "deselected": "nullable_integer_alias"
+      },
+      "elapsed_clock": {
+        "seconds": "duration_alias",
+        "hms": "clock_alias_list_exact3"
+      },
+      "positive_claim": {
+        "aliases": "integer_alias_list"
+      },
+      "not_record_T": {
+        "aliases": "revision_alias_list"
+      },
+      "active_not_more_than_tasks": {
+        "tasks": "integer_alias",
+        "active": "integer_alias"
+      },
+      "decreased_count": {
+        "before": "integer_alias",
+        "after": "integer_alias"
+      }
+    },
+    "schema": "Each relation has exactly kind plus declared properties; unknown fields/kinds, missing fields, unknown aliases or role/type/array arity mismatch DENY. Alias strings resolve only within the same whole production; arrays are nonempty bounded1024 unique aliases, min2/exact3 where named. Clock sequence is HOURS,SUBMINUTE,SUBMINUTE; progress parts and percentages have equal length. Nullable integer alias permits only null or one integer alias.",
+    "integer_alias_types": [
+      "COUNTER_CLAIM",
+      "POSITIVE_COUNT_CLAIM",
+      "PERCENT_CLAIM",
+      "CLOCK_HOURS_CLAIM",
+      "CLOCK_SUBMINUTE_CLAIM",
+      "EXPLICIT_ZERO_EXIT_CLAIM"
+    ],
+    "meanings": {
+      "equality": "bounded decimal integer numeric-value equality, no float/Boolean alias",
+      "progress_sum": "sum dot lengths equals terminal count",
+      "progress_percent": "each cumulative dot count times100 integer-floor-divided by positive terminal equals corresponding percent",
+      "collection_total": "collected equals passed plus optional deselected",
+      "elapsed_clock": "floor duration seconds equals HOURS*3600+MINUTES*60+SECONDS",
+      "positive_claim": "each count strictly positive",
+      "not_record_T": "each separately attributed full revision differs from recordT",
+      "active_not_more_than_tasks": "each transcribed active count <= same transcribed total tasks",
+      "decreased_count": "explicit earlier active count strictly greater than later count"
+    },
+    "current_catalog_scope": "All33 complete closed productions and all listed present relations; six human dispositions resolved for preparation only; no runtime inference or further unresolved relation permission"
+  },
+  "numeric_work": "Use bounded decimal arithmetic, no float overflow or exponent syntax."
+}

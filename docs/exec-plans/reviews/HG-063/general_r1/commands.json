@@ -1,0 +1,26 @@
+[
+  {
+    "command": "PYTHONDONTWRITEBYTECODE=1 /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python /private/tmp/hg063-general-r1/verify_review.py",
+    "exit_code": 0,
+    "output": "verification.log",
+    "meaning": "Independent capture/scope/identity verification plus fresh255 definition tests and39 original Git bindings"
+  },
+  {
+    "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=<candidate-root>:<candidate-root>/src TMPDIR=/private/tmp/hg063-general-r1 /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m pytest tests/harness/test_validator.py -q -k hg063 -p no:cacheprovider --basetemp=/private/tmp/hg063-general-r1/pytest",
+    "exit_code": 0,
+    "output": "targeted.log",
+    "meaning": "3 passed,170 deliberately deselected"
+  },
+  {
+    "command": "PYTHONDONTWRITEBYTECODE=1 /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python /private/tmp/hg063-general-r1/probes.py",
+    "exit_code": 0,
+    "output": "probes.log",
+    "meaning": "132 hostile cases denied; source canonical identity and26 external pins corroborated"
+  },
+  {
+    "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=<candidate-root>:<candidate-root>/src /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python tools/harness/compact_evidence.py audit --base 161744c5760561349bdeb17d628e38220640c95b --head f22a78a622caa1e461099e690583b40f5cf5b925 --identity HG-063",
+    "exit_code": 0,
+    "output": "storage-audit.json",
+    "meaning": "129 evidence files,4777893 stored bytes,no errors"
+  }
+]

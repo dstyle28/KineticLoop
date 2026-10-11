@@ -1,0 +1,2638 @@
+{
+  "profiles": [
+    {
+      "profile": "PLAIN_LITERAL_01",
+      "all_counter_slots": [
+        {
+          "alias": "v5",
+          "type": "COUNTER_CLAIM",
+          "role": "FIXED_AUTHORITY_OR_IDENTIFIER_CLAUSE",
+          "context": "t-hash rejection by frozen command binding:\n  generic DB section 3 uses IDEMPOTENCY_KEY_REUSE_WITH_DIFFERENT_PA"
+        },
+        {
+          "alias": "v6",
+          "type": "COUNTER_CLAIM",
+          "role": "FIXED_AUTHORITY_OR_IDENTIFIER_CLAUSE",
+          "context": "te, and RevokeArtifact use IDEMPOTENCY_CONFLICT under DB section 11.\n- Removed the unsupported contradictory res"
+        },
+        {
+          "alias": "v8",
+          "type": "COUNTER_CLAIM",
+          "role": "TASK_ACTIVE_PAIR",
+          "context": "uthority.\n\n$ .venv/bin/kl check-harness\nHARNESS_CHECK_PASS tasks=68 active=66\nRESULT: PASS\n\n$ .venv/bin/ruff che"
+        },
+        {
+          "alias": "v9",
+          "type": "COUNTER_CLAIM",
+          "role": "TASK_ACTIVE_PAIR",
+          "context": "\n$ .venv/bin/kl check-harness\nHARNESS_CHECK_PASS tasks=68 active=66\nRESULT: PASS\n\n$ .venv/bin/ruff check .\nAll c"
+        },
+        {
+          "alias": "v12",
+          "type": "COUNTER_CLAIM",
+          "role": "INDEPENDENT_INERT_COUNT_CLAIM",
+          "context": "tested-mypy .venv/bin/mypy src tools\nSuccess: no issues found in 21 source files\nRESULT: PASS\n\n$ .venv/bin/pytes"
+        },
+        {
+          "alias": "v16",
+          "type": "POSITIVE_COUNT_CLAIM",
+          "role": "PASSING_PHASE_TERMINAL",
+          "context": "....................................................      [100%]\n67 passed in 0.99s\nRESULT: PASS\n\n$ .venv/bin/py"
+        },
+        {
+          "alias": "v23",
+          "type": "POSITIVE_COUNT_CLAIM",
+          "role": "PASSING_PHASE_TERMINAL",
+          "context": "                                                          [100%]\n77 passed in 23.19s\nRESULT: PASS\n\n$ git diff --"
+        }
+      ],
+      "semantic_obligations": [
+        {
+          "role": "PASSING_PHASE_TERMINAL",
+          "alias": "v16",
+          "prose": "67 passed",
+          "offset": 1035
+        },
+        {
+          "role": "PASSING_PHASE_TERMINAL",
+          "alias": "v23",
+          "prose": "77 passed",
+          "offset": 1264
+        },
+        {
+          "role": "TASK_ACTIVE_PAIR",
+          "aliases": [
+            "v8",
+            "v9"
+          ],
+          "prose": "tasks=68 active=66",
+          "offset": 687
+        }
+      ],
+      "fixed_numeric_aliases": [
+        "v5",
+        "v6"
+      ],
+      "policy": "Unrelated counts remain separate inert documentary claims; passing phases/zero exits/explicit repeated summaries/authority clauses have exact roles; no computation/execution certified",
+      "other_numeric_role_policy": {
+        "duration": "inert finite nonnegative seconds, explicit alternative clock relation when present",
+        "tool_version": "inert bounded version claim; frozen authority versions are literal clauses",
+        "host": "INERT_IPV4_CLAIM, finite octets, no network authority",
+        "port": "INERT_PORT_CLAIM, finite1..65535, no network authority",
+        "unrelated_counters": "each named transcribed count is independent unless represented prose asserts equality/order; values do not certify computation or execution"
+      }
+    },
+    {
+      "profile": "PLAIN_LITERAL_02",
+      "all_counter_slots": [
+        {
+          "alias": "v5",
+          "type": "COUNTER_CLAIM",
+          "role": "TASK_ACTIVE_PAIR",
+          "context": "929801dcf\n\n$ .venv/bin/kl check-harness\nHARNESS_CHECK_PASS tasks=68 active=66\nRESULT: PASS\n\n$ .venv/bin/ruff che"
+        },
+        {
+          "alias": "v6",
+          "type": "COUNTER_CLAIM",
+          "role": "TASK_ACTIVE_PAIR",
+          "context": "\n$ .venv/bin/kl check-harness\nHARNESS_CHECK_PASS tasks=68 active=66\nRESULT: PASS\n\n$ .venv/bin/ruff check .\nAll c"
+        },
+        {
+          "alias": "v9",
+          "type": "COUNTER_CLAIM",
+          "role": "INDEPENDENT_INERT_COUNT_CLAIM",
+          "context": "-mypy .venv/bin/mypy src tools tests\nSuccess: no issues found in 44 source files\nRESULT: PASS\n\n$ .venv/bin/pytes"
+        },
+        {
+          "alias": "v15",
+          "type": "POSITIVE_COUNT_CLAIM",
+          "role": "PASSING_PHASE_TERMINAL",
+          "context": ".....                                                     [100%]\n92 passed in 1.09s\nRESULT: PASS\n\n$ .venv/bin/py"
+        },
+        {
+          "alias": "v22",
+          "type": "POSITIVE_COUNT_CLAIM",
+          "role": "PASSING_PHASE_TERMINAL",
+          "context": "                                                          [100%]\n81 passed in 23.45s\nRESULT: PASS\n\n$ .venv/bin/p"
+        },
+        {
+          "alias": "v27",
+          "type": "POSITIVE_COUNT_CLAIM",
+          "role": "PASSING_PHASE_TERMINAL",
+          "context": "                                                          [100%]\n4 passed, 52 deselected in 2.36s\nRESULT: PASS\n"
+        },
+        {
+          "alias": "v28",
+          "type": "COUNTER_CLAIM",
+          "role": "INDEPENDENT_INERT_COUNT_CLAIM",
+          "context": "                                                [100%]\n4 passed, 52 deselected in 2.36s\nRESULT: PASS\n\n$ git diff"
+        }
+      ],
+      "semantic_obligations": [
+        {
+          "role": "PASSING_PHASE_TERMINAL",
+          "alias": "v15",
+          "prose": "92 passed",
+          "offset": 614
+        },
+        {
+          "role": "PASSING_PHASE_TERMINAL",
+          "alias": "v22",
+          "prose": "81 passed",
+          "offset": 843
+        },
+        {
+          "role": "PASSING_PHASE_TERMINAL",
+          "alias": "v27",
+          "prose": "4 passed",
+          "offset": 1200
+        },
+        {
+          "role": "TASK_ACTIVE_PAIR",
+          "aliases": [
+            "v5",
+            "v6"
+          ],
+          "prose": "tasks=68 active=66",
+          "offset": 192
+        }
+      ],
+      "fixed_numeric_aliases": [],
+      "policy": "Unrelated counts remain separate inert documentary claims; passing phases/zero exits/explicit repeated summaries/authority clauses have exact roles; no computation/execution certified",
+      "other_numeric_role_policy": {
+        "duration": "inert finite nonnegative seconds, explicit alternative clock relation when present",
+        "tool_version": "inert bounded version claim; frozen authority versions are literal clauses",
+        "host": "INERT_IPV4_CLAIM, finite octets, no network authority",
+        "port": "INERT_PORT_CLAIM, finite1..65535, no network authority",
+        "unrelated_counters": "each named transcribed count is independent unless represented prose asserts equality/order; values do not certify computation or execution"
+      }
+    },
+    {
+      "profile": "PLAIN_LITERAL_03",
+      "all_counter_slots": [
+        {
+          "alias": "v14",
+          "type": "COUNTER_CLAIM",
+          "role": "TASK_ACTIVE_PAIR",
+          "context": "pty: PASS\n\n.venv/bin/kl check-harness\n  HARNESS_CHECK_PASS tasks=68 active=66\n  result: PASS\n\n.venv/bin/ruff che"
+        },
+        {
+          "alias": "v15",
+          "type": "COUNTER_CLAIM",
+          "role": "TASK_ACTIVE_PAIR",
+          "context": "\n.venv/bin/kl check-harness\n  HARNESS_CHECK_PASS tasks=68 active=66\n  result: PASS\n\n.venv/bin/ruff check .\n  All"
+        },
+        {
+          "alias": "v18",
+          "type": "COUNTER_CLAIM",
+          "role": "INDEPENDENT_INERT_COUNT_CLAIM",
+          "context": "ypy .venv/bin/mypy src tools tests\n  Success: no issues found in 44 source files\n  result: PASS\n\n.venv/bin/pytes"
+        },
+        {
+          "alias": "v20",
+          "type": "POSITIVE_COUNT_CLAIM",
+          "role": "PASSING_PHASE_TERMINAL",
+          "context": "44 source files\n  result: PASS\n\n.venv/bin/pytest -q tests/unit\n  92 passed in 1.56s\n  result: PASS\n\n.venv/bin/py"
+        },
+        {
+          "alias": "v23",
+          "type": "POSITIVE_COUNT_CLAIM",
+          "role": "PASSING_PHASE_TERMINAL",
+          "context": "sed in 1.56s\n  result: PASS\n\n.venv/bin/pytest -q tests/harness\n  81 passed in 27.31s\n  result: PASS\n\ngit diff --"
+        }
+      ],
+      "semantic_obligations": [
+        {
+          "role": "PASSING_PHASE_TERMINAL",
+          "alias": "v20",
+          "prose": "92 passed",
+          "offset": 1567
+        },
+        {
+          "role": "PASSING_PHASE_TERMINAL",
+          "alias": "v23",
+          "prose": "81 passed",
+          "offset": 1638
+        },
+        {
+          "role": "TASK_ACTIVE_PAIR",
+          "aliases": [
+            "v14",
+            "v15"
+          ],
+          "prose": "tasks=68 active=66",
+          "offset": 1306
+        }
+      ],
+      "fixed_numeric_aliases": [],
+      "policy": "Unrelated counts remain separate inert documentary claims; passing phases/zero exits/explicit repeated summaries/authority clauses have exact roles; no computation/execution certified",
+      "other_numeric_role_policy": {
+        "duration": "inert finite nonnegative seconds, explicit alternative clock relation when present",
+        "tool_version": "inert bounded version claim; frozen authority versions are literal clauses",
+        "host": "INERT_IPV4_CLAIM, finite octets, no network authority",
+        "port": "INERT_PORT_CLAIM, finite1..65535, no network authority",
+        "unrelated_counters": "each named transcribed count is independent unless represented prose asserts equality/order; values do not certify computation or execution"
+      }
+    },
+    {
+      "profile": "PLAIN_LITERAL_04",
+      "all_counter_slots": [
+        {
+          "alias": "v6",
+          "type": "COUNTER_CLAIM",
+          "role": "TASK_ACTIVE_PAIR",
+          "context": "required.\n\n.venv/bin/kl check-harness\n  HARNESS_CHECK_PASS tasks=68 active=66\n  result: PASS\n\n.venv/bin/ruff che"
+        },
+        {
+          "alias": "v7",
+          "type": "COUNTER_CLAIM",
+          "role": "TASK_ACTIVE_PAIR",
+          "context": "\n.venv/bin/kl check-harness\n  HARNESS_CHECK_PASS tasks=68 active=66\n  result: PASS\n\n.venv/bin/ruff check .\n  All"
+        },
+        {
+          "alias": "v10",
+          "type": "COUNTER_CLAIM",
+          "role": "INDEPENDENT_INERT_COUNT_CLAIM",
+          "context": "ypy .venv/bin/mypy src tools tests\n  Success: no issues found in 44 source files\n  result: PASS\n\n.venv/bin/pytes"
+        },
+        {
+          "alias": "v12",
+          "type": "POSITIVE_COUNT_CLAIM",
+          "role": "PASSING_PHASE_TERMINAL",
+          "context": "44 source files\n  result: PASS\n\n.venv/bin/pytest -q tests/unit\n  92 passed in 1.05s\n  result: PASS\n\n.venv/bin/py"
+        },
+        {
+          "alias": "v15",
+          "type": "POSITIVE_COUNT_CLAIM",
+          "role": "PASSING_PHASE_TERMINAL",
+          "context": "sed in 1.05s\n  result: PASS\n\n.venv/bin/pytest -q tests/harness\n  86 passed in 26.67s\n  result: PASS\n\n.venv/bin/p"
+        },
+        {
+          "alias": "v18",
+          "type": "POSITIVE_COUNT_CLAIM",
+          "role": "PASSING_PHASE_TERMINAL",
+          "context": "gnores_unrelated or historical_review or legal_implementation'\n  3 passed, 58 deselected in 1.31s\n  result: PAS"
+        },
+        {
+          "alias": "v19",
+          "type": "COUNTER_CLAIM",
+          "role": "INDEPENDENT_INERT_COUNT_CLAIM",
+          "context": "elated or historical_review or legal_implementation'\n  3 passed, 58 deselected in 1.31s\n  result: PASS\n\nFrozen a"
+        }
+      ],
+      "semantic_obligations": [
+        {
+          "role": "PASSING_PHASE_TERMINAL",
+          "alias": "v12",
+          "prose": "92 passed",
+          "offset": 1235
+        },
+        {
+          "role": "PASSING_PHASE_TERMINAL",
+          "alias": "v15",
+          "prose": "86 passed",
+          "offset": 1306
+        },
+        {
+          "role": "PASSING_PHASE_TERMINAL",
+          "alias": "v18",
+          "prose": "3 passed",
+          "offset": 1475
+        },
+        {
+          "role": "TASK_ACTIVE_PAIR",
+          "aliases": [
+            "v6",
+            "v7"
+          ],
+          "prose": "tasks=68 active=66",
+          "offset": 971
+        }
+      ],
+      "fixed_numeric_aliases": [],
+      "policy": "Unrelated counts remain separate inert documentary claims; passing phases/zero exits/explicit repeated summaries/authority clauses have exact roles; no computation/execution certified",
+      "other_numeric_role_policy": {
+        "duration": "inert finite nonnegative seconds, explicit alternative clock relation when present",
+        "tool_version": "inert bounded version claim; frozen authority versions are literal clauses",
+        "host": "INERT_IPV4_CLAIM, finite octets, no network authority",
+        "port": "INERT_PORT_CLAIM, finite1..65535, no network authority",
+        "unrelated_counters": "each named transcribed count is independent unless represented prose asserts equality/order; values do not certify computation or execution"
+      }
+    },
+    {
+      "profile": "PLAIN_LITERAL_05",
+      "all_counter_slots": [
+        {
+          "alias": "v6",
+          "type": "COUNTER_CLAIM",
+          "role": "TASK_ACTIVE_PAIR",
+          "context": "YTHONPATH=\"$PWD/src\"\n\nkl check-harness: HARNESS_CHECK_PASS tasks=68 active=66\nruff check .: All checks passed!\nM"
+        },
+        {
+          "alias": "v7",
+          "type": "COUNTER_CLAIM",
+          "role": "TASK_ACTIVE_PAIR",
+          "context": "\"$PWD/src\"\n\nkl check-harness: HARNESS_CHECK_PASS tasks=68 active=66\nruff check .: All checks passed!\nMYPY_CACHE_"
+        },
+        {
+          "alias": "v9",
+          "type": "COUNTER_CLAIM",
+          "role": "INDEPENDENT_INERT_COUNT_CLAIM",
+          "context": "mp/hg-013-mypy mypy src tools tests:\nSuccess: no issues found in 44 source files\nkl test-unit: 92 passed in 2.42"
+        },
+        {
+          "alias": "v10",
+          "type": "POSITIVE_COUNT_CLAIM",
+          "role": "PASSING_PHASE_TERMINAL",
+          "context": "tests:\nSuccess: no issues found in 44 source files\nkl test-unit: 92 passed in 2.42s\nkl test-harness: 95 passed i"
+        },
+        {
+          "alias": "v12",
+          "type": "POSITIVE_COUNT_CLAIM",
+          "role": "PASSING_PHASE_TERMINAL",
+          "context": "4 source files\nkl test-unit: 92 passed in 2.42s\nkl test-harness: 95 passed in 70.18s\ngit diff --check 7fb8947373"
+        },
+        {
+          "alias": "v15",
+          "type": "EXPLICIT_ZERO_EXIT_CLAIM",
+          "role": "TRANSCRIBED_ZERO_EXIT",
+          "context": "diff --check 7fb89473737015d517d3e3c18a5adf6d0b274fb3 HEAD: exit 0\ngit diff --exit-code 7fb89473737015d517d3e3c"
+        },
+        {
+          "alias": "v16",
+          "type": "EXPLICIT_ZERO_EXIT_CLAIM",
+          "role": "TRANSCRIBED_ZERO_EXIT",
+          "context": "sign_v0.2_FROZEN.md 05_KineticLoop_Protocol_v1.2_FROZEN.md: exit 0\n\nEarlier failures and their repair are retai"
+        }
+      ],
+      "semantic_obligations": [
+        {
+          "role": "PASSING_PHASE_TERMINAL",
+          "alias": "v10",
+          "prose": "92 passed",
+          "offset": 459
+        },
+        {
+          "role": "PASSING_PHASE_TERMINAL",
+          "alias": "v12",
+          "prose": "95 passed",
+          "offset": 495
+        },
+        {
+          "role": "TRANSCRIBED_ZERO_EXIT",
+          "alias": "v15",
+          "prose": "exit 0",
+          "offset": 579
+        },
+        {
+          "role": "TRANSCRIBED_ZERO_EXIT",
+          "alias": "v16",
+          "prose": "exit 0",
+          "offset": 764
+        },
+        {
+          "role": "TASK_ACTIVE_PAIR",
+          "aliases": [
+            "v6",
+            "v7"
+          ],
+          "prose": "tasks=68 active=66",
+          "offset": 287
+        }
+      ],
+      "fixed_numeric_aliases": [],
+      "policy": "Unrelated counts remain separate inert documentary claims; passing phases/zero exits/explicit repeated summaries/authority clauses have exact roles; no computation/execution certified",
+      "other_numeric_role_policy": {
+        "duration": "inert finite nonnegative seconds, explicit alternative clock relation when present",
+        "tool_version": "inert bounded version claim; frozen authority versions are literal clauses",
+        "host": "INERT_IPV4_CLAIM, finite octets, no network authority",
+        "port": "INERT_PORT_CLAIM, finite1..65535, no network authority",
+        "unrelated_counters": "each named transcribed count is independent unless represented prose asserts equality/order; values do not certify computation or execution"
+      }
+    },
+    {
+      "profile": "PLAIN_LITERAL_06",
+      "all_counter_slots": [
+        {
+          "alias": "v7",
+          "type": "COUNTER_CLAIM",
+          "role": "TASK_ACTIVE_PAIR",
+          "context": "ews-not-pass:HG-014']\nHG014_GOVERNANCE_IMPLEMENTATION_PASS tasks=68 active=66\n\nThe assertion required this to be"
+        },
+        {
+          "alias": "v8",
+          "type": "COUNTER_CLAIM",
+          "role": "TASK_ACTIVE_PAIR",
+          "context": "ss:HG-014']\nHG014_GOVERNANCE_IMPLEMENTATION_PASS tasks=68 active=66\n\nThe assertion required this to be the sole "
+        }
+      ],
+      "semantic_obligations": [
+        {
+          "role": "TASK_ACTIVE_PAIR",
+          "aliases": [
+            "v7",
+            "v8"
+          ],
+          "prose": "tasks=68 active=66",
+          "offset": 435
+        }
+      ],
+      "fixed_numeric_aliases": [],
+      "policy": "Unrelated counts remain separate inert documentary claims; passing phases/zero exits/explicit repeated summaries/authority clauses have exact roles; no computation/execution certified",
+      "other_numeric_role_policy": {
+        "duration": "inert finite nonnegative seconds, explicit alternative clock relation when present",
+        "tool_version": "inert bounded version claim; frozen authority versions are literal clauses",
+        "host": "INERT_IPV4_CLAIM, finite octets, no network authority",
+        "port": "INERT_PORT_CLAIM, finite1..65535, no network authority",
+        "unrelated_counters": "each named transcribed count is independent unless represented prose asserts equality/order; values do not certify computation or execution"
+      }
+    },
+    {
+      "profile": "PLAIN_LITERAL_07",
+      "all_counter_slots": [
+        {
+          "alias": "v6",
+          "type": "COUNTER_CLAIM",
+          "role": "TASK_ACTIVE_PAIR",
+          "context": "_integrations_valid\n  kl check-harness: HARNESS_CHECK_PASS tasks=68 active=66.\n  Historical integrations and ord"
+        },
+        {
+          "alias": "v7",
+          "type": "COUNTER_CLAIM",
+          "role": "TASK_ACTIVE_PAIR",
+          "context": "ons_valid\n  kl check-harness: HARNESS_CHECK_PASS tasks=68 active=66.\n  Historical integrations and ordinary/dela"
+        },
+        {
+          "alias": "v15",
+          "type": "COUNTER_CLAIM",
+          "role": "FIXED_AUTHORITY_OR_IDENTIFIER_CLAUSE",
+          "context": "\n  commit-linearized, idempotent RevokeArtifact contract. KL-014/015/016/017/018/055\n  critical command and oracl"
+        },
+        {
+          "alias": "v16",
+          "type": "COUNTER_CLAIM",
+          "role": "FIXED_AUTHORITY_OR_IDENTIFIER_CLAUSE",
+          "context": "ommit-linearized, idempotent RevokeArtifact contract. KL-014/015/016/017/018/055\n  critical command and oracle co"
+        },
+        {
+          "alias": "v17",
+          "type": "COUNTER_CLAIM",
+          "role": "FIXED_AUTHORITY_OR_IDENTIFIER_CLAUSE",
+          "context": "t-linearized, idempotent RevokeArtifact contract. KL-014/015/016/017/018/055\n  critical command and oracle contra"
+        },
+        {
+          "alias": "v18",
+          "type": "COUNTER_CLAIM",
+          "role": "FIXED_AUTHORITY_OR_IDENTIFIER_CLAUSE",
+          "context": "nearized, idempotent RevokeArtifact contract. KL-014/015/016/017/018/055\n  critical command and oracle contracts "
+        },
+        {
+          "alias": "v19",
+          "type": "COUNTER_CLAIM",
+          "role": "FIXED_AUTHORITY_OR_IDENTIFIER_CLAUSE",
+          "context": "ized, idempotent RevokeArtifact contract. KL-014/015/016/017/018/055\n  critical command and oracle contracts are "
+        },
+        {
+          "alias": "v22",
+          "type": "POSITIVE_COUNT_CLAIM",
+          "role": "PASSING_PHASE_TERMINAL",
+          "context": "negative_tests_pass\n  pytest -q tests/harness/test_validator.py: 102 passed in 170.36s.\nPASS harness_structure_va"
+        },
+        {
+          "alias": "v25",
+          "type": "COUNTER_CLAIM",
+          "role": "TASK_ACTIVE_PAIR",
+          "context": "ess_structure_valid\n  kl check-harness: HARNESS_CHECK_PASS tasks=68 active=66.\nPASS lint_passes\n  ruff check .: "
+        },
+        {
+          "alias": "v26",
+          "type": "COUNTER_CLAIM",
+          "role": "TASK_ACTIVE_PAIR",
+          "context": "ure_valid\n  kl check-harness: HARNESS_CHECK_PASS tasks=68 active=66.\nPASS lint_passes\n  ruff check .: All checks"
+        },
+        {
+          "alias": "v29",
+          "type": "COUNTER_CLAIM",
+          "role": "INDEPENDENT_INERT_COUNT_CLAIM",
+          "context": "S typecheck_passes\n  mypy src tools tests: Success, no issues in 55 source files.\nPASS unit_tests_pass\n  kl test"
+        },
+        {
+          "alias": "v31",
+          "type": "POSITIVE_COUNT_CLAIM",
+          "role": "PASSING_PHASE_TERMINAL",
+          "context": " issues in 55 source files.\nPASS unit_tests_pass\n  kl test-unit: 134 passed in 18.66s.\nPASS harness_tests_pass\n  "
+        },
+        {
+          "alias": "v34",
+          "type": "POSITIVE_COUNT_CLAIM",
+          "role": "PASSING_PHASE_TERMINAL",
+          "context": "134 passed in 18.66s.\nPASS harness_tests_pass\n  kl test-harness: 127 passed in 187.81s.\nPASS full_suite_passes\n  "
+        },
+        {
+          "alias": "v37",
+          "type": "POSITIVE_COUNT_CLAIM",
+          "role": "PASSING_PHASE_TERMINAL",
+          "context": "ness: 127 passed in 187.81s.\nPASS full_suite_passes\n  pytest -q: 320 passed in 207.64s.\nPASS frozen_baseline_unch"
+        },
+        {
+          "alias": "v40",
+          "type": "EXPLICIT_ZERO_EXIT_CLAIM",
+          "role": "TRANSCRIBED_ZERO_EXIT",
+          "context": "n_v0.2_FROZEN.md\n  05_KineticLoop_Protocol_v1.2_FROZEN.md\n  Exit 0; no output.\nPASS governance_scope_exact\n  Al"
+        },
+        {
+          "alias": "v42",
+          "type": "COUNTER_CLAIM",
+          "role": "INDEPENDENT_INERT_COUNT_CLAIM",
+          "context": "FROZEN.md\n  Exit 0; no output.\nPASS governance_scope_exact\n  All 49 protected-base-to-tested paths match governa"
+        },
+        {
+          "alias": "v45",
+          "type": "EXPLICIT_ZERO_EXIT_CLAIM",
+          "role": "TRANSCRIBED_ZERO_EXIT",
+          "context": "38a8f0f89648a767 7892ccd3313f8862a799182c088ef837359cf45c\n  Exit 0; no output.\n"
+        }
+      ],
+      "semantic_obligations": [
+        {
+          "role": "PASSING_PHASE_TERMINAL",
+          "alias": "v22",
+          "prose": "102 passed",
+          "offset": 1452
+        },
+        {
+          "role": "PASSING_PHASE_TERMINAL",
+          "alias": "v31",
+          "prose": "134 passed",
+          "offset": 1737
+        },
+        {
+          "role": "PASSING_PHASE_TERMINAL",
+          "alias": "v34",
+          "prose": "127 passed",
+          "offset": 1802
+        },
+        {
+          "role": "PASSING_PHASE_TERMINAL",
+          "alias": "v37",
+          "prose": "320 passed",
+          "offset": 1861
+        },
+        {
+          "role": "TRANSCRIBED_ZERO_EXIT",
+          "alias": "v40",
+          "prose": "Exit 0",
+          "offset": 2138
+        },
+        {
+          "role": "TRANSCRIBED_ZERO_EXIT",
+          "alias": "v45",
+          "prose": "Exit 0",
+          "offset": 2387
+        },
+        {
+          "role": "TASK_ACTIVE_PAIR",
+          "aliases": [
+            "v6",
+            "v7"
+          ],
+          "prose": "tasks=68 active=66",
+          "offset": 319
+        },
+        {
+          "role": "TASK_ACTIVE_PAIR",
+          "aliases": [
+            "v25",
+            "v26"
+          ],
+          "prose": "tasks=68 active=66",
+          "offset": 1543
+        }
+      ],
+      "fixed_numeric_aliases": [
+        "v15",
+        "v16",
+        "v17",
+        "v18",
+        "v19"
+      ],
+      "policy": "Unrelated counts remain separate inert documentary claims; passing phases/zero exits/explicit repeated summaries/authority clauses have exact roles; no computation/execution certified",
+      "other_numeric_role_policy": {
+        "duration": "inert finite nonnegative seconds, explicit alternative clock relation when present",
+        "tool_version": "inert bounded version claim; frozen authority versions are literal clauses",
+        "host": "INERT_IPV4_CLAIM, finite octets, no network authority",
+        "port": "INERT_PORT_CLAIM, finite1..65535, no network authority",
+        "unrelated_counters": "each named transcribed count is independent unless represented prose asserts equality/order; values do not certify computation or execution"
+      }
+    },
+    {
+      "profile": "PLAIN_LITERAL_08",
+      "all_counter_slots": [
+        {
+          "alias": "v16",
+          "type": "POSITIVE_COUNT_CLAIM",
+          "role": "PASSING_PHASE_TERMINAL",
+          "context": "014f2ffab173b4142850d4770ac32464\n- Focused validator regression: 2 passed, 106 deselected in 4.06s.\n- Removal, "
+        },
+        {
+          "alias": "v17",
+          "type": "COUNTER_CLAIM",
+          "role": "INDEPENDENT_INERT_COUNT_CLAIM",
+          "context": "73b4142850d4770ac32464\n- Focused validator regression: 2 passed, 106 deselected in 4.06s.\n- Removal, command subs"
+        },
+        {
+          "alias": "v19",
+          "type": "POSITIVE_COUNT_CLAIM",
+          "role": "PASSING_PHASE_TERMINAL",
+          "context": "evocation contract.\n\nPASS complete validation\n- Validator suite: 108 passed in 193.62s.\n- Harness suite: 133 pass"
+        },
+        {
+          "alias": "v21",
+          "type": "POSITIVE_COUNT_CLAIM",
+          "role": "PASSING_PHASE_TERMINAL",
+          "context": "ation\n- Validator suite: 108 passed in 193.62s.\n- Harness suite: 133 passed in 193.60s.\n- Harness structure: HARN"
+        },
+        {
+          "alias": "v23",
+          "type": "COUNTER_CLAIM",
+          "role": "TASK_ACTIVE_PAIR",
+          "context": "passed in 193.60s.\n- Harness structure: HARNESS_CHECK_PASS tasks=69 active=67.\n- Ruff: All checks passed.\n- JSON"
+        },
+        {
+          "alias": "v24",
+          "type": "COUNTER_CLAIM",
+          "role": "TASK_ACTIVE_PAIR",
+          "context": "193.60s.\n- Harness structure: HARNESS_CHECK_PASS tasks=69 active=67.\n- Ruff: All checks passed.\n- JSON syntax, p"
+        },
+        {
+          "alias": "v25",
+          "type": "COUNTER_CLAIM",
+          "role": "HARNESS_TERMINAL_RATIO",
+          "context": "e .pytest_cache. It did not affect collection, execution, or the 133/133 PASS result.\n\nNo review artifacts were c"
+        },
+        {
+          "alias": "v26",
+          "type": "COUNTER_CLAIM",
+          "role": "HARNESS_TERMINAL_RATIO",
+          "context": "ytest_cache. It did not affect collection, execution, or the 133/133 PASS result.\n\nNo review artifacts were creat"
+        }
+      ],
+      "semantic_obligations": [
+        {
+          "role": "PASSING_PHASE_TERMINAL",
+          "alias": "v16",
+          "prose": "2 passed",
+          "offset": 5013
+        },
+        {
+          "role": "PASSING_PHASE_TERMINAL",
+          "alias": "v19",
+          "prose": "108 passed",
+          "offset": 5301
+        },
+        {
+          "role": "PASSING_PHASE_TERMINAL",
+          "alias": "v21",
+          "prose": "133 passed",
+          "offset": 5341
+        },
+        {
+          "role": "TASK_ACTIVE_PAIR",
+          "aliases": [
+            "v23",
+            "v24"
+          ],
+          "prose": "tasks=69 active=67",
+          "offset": 5404
+        },
+        {
+          "role": "HARNESS_TERMINAL_RATIO",
+          "aliases": [
+            "v21",
+            "v25",
+            "v26"
+          ],
+          "prose": "133/133 PASS result",
+          "offset": 5718
+        }
+      ],
+      "fixed_numeric_aliases": [],
+      "policy": "Unrelated counts remain separate inert documentary claims; passing phases/zero exits/explicit repeated summaries/authority clauses have exact roles; no computation/execution certified",
+      "other_numeric_role_policy": {
+        "duration": "inert finite nonnegative seconds, explicit alternative clock relation when present",
+        "tool_version": "inert bounded version claim; frozen authority versions are literal clauses",
+        "host": "INERT_IPV4_CLAIM, finite octets, no network authority",
+        "port": "INERT_PORT_CLAIM, finite1..65535, no network authority",
+        "unrelated_counters": "each named transcribed count is independent unless represented prose asserts equality/order; values do not certify computation or execution"
+      }
+    },
+    {
+      "profile": "PLAIN_LITERAL_09",
+      "all_counter_slots": [
+        {
+          "alias": "v12",
+          "type": "POSITIVE_COUNT_CLAIM",
+          "role": "PASSING_PHASE_TERMINAL",
+          "context": "76d64b715714d532059f1f5ceb59f4b6\n- Focused validator regression: 9 passed, 100 deselected in 63.39s.\n- Removal "
+        },
+        {
+          "alias": "v13",
+          "type": "COUNTER_CLAIM",
+          "role": "INDEPENDENT_INERT_COUNT_CLAIM",
+          "context": "14d532059f1f5ceb59f4b6\n- Focused validator regression: 9 passed, 100 deselected in 63.39s.\n- Removal of KL-018, r"
+        },
+        {
+          "alias": "v15",
+          "type": "POSITIVE_COUNT_CLAIM",
+          "role": "PASSING_PHASE_TERMINAL",
+          "context": "-022 retroactively.\n\nPASS complete validation\n- Validator suite: 109 passed in 190.01s.\n- Harness suite: 134 pass"
+        },
+        {
+          "alias": "v17",
+          "type": "POSITIVE_COUNT_CLAIM",
+          "role": "PASSING_PHASE_TERMINAL",
+          "context": "ation\n- Validator suite: 109 passed in 190.01s.\n- Harness suite: 134 passed in 189.98s.\n- Harness structure: HARN"
+        },
+        {
+          "alias": "v19",
+          "type": "COUNTER_CLAIM",
+          "role": "TASK_ACTIVE_PAIR",
+          "context": "passed in 189.98s.\n- Harness structure: HARNESS_CHECK_PASS tasks=69 active=67.\n- Ruff: All checks passed.\n- JSON"
+        },
+        {
+          "alias": "v20",
+          "type": "COUNTER_CLAIM",
+          "role": "TASK_ACTIVE_PAIR",
+          "context": "189.98s.\n- Harness structure: HARNESS_CHECK_PASS tasks=69 active=67.\n- Ruff: All checks passed.\n- JSON syntax an"
+        },
+        {
+          "alias": "v21",
+          "type": "COUNTER_CLAIM",
+          "role": "HARNESS_TERMINAL_RATIO",
+          "context": "`.pytest_cache`. It did not affect collection, execution, or the 134/134 PASS result.\n\nNo review artifacts were c"
+        },
+        {
+          "alias": "v22",
+          "type": "COUNTER_CLAIM",
+          "role": "HARNESS_TERMINAL_RATIO",
+          "context": "test_cache`. It did not affect collection, execution, or the 134/134 PASS result.\n\nNo review artifacts were creat"
+        }
+      ],
+      "semantic_obligations": [
+        {
+          "role": "PASSING_PHASE_TERMINAL",
+          "alias": "v12",
+          "prose": "9 passed",
+          "offset": 2071
+        },
+        {
+          "role": "PASSING_PHASE_TERMINAL",
+          "alias": "v15",
+          "prose": "109 passed",
+          "offset": 2511
+        },
+        {
+          "role": "PASSING_PHASE_TERMINAL",
+          "alias": "v17",
+          "prose": "134 passed",
+          "offset": 2551
+        },
+        {
+          "role": "TASK_ACTIVE_PAIR",
+          "aliases": [
+            "v19",
+            "v20"
+          ],
+          "prose": "tasks=69 active=67",
+          "offset": 2614
+        },
+        {
+          "role": "HARNESS_TERMINAL_RATIO",
+          "aliases": [
+            "v17",
+            "v21",
+            "v22"
+          ],
+          "prose": "134/134 PASS result",
+          "offset": 2899
+        }
+      ],
+      "fixed_numeric_aliases": [],
+      "policy": "Unrelated counts remain separate inert documentary claims; passing phases/zero exits/explicit repeated summaries/authority clauses have exact roles; no computation/execution certified",
+      "other_numeric_role_policy": {
+        "duration": "inert finite nonnegative seconds, explicit alternative clock relation when present",
+        "tool_version": "inert bounded version claim; frozen authority versions are literal clauses",
+        "host": "INERT_IPV4_CLAIM, finite octets, no network authority",
+        "port": "INERT_PORT_CLAIM, finite1..65535, no network authority",
+        "unrelated_counters": "each named transcribed count is independent unless represented prose asserts equality/order; values do not certify computation or execution"
+      }
+    },
+    {
+      "profile": "PLAIN_LITERAL_10",
+      "all_counter_slots": [
+        {
+          "alias": "v6",
+          "type": "COUNTER_CLAIM",
+          "role": "INDEPENDENT_INERT_COUNT_CLAIM",
+          "context": "main task 01a0e412-ccbe-7530-82dd-bf6962e2b751 proposed that PR #48 contain\nthe KL-073 definition and database-c"
+        },
+        {
+          "alias": "v15",
+          "type": "COUNTER_CLAIM",
+          "role": "TASK_ACTIVE_PAIR",
+          "context": "ineticloop.db.cli check-harness\nstdout: HARNESS_CHECK_PASS tasks=70 active=68\n\nPASS harness_tests_pass\ncommand: "
+        },
+        {
+          "alias": "v16",
+          "type": "COUNTER_CLAIM",
+          "role": "TASK_ACTIVE_PAIR",
+          "context": ".db.cli check-harness\nstdout: HARNESS_CHECK_PASS tasks=70 active=68\n\nPASS harness_tests_pass\ncommand: PYTHONPATH"
+        },
+        {
+          "alias": "v19",
+          "type": "POSITIVE_COUNT_CLAIM",
+          "role": "INDEPENDENT_INERT_COUNT_CLAIM",
+          "context": "icloop.db.cli test-harness\ntranscribed-stdout-summary: collected 141 items; 141 passed in 188.57s\nnote: This is a"
+        },
+        {
+          "alias": "v20",
+          "type": "POSITIVE_COUNT_CLAIM",
+          "role": "PASSING_PHASE_TERMINAL",
+          "context": "li test-harness\ntranscribed-stdout-summary: collected 141 items; 141 passed in 188.57s\nnote: This is a faithful s"
+        },
+        {
+          "alias": "v24",
+          "type": "POSITIVE_COUNT_CLAIM",
+          "role": "INDEPENDENT_INERT_COUNT_CLAIM",
+          "context": "neticloop.db.cli test-unit\ntranscribed-stdout-summary: collected 186 items; 186 passed in 19.39s\nnote: This is a "
+        },
+        {
+          "alias": "v25",
+          "type": "POSITIVE_COUNT_CLAIM",
+          "role": "PASSING_PHASE_TERMINAL",
+          "context": "b.cli test-unit\ntranscribed-stdout-summary: collected 186 items; 186 passed in 19.39s\nnote: This is a faithful su"
+        },
+        {
+          "alias": "v31",
+          "type": "COUNTER_CLAIM",
+          "role": "INDEPENDENT_INERT_COUNT_CLAIM",
+          "context": "kineticloop.db.cli typecheck\nstdout: Success: no issues found in 85 source files\n\nPASS frozen_authority_and_prod"
+        },
+        {
+          "alias": "v39",
+          "type": "POSITIVE_COUNT_CLAIM",
+          "role": "PASSING_PHASE_TERMINAL",
+          "context": "ce_task_pair or future_task_can_modify_transaction_test'\nstdout: 7 passed, 109 deselected in 2.32s\nnote: This r"
+        },
+        {
+          "alias": "v40",
+          "type": "COUNTER_CLAIM",
+          "role": "INDEPENDENT_INERT_COUNT_CLAIM",
+          "context": "ir or future_task_can_modify_transaction_test'\nstdout: 7 passed, 109 deselected in 2.32s\nnote: This run occurred "
+        },
+        {
+          "alias": "v42",
+          "type": "POSITIVE_COUNT_CLAIM",
+          "role": "PASSING_PHASE_TERMINAL",
+          "context": "kl017-venv/bin/pytest -q tests/harness/test_validator.py\nstdout: 116 passed in 196.66s\nnote: This run occurred be"
+        }
+      ],
+      "semantic_obligations": [
+        {
+          "role": "PASSING_PHASE_TERMINAL",
+          "alias": "v20",
+          "prose": "141 passed",
+          "offset": 2046
+        },
+        {
+          "role": "PASSING_PHASE_TERMINAL",
+          "alias": "v25",
+          "prose": "186 passed",
+          "offset": 2402
+        },
+        {
+          "role": "PASSING_PHASE_TERMINAL",
+          "alias": "v39",
+          "prose": "7 passed",
+          "offset": 3541
+        },
+        {
+          "role": "PASSING_PHASE_TERMINAL",
+          "alias": "v42",
+          "prose": "116 passed",
+          "offset": 3985
+        },
+        {
+          "role": "TASK_ACTIVE_PAIR",
+          "aliases": [
+            "v15",
+            "v16"
+          ],
+          "prose": "tasks=70 active=68",
+          "offset": 1852
+        }
+      ],
+      "fixed_numeric_aliases": [],
+      "policy": "Unrelated counts remain separate inert documentary claims; passing phases/zero exits/explicit repeated summaries/authority clauses have exact roles; no computation/execution certified",
+      "other_numeric_role_policy": {
+        "duration": "inert finite nonnegative seconds, explicit alternative clock relation when present",
+        "tool_version": "inert bounded version claim; frozen authority versions are literal clauses",
+        "host": "INERT_IPV4_CLAIM, finite octets, no network authority",
+        "port": "INERT_PORT_CLAIM, finite1..65535, no network authority",
+        "unrelated_counters": "each named transcribed count is independent unless represented prose asserts equality/order; values do not certify computation or execution"
+      }
+    },
+    {
+      "profile": "PLAIN_LITERAL_11",
+      "all_counter_slots": [
+        {
+          "alias": "v13",
+          "type": "COUNTER_CLAIM",
+          "role": "TASK_ACTIVE_PAIR",
+          "context": "ineticloop.db.cli check-harness\n  PASS: HARNESS_CHECK_PASS tasks=70 active=67.\n- PYTHONPATH=\"$PWD/src\" /private/"
+        },
+        {
+          "alias": "v14",
+          "type": "COUNTER_CLAIM",
+          "role": "TASK_ACTIVE_PAIR",
+          "context": ".db.cli check-harness\n  PASS: HARNESS_CHECK_PASS tasks=70 active=67.\n- PYTHONPATH=\"$PWD/src\" /private/tmp/kl017-"
+        },
+        {
+          "alias": "v16",
+          "type": "POSITIVE_COUNT_CLAIM",
+          "role": "PASSING_PHASE_TERMINAL",
+          "context": "kl017-venv/bin/python -m kineticloop.db.cli test-harness\n  PASS: 167 passed in 202.07s.\n- PYTHONPATH=\"$PWD/src\" /"
+        },
+        {
+          "alias": "v19",
+          "type": "POSITIVE_COUNT_CLAIM",
+          "role": "PASSING_PHASE_TERMINAL",
+          "context": "mp/kl017-venv/bin/python -m kineticloop.db.cli test-unit\n  PASS: 186 passed in 59.31s.\n- PYTHONPATH=\"$PWD/src\" /p"
+        },
+        {
+          "alias": "v22",
+          "type": "POSITIVE_COUNT_CLAIM",
+          "role": "PASSING_PHASE_TERMINAL",
+          "context": "env/bin/python -m pytest -q tests/db -p no:cacheprovider\n  PASS: 218 passed in 113.75s under approved Docker acce"
+        },
+        {
+          "alias": "v27",
+          "type": "COUNTER_CLAIM",
+          "role": "INDEPENDENT_INERT_COUNT_CLAIM",
+          "context": "ython -m kineticloop.db.cli typecheck\n  PASS: no issues found in 85 source files.\n- git diff --check 7982c30230d"
+        }
+      ],
+      "semantic_obligations": [
+        {
+          "role": "PASSING_PHASE_TERMINAL",
+          "alias": "v16",
+          "prose": "167 passed",
+          "offset": 2108
+        },
+        {
+          "role": "PASSING_PHASE_TERMINAL",
+          "alias": "v19",
+          "prose": "186 passed",
+          "offset": 2230
+        },
+        {
+          "role": "PASSING_PHASE_TERMINAL",
+          "alias": "v22",
+          "prose": "218 passed",
+          "offset": 2361
+        },
+        {
+          "role": "TASK_ACTIVE_PAIR",
+          "aliases": [
+            "v13",
+            "v14"
+          ],
+          "prose": "tasks=70 active=67",
+          "offset": 1986
+        }
+      ],
+      "fixed_numeric_aliases": [],
+      "policy": "Unrelated counts remain separate inert documentary claims; passing phases/zero exits/explicit repeated summaries/authority clauses have exact roles; no computation/execution certified",
+      "other_numeric_role_policy": {
+        "duration": "inert finite nonnegative seconds, explicit alternative clock relation when present",
+        "tool_version": "inert bounded version claim; frozen authority versions are literal clauses",
+        "host": "INERT_IPV4_CLAIM, finite octets, no network authority",
+        "port": "INERT_PORT_CLAIM, finite1..65535, no network authority",
+        "unrelated_counters": "each named transcribed count is independent unless represented prose asserts equality/order; values do not certify computation or execution"
+      }
+    },
+    {
+      "profile": "PLAIN_LITERAL_12",
+      "all_counter_slots": [
+        {
+          "alias": "v7",
+          "type": "POSITIVE_COUNT_CLAIM",
+          "role": "INDEPENDENT_INERT_COUNT_CLAIM",
+          "context": "/worktrees/59e0/KineticLoop\nconfigfile: pyproject.toml\ncollected 204 items\n\ntests/harness/acceptance/test_registr"
+        },
+        {
+          "alias": "v30",
+          "type": "POSITIVE_COUNT_CLAIM",
+          "role": "PASSING_PHASE_TERMINAL",
+          "context": "..............................   [100%]\n\n======================= 204 passed in 154.94s (0:02:34) ================"
+        }
+      ],
+      "semantic_obligations": [
+        {
+          "role": "PASSING_PHASE_TERMINAL",
+          "alias": "v30",
+          "prose": "204 passed",
+          "offset": 1050
+        }
+      ],
+      "fixed_numeric_aliases": [],
+      "policy": "Unrelated counts remain separate inert documentary claims; passing phases/zero exits/explicit repeated summaries/authority clauses have exact roles; no computation/execution certified",
+      "other_numeric_role_policy": {
+        "duration": "inert finite nonnegative seconds, explicit alternative clock relation when present",
+        "tool_version": "inert bounded version claim; frozen authority versions are literal clauses",
+        "host": "INERT_IPV4_CLAIM, finite octets, no network authority",
+        "port": "INERT_PORT_CLAIM, finite1..65535, no network authority",
+        "unrelated_counters": "each named transcribed count is independent unless represented prose asserts equality/order; values do not certify computation or execution"
+      }
+    },
+    {
+      "profile": "PLAIN_LITERAL_13",
+      "all_counter_slots": [],
+      "semantic_obligations": [],
+      "fixed_numeric_aliases": [],
+      "policy": "Unrelated counts remain separate inert documentary claims; passing phases/zero exits/explicit repeated summaries/authority clauses have exact roles; no computation/execution certified",
+      "other_numeric_role_policy": {
+        "duration": "inert finite nonnegative seconds, explicit alternative clock relation when present",
+        "tool_version": "inert bounded version claim; frozen authority versions are literal clauses",
+        "host": "INERT_IPV4_CLAIM, finite octets, no network authority",
+        "port": "INERT_PORT_CLAIM, finite1..65535, no network authority",
+        "unrelated_counters": "each named transcribed count is independent unless represented prose asserts equality/order; values do not certify computation or execution"
+      }
+    },
+    {
+      "profile": "PLAIN_LITERAL_14",
+      "all_counter_slots": [
+        {
+          "alias": "v7",
+          "type": "POSITIVE_COUNT_CLAIM",
+          "role": "INDEPENDENT_INERT_COUNT_CLAIM",
+          "context": "/worktrees/59e0/KineticLoop\nconfigfile: pyproject.toml\ncollected 189 items\n\ntests/unit/config/test_secret_loader."
+        },
+        {
+          "alias": "v76",
+          "type": "POSITIVE_COUNT_CLAIM",
+          "role": "PASSING_PHASE_TERMINAL",
+          "context": "                           [100%]\n\n============================= 189 passed in 41.27s ==========================="
+        }
+      ],
+      "semantic_obligations": [
+        {
+          "role": "PASSING_PHASE_TERMINAL",
+          "alias": "v76",
+          "prose": "189 passed",
+          "offset": 2253
+        }
+      ],
+      "fixed_numeric_aliases": [],
+      "policy": "Unrelated counts remain separate inert documentary claims; passing phases/zero exits/explicit repeated summaries/authority clauses have exact roles; no computation/execution certified",
+      "other_numeric_role_policy": {
+        "duration": "inert finite nonnegative seconds, explicit alternative clock relation when present",
+        "tool_version": "inert bounded version claim; frozen authority versions are literal clauses",
+        "host": "INERT_IPV4_CLAIM, finite octets, no network authority",
+        "port": "INERT_PORT_CLAIM, finite1..65535, no network authority",
+        "unrelated_counters": "each named transcribed count is independent unless represented prose asserts equality/order; values do not certify computation or execution"
+      }
+    },
+    {
+      "profile": "PLAIN_LITERAL_15",
+      "all_counter_slots": [
+        {
+          "alias": "v5",
+          "type": "POSITIVE_COUNT_CLAIM",
+          "role": "PASSING_PHASE_TERMINAL",
+          "context": "......................                                    [100%]\n37 passed in 0.02s\n"
+        }
+      ],
+      "semantic_obligations": [
+        {
+          "role": "PASSING_PHASE_TERMINAL",
+          "alias": "v5",
+          "prose": "37 passed",
+          "offset": 226
+        }
+      ],
+      "fixed_numeric_aliases": [],
+      "policy": "Unrelated counts remain separate inert documentary claims; passing phases/zero exits/explicit repeated summaries/authority clauses have exact roles; no computation/execution certified",
+      "other_numeric_role_policy": {
+        "duration": "inert finite nonnegative seconds, explicit alternative clock relation when present",
+        "tool_version": "inert bounded version claim; frozen authority versions are literal clauses",
+        "host": "INERT_IPV4_CLAIM, finite octets, no network authority",
+        "port": "INERT_PORT_CLAIM, finite1..65535, no network authority",
+        "unrelated_counters": "each named transcribed count is independent unless represented prose asserts equality/order; values do not certify computation or execution"
+      }
+    },
+    {
+      "profile": "PLAIN_LITERAL_16",
+      "all_counter_slots": [
+        {
+          "alias": "v4",
+          "type": "COUNTER_CLAIM",
+          "role": "TASK_ACTIVE_PAIR",
+          "context": "ted tested revision\n  kl check-harness: HARNESS_CHECK_PASS tasks=68 active=66\n  ruff check .: All checks passed\n"
+        },
+        {
+          "alias": "v5",
+          "type": "COUNTER_CLAIM",
+          "role": "TASK_ACTIVE_PAIR",
+          "context": " revision\n  kl check-harness: HARNESS_CHECK_PASS tasks=68 active=66\n  ruff check .: All checks passed\n  mypy src"
+        },
+        {
+          "alias": "v6",
+          "type": "COUNTER_CLAIM",
+          "role": "INDEPENDENT_INERT_COUNT_CLAIM",
+          "context": "ruff check .: All checks passed\n  mypy src tools tests: Success, 44 source files\n  pytest -q tests/unit: 92 pass"
+        },
+        {
+          "alias": "v8",
+          "type": "POSITIVE_COUNT_CLAIM",
+          "role": "PASSING_PHASE_TERMINAL",
+          "context": "rc tools tests: Success, 44 source files\n  pytest -q tests/unit: 92 passed\n  pytest -q tests/harness: 91 passed\n"
+        },
+        {
+          "alias": "v10",
+          "type": "POSITIVE_COUNT_CLAIM",
+          "role": "PASSING_PHASE_TERMINAL",
+          "context": "les\n  pytest -q tests/unit: 92 passed\n  pytest -q tests/harness: 91 passed\n  focused governance replay regressio"
+        },
+        {
+          "alias": "v11",
+          "type": "POSITIVE_COUNT_CLAIM",
+          "role": "PASSING_PHASE_TERMINAL",
+          "context": "ests/harness: 91 passed\n  focused governance replay regressions: 10 passed, 56 deselected\n  exact HG-007 delayed"
+        },
+        {
+          "alias": "v12",
+          "type": "COUNTER_CLAIM",
+          "role": "INDEPENDENT_INERT_COUNT_CLAIM",
+          "context": "s: 91 passed\n  focused governance replay regressions: 10 passed, 56 deselected\n  exact HG-007 delayed-review rep"
+        },
+        {
+          "alias": "v14",
+          "type": "COUNTER_CLAIM",
+          "role": "TASK_ACTIVE_PAIR",
+          "context": "act HG-007 delayed-review reproduction: HARNESS_CHECK_PASS tasks=68 active=66\n  git diff --check: PASS\n  frozen "
+        },
+        {
+          "alias": "v15",
+          "type": "COUNTER_CLAIM",
+          "role": "TASK_ACTIVE_PAIR",
+          "context": " delayed-review reproduction: HARNESS_CHECK_PASS tasks=68 active=66\n  git diff --check: PASS\n  frozen Protocol, "
+        }
+      ],
+      "semantic_obligations": [
+        {
+          "role": "PASSING_PHASE_TERMINAL",
+          "alias": "v8",
+          "prose": "92 passed",
+          "offset": 445
+        },
+        {
+          "role": "PASSING_PHASE_TERMINAL",
+          "alias": "v10",
+          "prose": "91 passed",
+          "offset": 482
+        },
+        {
+          "role": "PASSING_PHASE_TERMINAL",
+          "alias": "v11",
+          "prose": "10 passed",
+          "offset": 533
+        },
+        {
+          "role": "TASK_ACTIVE_PAIR",
+          "aliases": [
+            "v4",
+            "v5"
+          ],
+          "prose": "tasks=68 active=66",
+          "offset": 319
+        },
+        {
+          "role": "TASK_ACTIVE_PAIR",
+          "aliases": [
+            "v14",
+            "v15"
+          ],
+          "prose": "tasks=68 active=66",
+          "offset": 621
+        }
+      ],
+      "fixed_numeric_aliases": [],
+      "policy": "Unrelated counts remain separate inert documentary claims; passing phases/zero exits/explicit repeated summaries/authority clauses have exact roles; no computation/execution certified",
+      "other_numeric_role_policy": {
+        "duration": "inert finite nonnegative seconds, explicit alternative clock relation when present",
+        "tool_version": "inert bounded version claim; frozen authority versions are literal clauses",
+        "host": "INERT_IPV4_CLAIM, finite octets, no network authority",
+        "port": "INERT_PORT_CLAIM, finite1..65535, no network authority",
+        "unrelated_counters": "each named transcribed count is independent unless represented prose asserts equality/order; values do not certify computation or execution"
+      }
+    },
+    {
+      "profile": "PLAIN_LITERAL_17",
+      "all_counter_slots": [
+        {
+          "alias": "v15",
+          "type": "COUNTER_CLAIM",
+          "role": "TASK_ACTIVE_PAIR",
+          "context": "ineticLoop/.venv/bin/kl check-harness\n  HARNESS_CHECK_PASS tasks=68 active=66\nlint_passes: PASS\n  PYTHONPATH=\"$P"
+        },
+        {
+          "alias": "v16",
+          "type": "COUNTER_CLAIM",
+          "role": "TASK_ACTIVE_PAIR",
+          "context": "/.venv/bin/kl check-harness\n  HARNESS_CHECK_PASS tasks=68 active=66\nlint_passes: PASS\n  PYTHONPATH=\"$PWD/src\" /U"
+        },
+        {
+          "alias": "v23",
+          "type": "COUNTER_CLAIM",
+          "role": "INDEPENDENT_INERT_COUNT_CLAIM",
+          "context": "oop/.venv/bin/mypy src tools tests\n  Success: no issues found in 44 source files\nunit_tests_pass: PASS\n  PYTHONP"
+        },
+        {
+          "alias": "v26",
+          "type": "POSITIVE_COUNT_CLAIM",
+          "role": "PASSING_PHASE_TERMINAL",
+          "context": "n/Personal_Projects/KineticLoop/.venv/bin/pytest -q tests/unit\n  92 passed in 1.81s\nharness_tests_pass: PASS\n  P"
+        },
+        {
+          "alias": "v30",
+          "type": "POSITIVE_COUNT_CLAIM",
+          "role": "PASSING_PHASE_TERMINAL",
+          "context": "ersonal_Projects/KineticLoop/.venv/bin/pytest -q tests/harness\n  95 passed in 75.72s\ndb_unit_tests_pass: PASS\n  "
+        },
+        {
+          "alias": "v34",
+          "type": "POSITIVE_COUNT_CLAIM",
+          "role": "PASSING_PHASE_TERMINAL",
+          "context": "ian/Personal_Projects/KineticLoop/.venv/bin/pytest -q tests/db\n  10 passed in 0.06s\nintegration_binding_tests_pa"
+        },
+        {
+          "alias": "v39",
+          "type": "POSITIVE_COUNT_CLAIM",
+          "role": "PASSING_PHASE_TERMINAL",
+          "context": "lidator.py -k 'integration or task_review_without_integration'\n  15 passed, 55 deselected in 9.40s\ncompose_confi"
+        },
+        {
+          "alias": "v40",
+          "type": "COUNTER_CLAIM",
+          "role": "INDEPENDENT_INERT_COUNT_CLAIM",
+          "context": "-k 'integration or task_review_without_integration'\n  15 passed, 55 deselected in 9.40s\ncompose_config_valid: PA"
+        },
+        {
+          "alias": "v49",
+          "type": "INERT_PORT_CLAIM",
+          "role": "INDEPENDENT_INERT_COUNT_CLAIM",
+          "context": "dy\n  database_name=kl_d1f3_c0283faae1a8_test host=127.0.0.1 port=55003\nreset_idempotent: PASS\n  PYTHONPATH=\"$PWD/sr"
+        },
+        {
+          "alias": "v51",
+          "type": "COUNTER_CLAIM",
+          "role": "INDEPENDENT_INERT_COUNT_CLAIM",
+          "context": "/.venv/bin/python\n  tools/db/verify.py reset-idempotent\n  resets=3 sentinel_removed=true status=PASS\nworktree_d"
+        },
+        {
+          "alias": "v56",
+          "type": "COUNTER_CLAIM",
+          "role": "FIXED_AUTHORITY_OR_IDENTIFIER_CLAUSE",
+          "context": "37e72c is an ancestor of tested_commit;\n  KL-002_RESULT.yaml SHA-256 is ba7098f56e6b4d2618d2ddb3fa14c3a2eb894ed71"
+        }
+      ],
+      "semantic_obligations": [
+        {
+          "role": "PASSING_PHASE_TERMINAL",
+          "alias": "v26",
+          "prose": "92 passed",
+          "offset": 1485
+        },
+        {
+          "role": "PASSING_PHASE_TERMINAL",
+          "alias": "v30",
+          "prose": "95 passed",
+          "offset": 1635
+        },
+        {
+          "role": "PASSING_PHASE_TERMINAL",
+          "alias": "v34",
+          "prose": "10 passed",
+          "offset": 1781
+        },
+        {
+          "role": "PASSING_PHASE_TERMINAL",
+          "alias": "v39",
+          "prose": "15 passed",
+          "offset": 2015
+        },
+        {
+          "role": "TASK_ACTIVE_PAIR",
+          "aliases": [
+            "v15",
+            "v16"
+          ],
+          "prose": "tasks=68 active=66",
+          "offset": 997
+        }
+      ],
+      "fixed_numeric_aliases": [
+        "v56"
+      ],
+      "policy": "Unrelated counts remain separate inert documentary claims; passing phases/zero exits/explicit repeated summaries/authority clauses have exact roles; no computation/execution certified",
+      "other_numeric_role_policy": {
+        "duration": "inert finite nonnegative seconds, explicit alternative clock relation when present",
+        "tool_version": "inert bounded version claim; frozen authority versions are literal clauses",
+        "host": "INERT_IPV4_CLAIM, finite octets, no network authority",
+        "port": "INERT_PORT_CLAIM, finite1..65535, no network authority",
+        "unrelated_counters": "each named transcribed count is independent unless represented prose asserts equality/order; values do not certify computation or execution"
+      }
+    },
+    {
+      "profile": "PLAIN_LITERAL_18",
+      "all_counter_slots": [
+        {
+          "alias": "v4",
+          "type": "COUNTER_CLAIM",
+          "role": "TASK_ACTIVE_PAIR",
+          "context": "ision.\n\nharness_structure_valid: PASS\n  HARNESS_CHECK_PASS tasks=68 active=66\nlint_passes: PASS\n  All checks pas"
+        },
+        {
+          "alias": "v5",
+          "type": "COUNTER_CLAIM",
+          "role": "TASK_ACTIVE_PAIR",
+          "context": "rness_structure_valid: PASS\n  HARNESS_CHECK_PASS tasks=68 active=66\nlint_passes: PASS\n  All checks passed!\ntypec"
+        },
+        {
+          "alias": "v6",
+          "type": "COUNTER_CLAIM",
+          "role": "INDEPENDENT_INERT_COUNT_CLAIM",
+          "context": "cks passed!\ntypecheck_passes: PASS\n  Success: no issues found in 44 source files\nunit_tests_pass: PASS\n  92 pass"
+        },
+        {
+          "alias": "v7",
+          "type": "POSITIVE_COUNT_CLAIM",
+          "role": "PASSING_PHASE_TERMINAL",
+          "context": "cess: no issues found in 44 source files\nunit_tests_pass: PASS\n  92 passed in 1.95s\ndb_unit_tests_pass: PASS\n  1"
+        },
+        {
+          "alias": "v9",
+          "type": "POSITIVE_COUNT_CLAIM",
+          "role": "PASSING_PHASE_TERMINAL",
+          "context": "tests_pass: PASS\n  92 passed in 1.95s\ndb_unit_tests_pass: PASS\n  10 passed in 0.06s\nharness_tests_pass: PASS\n  9"
+        },
+        {
+          "alias": "v11",
+          "type": "POSITIVE_COUNT_CLAIM",
+          "role": "PASSING_PHASE_TERMINAL",
+          "context": "tests_pass: PASS\n  10 passed in 0.06s\nharness_tests_pass: PASS\n  95 passed in 77.65s\nintegration_binding_tests_p"
+        },
+        {
+          "alias": "v13",
+          "type": "POSITIVE_COUNT_CLAIM",
+          "role": "PASSING_PHASE_TERMINAL",
+          "context": "ASS\n  95 passed in 77.65s\nintegration_binding_tests_pass: PASS\n  15 passed, 55 deselected in 9.38s\ncompose_confi"
+        },
+        {
+          "alias": "v14",
+          "type": "COUNTER_CLAIM",
+          "role": "INDEPENDENT_INERT_COUNT_CLAIM",
+          "context": "ssed in 77.65s\nintegration_binding_tests_pass: PASS\n  15 passed, 55 deselected in 9.38s\ncompose_config_valid: PA"
+        },
+        {
+          "alias": "v19",
+          "type": "INERT_PORT_CLAIM",
+          "role": "INDEPENDENT_INERT_COUNT_CLAIM",
+          "context": "SS\n  database_name=kl_d1f3_c0283faae1a8_test host=127.0.0.1 port=55005\nreset_idempotent: PASS\n  resets=3 sentinel_r"
+        },
+        {
+          "alias": "v20",
+          "type": "COUNTER_CLAIM",
+          "role": "INDEPENDENT_INERT_COUNT_CLAIM",
+          "context": "8_test host=127.0.0.1 port=55005\nreset_idempotent: PASS\n  resets=3 sentinel_removed=true status=PASS\nworktree_d"
+        },
+        {
+          "alias": "v25",
+          "type": "COUNTER_CLAIM",
+          "role": "FIXED_AUTHORITY_OR_IDENTIFIER_CLAUSE",
+          "context": "rge revision\n  e6f7a36485e4a9557297a9c282eb38c6ac37e72c with SHA-256\n  ba7098f56e6b4d2618d2ddb3fa14c3a2eb894ed716"
+        }
+      ],
+      "semantic_obligations": [
+        {
+          "role": "PASSING_PHASE_TERMINAL",
+          "alias": "v7",
+          "prose": "92 passed",
+          "offset": 506
+        },
+        {
+          "role": "PASSING_PHASE_TERMINAL",
+          "alias": "v9",
+          "prose": "10 passed",
+          "offset": 552
+        },
+        {
+          "role": "PASSING_PHASE_TERMINAL",
+          "alias": "v11",
+          "prose": "95 passed",
+          "offset": 598
+        },
+        {
+          "role": "PASSING_PHASE_TERMINAL",
+          "alias": "v13",
+          "prose": "15 passed",
+          "offset": 657
+        },
+        {
+          "role": "TASK_ACTIVE_PAIR",
+          "aliases": [
+            "v4",
+            "v5"
+          ],
+          "prose": "tasks=68 active=66",
+          "offset": 355
+        }
+      ],
+      "fixed_numeric_aliases": [
+        "v25"
+      ],
+      "policy": "Unrelated counts remain separate inert documentary claims; passing phases/zero exits/explicit repeated summaries/authority clauses have exact roles; no computation/execution certified",
+      "other_numeric_role_policy": {
+        "duration": "inert finite nonnegative seconds, explicit alternative clock relation when present",
+        "tool_version": "inert bounded version claim; frozen authority versions are literal clauses",
+        "host": "INERT_IPV4_CLAIM, finite octets, no network authority",
+        "port": "INERT_PORT_CLAIM, finite1..65535, no network authority",
+        "unrelated_counters": "each named transcribed count is independent unless represented prose asserts equality/order; values do not certify computation or execution"
+      }
+    },
+    {
+      "profile": "PLAIN_LITERAL_19",
+      "all_counter_slots": [
+        {
+          "alias": "v7",
+          "type": "COUNTER_CLAIM",
+          "role": "EXPLICIT_BINDING_CONTINUITY",
+          "context": "32b8907bc6ddc4f7b31916d6:\n  CURRENT_DOCUMENT_INDEX_PASS resolved=13 package_bindings=3\n  EVIDENCE_MANIFEST_PASS "
+        },
+        {
+          "alias": "v8",
+          "type": "COUNTER_CLAIM",
+          "role": "EXPLICIT_BINDING_CONTINUITY",
+          "context": "16d6:\n  CURRENT_DOCUMENT_INDEX_PASS resolved=13 package_bindings=3\n  EVIDENCE_MANIFEST_PASS verified_paths=3\n  "
+        },
+        {
+          "alias": "v9",
+          "type": "COUNTER_CLAIM",
+          "role": "EXPLICIT_BINDING_CONTINUITY",
+          "context": "ed=13 package_bindings=3\n  EVIDENCE_MANIFEST_PASS verified_paths=3\n  HISTORICAL_TASK_ID_MAP_PASS mappings=10\n\nh"
+        },
+        {
+          "alias": "v10",
+          "type": "COUNTER_CLAIM",
+          "role": "EXPLICIT_BINDING_CONTINUITY",
+          "context": "EST_PASS verified_paths=3\n  HISTORICAL_TASK_ID_MAP_PASS mappings=10\n\nhistorical_revision_document_index_tests: P"
+        },
+        {
+          "alias": "v14",
+          "type": "POSITIVE_COUNT_CLAIM",
+          "role": "PASSING_PHASE_TERMINAL",
+          "context": "KineticLoop/.venv/bin/pytest -q\n  tests/harness/document_index\n  20 passed in 0.12s\n\nexplicit_unresolved_model_s"
+        },
+        {
+          "alias": "v23",
+          "type": "COUNTER_CLAIM",
+          "role": "TASK_ACTIVE_PAIR",
+          "context": "ineticLoop/.venv/bin/kl check-harness\n  HARNESS_CHECK_PASS tasks=68 active=66\n\nlint_passes: PASS\n  PYTHONPATH=\"$"
+        },
+        {
+          "alias": "v24",
+          "type": "COUNTER_CLAIM",
+          "role": "TASK_ACTIVE_PAIR",
+          "context": "/.venv/bin/kl check-harness\n  HARNESS_CHECK_PASS tasks=68 active=66\n\nlint_passes: PASS\n  PYTHONPATH=\"$PWD/src\" /"
+        },
+        {
+          "alias": "v31",
+          "type": "COUNTER_CLAIM",
+          "role": "INDEPENDENT_INERT_COUNT_CLAIM",
+          "context": "oop/.venv/bin/mypy src tools tests\n  Success: no issues found in 44 source files\n\nunit_tests_pass: PASS\n  PYTHON"
+        },
+        {
+          "alias": "v34",
+          "type": "POSITIVE_COUNT_CLAIM",
+          "role": "PASSING_PHASE_TERMINAL",
+          "context": "/davetian/Personal_Projects/KineticLoop/.venv/bin/kl test-unit\n  92 passed in 2.45s\n\nharness_tests_pass: PASS\n  "
+        },
+        {
+          "alias": "v38",
+          "type": "POSITIVE_COUNT_CLAIM",
+          "role": "PASSING_PHASE_TERMINAL",
+          "context": "vetian/Personal_Projects/KineticLoop/.venv/bin/kl test-harness\n  95 passed in 77.70s\n\ncurrent_packet_checks_pass"
+        },
+        {
+          "alias": "v41",
+          "type": "COUNTER_CLAIM",
+          "role": "EXPLICIT_BINDING_CONTINUITY",
+          "context": "nt_document_index_resolves: CURRENT_DOCUMENT_INDEX_PASS resolved=13 package_bindings=3\n  evidence_manifest_paths"
+        },
+        {
+          "alias": "v42",
+          "type": "COUNTER_CLAIM",
+          "role": "EXPLICIT_BINDING_CONTINUITY",
+          "context": "solves: CURRENT_DOCUMENT_INDEX_PASS resolved=13 package_bindings=3\n  evidence_manifest_paths_resolve: EVIDENCE_"
+        },
+        {
+          "alias": "v43",
+          "type": "COUNTER_CLAIM",
+          "role": "EXPLICIT_BINDING_CONTINUITY",
+          "context": "ce_manifest_paths_resolve: EVIDENCE_MANIFEST_PASS verified_paths=3\n  historical_task_id_map_valid: HISTORICAL_T"
+        },
+        {
+          "alias": "v44",
+          "type": "COUNTER_CLAIM",
+          "role": "EXPLICIT_BINDING_CONTINUITY",
+          "context": "storical_task_id_map_valid: HISTORICAL_TASK_ID_MAP_PASS mappings=10\n  The current evidence check reports the sam"
+        },
+        {
+          "alias": "v46",
+          "type": "POSITIVE_COUNT_CLAIM",
+          "role": "PASSING_PHASE_TERMINAL",
+          "context": "KineticLoop/.venv/bin/pytest -q\n  tests/harness/document_index\n  20 passed in 0.15s\n\nintegration_binding_tests_p"
+        },
+        {
+          "alias": "v50",
+          "type": "POSITIVE_COUNT_CLAIM",
+          "role": "PASSING_PHASE_TERMINAL",
+          "context": "lidator.py -k 'integration or task_review_without_integration'\n  13 passed, 57 deselected in 8.21s\n\ncurrent_mast"
+        },
+        {
+          "alias": "v51",
+          "type": "COUNTER_CLAIM",
+          "role": "INDEPENDENT_INERT_COUNT_CLAIM",
+          "context": "-k 'integration or task_review_without_integration'\n  13 passed, 57 deselected in 8.21s\n\ncurrent_master_ancestry"
+        },
+        {
+          "alias": "v56",
+          "type": "COUNTER_CLAIM",
+          "role": "EXPLICIT_BINDING_CONTINUITY",
+          "context": "dentical between the reviewed revision and current master.\n  All 13 document ID/path/status bindings and both fr"
+        }
+      ],
+      "semantic_obligations": [
+        {
+          "role": "PASSING_PHASE_TERMINAL",
+          "alias": "v14",
+          "prose": "20 passed",
+          "offset": 882
+        },
+        {
+          "role": "PASSING_PHASE_TERMINAL",
+          "alias": "v34",
+          "prose": "92 passed",
+          "offset": 2488
+        },
+        {
+          "role": "PASSING_PHASE_TERMINAL",
+          "alias": "v38",
+          "prose": "95 passed",
+          "offset": 2631
+        },
+        {
+          "role": "PASSING_PHASE_TERMINAL",
+          "alias": "v46",
+          "prose": "20 passed",
+          "offset": 3229
+        },
+        {
+          "role": "PASSING_PHASE_TERMINAL",
+          "alias": "v50",
+          "prose": "13 passed",
+          "offset": 3464
+        },
+        {
+          "role": "TASK_ACTIVE_PAIR",
+          "aliases": [
+            "v23",
+            "v24"
+          ],
+          "prose": "tasks=68 active=66",
+          "offset": 2005
+        },
+        {
+          "role": "EXPLICIT_BINDING_CONTINUITY",
+          "aliases": [
+            "v7",
+            "v41",
+            "v56"
+          ],
+          "prose": "CURRENT_DOCUMENT_INDEX_PASS resolved=(\\d+)"
+        },
+        {
+          "role": "EXPLICIT_BINDING_CONTINUITY",
+          "aliases": [
+            "v8",
+            "v42"
+          ],
+          "prose": "package_bindings=(\\d+)"
+        },
+        {
+          "role": "EXPLICIT_BINDING_CONTINUITY",
+          "aliases": [
+            "v9",
+            "v43"
+          ],
+          "prose": "EVIDENCE_MANIFEST_PASS verified_paths=(\\d+)"
+        },
+        {
+          "role": "EXPLICIT_BINDING_CONTINUITY",
+          "aliases": [
+            "v10",
+            "v44"
+          ],
+          "prose": "HISTORICAL_TASK_ID_MAP_PASS mappings=(\\d+)"
+        }
+      ],
+      "fixed_numeric_aliases": [],
+      "policy": "Unrelated counts remain separate inert documentary claims; passing phases/zero exits/explicit repeated summaries/authority clauses have exact roles; no computation/execution certified",
+      "other_numeric_role_policy": {
+        "duration": "inert finite nonnegative seconds, explicit alternative clock relation when present",
+        "tool_version": "inert bounded version claim; frozen authority versions are literal clauses",
+        "host": "INERT_IPV4_CLAIM, finite octets, no network authority",
+        "port": "INERT_PORT_CLAIM, finite1..65535, no network authority",
+        "unrelated_counters": "each named transcribed count is independent unless represented prose asserts equality/order; values do not certify computation or execution"
+      }
+    },
+    {
+      "profile": "PLAIN_LITERAL_20",
+      "all_counter_slots": [
+        {
+          "alias": "v5",
+          "type": "EXPLICIT_ZERO_EXIT_CLAIM",
+          "role": "TRANSCRIBED_ZERO_EXIT",
+          "context": "]\n\nOutput: ['governance-required-reviews-not-pass:HG-013']\nExit: 0\nAll scope, schema, derived hashes, frozen pr"
+        }
+      ],
+      "semantic_obligations": [
+        {
+          "role": "TRANSCRIBED_ZERO_EXIT",
+          "alias": "v5",
+          "prose": "Exit: 0",
+          "offset": 584
+        }
+      ],
+      "fixed_numeric_aliases": [],
+      "policy": "Unrelated counts remain separate inert documentary claims; passing phases/zero exits/explicit repeated summaries/authority clauses have exact roles; no computation/execution certified",
+      "other_numeric_role_policy": {
+        "duration": "inert finite nonnegative seconds, explicit alternative clock relation when present",
+        "tool_version": "inert bounded version claim; frozen authority versions are literal clauses",
+        "host": "INERT_IPV4_CLAIM, finite octets, no network authority",
+        "port": "INERT_PORT_CLAIM, finite1..65535, no network authority",
+        "unrelated_counters": "each named transcribed count is independent unless represented prose asserts equality/order; values do not certify computation or execution"
+      }
+    },
+    {
+      "profile": "PLAIN_LITERAL_21",
+      "all_counter_slots": [
+        {
+          "alias": "v12",
+          "type": "COUNTER_CLAIM",
+          "role": "TASK_ACTIVE_PAIR",
+          "context": "he tested commit:\n- `kl check-harness`: HARNESS_CHECK_PASS tasks=68 active=66\n- `ruff check .`: All checks passe"
+        },
+        {
+          "alias": "v13",
+          "type": "COUNTER_CLAIM",
+          "role": "TASK_ACTIVE_PAIR",
+          "context": "commit:\n- `kl check-harness`: HARNESS_CHECK_PASS tasks=68 active=66\n- `ruff check .`: All checks passed!\n- `mypy"
+        },
+        {
+          "alias": "v14",
+          "type": "COUNTER_CLAIM",
+          "role": "INDEPENDENT_INERT_COUNT_CLAIM",
+          "context": "ks passed!\n- `mypy src tools tests`: Success: no issues found in 46 source files\n- `kl test-unit`: 95 passed in "
+        },
+        {
+          "alias": "v15",
+          "type": "POSITIVE_COUNT_CLAIM",
+          "role": "PASSING_PHASE_TERMINAL",
+          "context": "`: Success: no issues found in 46 source files\n- `kl test-unit`: 95 passed in 2.74s\n- `kl test-harness`: 100 pas"
+        },
+        {
+          "alias": "v17",
+          "type": "POSITIVE_COUNT_CLAIM",
+          "role": "PASSING_PHASE_TERMINAL",
+          "context": " files\n- `kl test-unit`: 95 passed in 2.74s\n- `kl test-harness`: 100 passed in 80.25s\n- focused identity/wrong-ta"
+        },
+        {
+          "alias": "v19",
+          "type": "POSITIVE_COUNT_CLAIM",
+          "role": "PASSING_PHASE_TERMINAL",
+          "context": "ss`: 100 passed in 80.25s\n- focused identity/wrong-target suite: 4 passed in 2.02s\n- protected-base/current bac"
+        },
+        {
+          "alias": "v22",
+          "type": "EXPLICIT_ZERO_EXIT_CLAIM",
+          "role": "TRANSCRIBED_ZERO_EXIT",
+          "context": "iff --check 94e2d66eabbe57405cf1efbdf4fd520cd78c62f2 HEAD`: exit 0\n- frozen Protocol, DB and FROZEN_BASELINE di"
+        },
+        {
+          "alias": "v23",
+          "type": "EXPLICIT_ZERO_EXIT_CLAIM",
+          "role": "TRANSCRIBED_ZERO_EXIT",
+          "context": "AD`: exit 0\n- frozen Protocol, DB and FROZEN_BASELINE diff: exit 0\n\nKL-008 is merged and integrated in the prot"
+        }
+      ],
+      "semantic_obligations": [
+        {
+          "role": "PASSING_PHASE_TERMINAL",
+          "alias": "v15",
+          "prose": "95 passed",
+          "offset": 1386
+        },
+        {
+          "role": "PASSING_PHASE_TERMINAL",
+          "alias": "v17",
+          "prose": "100 passed",
+          "offset": 1426
+        },
+        {
+          "role": "PASSING_PHASE_TERMINAL",
+          "alias": "v19",
+          "prose": "4 passed",
+          "offset": 1486
+        },
+        {
+          "role": "TRANSCRIBED_ZERO_EXIT",
+          "alias": "v22",
+          "prose": "exit 0",
+          "offset": 1697
+        },
+        {
+          "role": "TRANSCRIBED_ZERO_EXIT",
+          "alias": "v23",
+          "prose": "exit 0",
+          "offset": 1752
+        },
+        {
+          "role": "TASK_ACTIVE_PAIR",
+          "aliases": [
+            "v12",
+            "v13"
+          ],
+          "prose": "tasks=68 active=66",
+          "offset": 1242
+        }
+      ],
+      "fixed_numeric_aliases": [],
+      "policy": "Unrelated counts remain separate inert documentary claims; passing phases/zero exits/explicit repeated summaries/authority clauses have exact roles; no computation/execution certified",
+      "other_numeric_role_policy": {
+        "duration": "inert finite nonnegative seconds, explicit alternative clock relation when present",
+        "tool_version": "inert bounded version claim; frozen authority versions are literal clauses",
+        "host": "INERT_IPV4_CLAIM, finite octets, no network authority",
+        "port": "INERT_PORT_CLAIM, finite1..65535, no network authority",
+        "unrelated_counters": "each named transcribed count is independent unless represented prose asserts equality/order; values do not certify computation or execution"
+      }
+    },
+    {
+      "profile": "PLAIN_LITERAL_22",
+      "all_counter_slots": [
+        {
+          "alias": "v24",
+          "type": "COUNTER_CLAIM",
+          "role": "TASK_ACTIVE_PAIR",
+          "context": "ineticLoop/.venv/bin/kl check-harness\n  HARNESS_CHECK_PASS tasks=68 active=66\n\nlint_passes: PASS\n  PYTHONPATH=\"$"
+        },
+        {
+          "alias": "v25",
+          "type": "COUNTER_CLAIM",
+          "role": "TASK_ACTIVE_PAIR",
+          "context": "/.venv/bin/kl check-harness\n  HARNESS_CHECK_PASS tasks=68 active=66\n\nlint_passes: PASS\n  PYTHONPATH=\"$PWD/src\"\n "
+        },
+        {
+          "alias": "v31",
+          "type": "COUNTER_CLAIM",
+          "role": "INDEPENDENT_INERT_COUNT_CLAIM",
+          "context": "oop/.venv/bin/mypy src tools tests\n  Success: no issues found in 46 source files\n\nunit_tests_pass: PASS\n  PYTHON"
+        },
+        {
+          "alias": "v33",
+          "type": "POSITIVE_COUNT_CLAIM",
+          "role": "PASSING_PHASE_TERMINAL",
+          "context": "/davetian/Personal_Projects/KineticLoop/.venv/bin/kl test-unit\n  95 passed in 2.35s\n\nharness_tests_pass: PASS\n  "
+        },
+        {
+          "alias": "v36",
+          "type": "POSITIVE_COUNT_CLAIM",
+          "role": "PASSING_PHASE_TERMINAL",
+          "context": "vetian/Personal_Projects/KineticLoop/.venv/bin/kl test-harness\n  95 passed in 76.42s\n\nintegration_binding_tests_"
+        },
+        {
+          "alias": "v41",
+          "type": "POSITIVE_COUNT_CLAIM",
+          "role": "PASSING_PHASE_TERMINAL",
+          "context": "bin/pytest -q\n  tests/harness/test_validator.py -k integration\n  13 passed, 57 deselected in 7.41s\n\ngovernance_s"
+        },
+        {
+          "alias": "v42",
+          "type": "COUNTER_CLAIM",
+          "role": "INDEPENDENT_INERT_COUNT_CLAIM",
+          "context": "-q\n  tests/harness/test_validator.py -k integration\n  13 passed, 57 deselected in 7.41s\n\ngovernance_scope_exact:"
+        }
+      ],
+      "semantic_obligations": [
+        {
+          "role": "PASSING_PHASE_TERMINAL",
+          "alias": "v33",
+          "prose": "95 passed",
+          "offset": 3012
+        },
+        {
+          "role": "PASSING_PHASE_TERMINAL",
+          "alias": "v36",
+          "prose": "95 passed",
+          "offset": 3157
+        },
+        {
+          "role": "PASSING_PHASE_TERMINAL",
+          "alias": "v41",
+          "prose": "13 passed",
+          "offset": 3358
+        },
+        {
+          "role": "TASK_ACTIVE_PAIR",
+          "aliases": [
+            "v24",
+            "v25"
+          ],
+          "prose": "tasks=68 active=66",
+          "offset": 2525
+        }
+      ],
+      "fixed_numeric_aliases": [],
+      "policy": "Unrelated counts remain separate inert documentary claims; passing phases/zero exits/explicit repeated summaries/authority clauses have exact roles; no computation/execution certified",
+      "other_numeric_role_policy": {
+        "duration": "inert finite nonnegative seconds, explicit alternative clock relation when present",
+        "tool_version": "inert bounded version claim; frozen authority versions are literal clauses",
+        "host": "INERT_IPV4_CLAIM, finite octets, no network authority",
+        "port": "INERT_PORT_CLAIM, finite1..65535, no network authority",
+        "unrelated_counters": "each named transcribed count is independent unless represented prose asserts equality/order; values do not certify computation or execution"
+      }
+    },
+    {
+      "profile": "PLAIN_LITERAL_23",
+      "all_counter_slots": [
+        {
+          "alias": "v24",
+          "type": "COUNTER_CLAIM",
+          "role": "TASK_ACTIVE_PAIR",
+          "context": "ineticLoop/.venv/bin/kl check-harness\n  HARNESS_CHECK_PASS tasks=68 active=66\n\nlint_passes: PASS\n  PYTHONPATH=\"$"
+        },
+        {
+          "alias": "v25",
+          "type": "COUNTER_CLAIM",
+          "role": "TASK_ACTIVE_PAIR",
+          "context": "/.venv/bin/kl check-harness\n  HARNESS_CHECK_PASS tasks=68 active=66\n\nlint_passes: PASS\n  PYTHONPATH=\"$PWD/src\"\n "
+        },
+        {
+          "alias": "v31",
+          "type": "COUNTER_CLAIM",
+          "role": "INDEPENDENT_INERT_COUNT_CLAIM",
+          "context": "oop/.venv/bin/mypy src tools tests\n  Success: no issues found in 55 source files\n\nunit_tests_pass: PASS\n  PYTHON"
+        },
+        {
+          "alias": "v33",
+          "type": "POSITIVE_COUNT_CLAIM",
+          "role": "PASSING_PHASE_TERMINAL",
+          "context": "/davetian/Personal_Projects/KineticLoop/.venv/bin/kl test-unit\n  134 passed in 3.67s\n\nharness_tests_pass: PASS\n  "
+        },
+        {
+          "alias": "v36",
+          "type": "POSITIVE_COUNT_CLAIM",
+          "role": "PASSING_PHASE_TERMINAL",
+          "context": "vetian/Personal_Projects/KineticLoop/.venv/bin/kl test-harness\n  100 passed in 80.00s\n\nintegration_binding_tests_"
+        },
+        {
+          "alias": "v41",
+          "type": "POSITIVE_COUNT_CLAIM",
+          "role": "PASSING_PHASE_TERMINAL",
+          "context": "bin/pytest -q\n  tests/harness/test_validator.py -k integration\n  13 passed, 62 deselected in 8.83s\n\ngovernance_s"
+        },
+        {
+          "alias": "v42",
+          "type": "COUNTER_CLAIM",
+          "role": "INDEPENDENT_INERT_COUNT_CLAIM",
+          "context": "-q\n  tests/harness/test_validator.py -k integration\n  13 passed, 62 deselected in 8.83s\n\ngovernance_scope_exact:"
+        }
+      ],
+      "semantic_obligations": [
+        {
+          "role": "PASSING_PHASE_TERMINAL",
+          "alias": "v33",
+          "prose": "134 passed",
+          "offset": 3117
+        },
+        {
+          "role": "PASSING_PHASE_TERMINAL",
+          "alias": "v36",
+          "prose": "100 passed",
+          "offset": 3263
+        },
+        {
+          "role": "PASSING_PHASE_TERMINAL",
+          "alias": "v41",
+          "prose": "13 passed",
+          "offset": 3465
+        },
+        {
+          "role": "TASK_ACTIVE_PAIR",
+          "aliases": [
+            "v24",
+            "v25"
+          ],
+          "prose": "tasks=68 active=66",
+          "offset": 2630
+        }
+      ],
+      "fixed_numeric_aliases": [],
+      "policy": "Unrelated counts remain separate inert documentary claims; passing phases/zero exits/explicit repeated summaries/authority clauses have exact roles; no computation/execution certified",
+      "other_numeric_role_policy": {
+        "duration": "inert finite nonnegative seconds, explicit alternative clock relation when present",
+        "tool_version": "inert bounded version claim; frozen authority versions are literal clauses",
+        "host": "INERT_IPV4_CLAIM, finite octets, no network authority",
+        "port": "INERT_PORT_CLAIM, finite1..65535, no network authority",
+        "unrelated_counters": "each named transcribed count is independent unless represented prose asserts equality/order; values do not certify computation or execution"
+      }
+    },
+    {
+      "profile": "PLAIN_LITERAL_24",
+      "all_counter_slots": [
+        {
+          "alias": "v30",
+          "type": "POSITIVE_COUNT_CLAIM",
+          "role": "PASSING_PHASE_TERMINAL",
+          "context": "r\n  governance_rejects_undeclared_write\"\n  -p no:cacheprovider\n  15 passed, 93 deselected in 58.63s.\n\nharness_st"
+        },
+        {
+          "alias": "v31",
+          "type": "COUNTER_CLAIM",
+          "role": "INDEPENDENT_INERT_COUNT_CLAIM",
+          "context": "nce_rejects_undeclared_write\"\n  -p no:cacheprovider\n  15 passed, 93 deselected in 58.63s.\n\nharness_structure_val"
+        },
+        {
+          "alias": "v34",
+          "type": "COUNTER_CLAIM",
+          "role": "TASK_ACTIVE_PAIR",
+          "context": "e/tmp/hg018-venv/bin/kl check-harness\n  HARNESS_CHECK_PASS tasks=69 active=67.\n\nharness_tests_pass: PASS\n  PYTHO"
+        },
+        {
+          "alias": "v35",
+          "type": "COUNTER_CLAIM",
+          "role": "TASK_ACTIVE_PAIR",
+          "context": "8-venv/bin/kl check-harness\n  HARNESS_CHECK_PASS tasks=69 active=67.\n\nharness_tests_pass: PASS\n  PYTHONPATH=\"$PW"
+        },
+        {
+          "alias": "v38",
+          "type": "POSITIVE_COUNT_CLAIM",
+          "role": "PASSING_PHASE_TERMINAL",
+          "context": "o:cacheprovider\"\n  /private/tmp/hg018-venv/bin/kl test-harness\n  133 passed in 204.86s.\n\nunit_tests_pass: PASS\n  "
+        },
+        {
+          "alias": "v41",
+          "type": "POSITIVE_COUNT_CLAIM",
+          "role": "PASSING_PHASE_TERMINAL",
+          "context": "p no:cacheprovider\"\n  /private/tmp/hg018-venv/bin/kl test-unit\n  169 passed in 22.92s.\n\nfull_suite_unchanged_db_b"
+        },
+        {
+          "alias": "v44",
+          "type": "COUNTER_CLAIM",
+          "role": "INDEPENDENT_INERT_COUNT_CLAIM",
+          "context": "_boundary: PASS\n  The current tested revision reran the complete 133-test harness suite and\n  169-test unit suite"
+        },
+        {
+          "alias": "v45",
+          "type": "COUNTER_CLAIM",
+          "role": "INDEPENDENT_INERT_COUNT_CLAIM",
+          "context": " tested revision reran the complete 133-test harness suite and\n  169-test unit suite. The full invocation passed "
+        },
+        {
+          "alias": "v46",
+          "type": "COUNTER_CLAIM",
+          "role": "INDEPENDENT_INERT_COUNT_CLAIM",
+          "context": "ness suite and\n  169-test unit suite. The full invocation passed 361 tests before 22 PostgreSQL\n  cases stopped s"
+        },
+        {
+          "alias": "v47",
+          "type": "COUNTER_CLAIM",
+          "role": "INDEPENDENT_INERT_COUNT_CLAIM",
+          "context": "169-test unit suite. The full invocation passed 361 tests before 22 PostgreSQL\n  cases stopped solely because th"
+        },
+        {
+          "alias": "v48",
+          "type": "COUNTER_CLAIM",
+          "role": "INDEPENDENT_INERT_COUNT_CLAIM",
+          "context": "because this execution sandbox denied Docker API access.\n  Those 81 DB tests passed at 611c6fea55688ab3cf309853c"
+        },
+        {
+          "alias": "v56",
+          "type": "COUNTER_CLAIM",
+          "role": "INDEPENDENT_INERT_COUNT_CLAIM",
+          "context": "y src tools/harness tools/db tests\n  Success: no issues found in 72 source files.\n\nlint_passes: PASS\n  RUFF_CACH"
+        },
+        {
+          "alias": "v61",
+          "type": "COUNTER_CLAIM",
+          "role": "INDEPENDENT_INERT_COUNT_CLAIM",
+          "context": "t: PASS\n  The protected-base-to-tested change set is exactly the 12 declared governance\n  content, authority-pro"
+        }
+      ],
+      "semantic_obligations": [
+        {
+          "role": "PASSING_PHASE_TERMINAL",
+          "alias": "v30",
+          "prose": "15 passed",
+          "offset": 4538
+        },
+        {
+          "role": "PASSING_PHASE_TERMINAL",
+          "alias": "v38",
+          "prose": "133 passed",
+          "offset": 4850
+        },
+        {
+          "role": "PASSING_PHASE_TERMINAL",
+          "alias": "v41",
+          "prose": "169 passed",
+          "offset": 5002
+        },
+        {
+          "role": "TASK_ACTIVE_PAIR",
+          "aliases": [
+            "v34",
+            "v35"
+          ],
+          "prose": "tasks=69 active=67",
+          "offset": 4695
+        }
+      ],
+      "fixed_numeric_aliases": [],
+      "policy": "Unrelated counts remain separate inert documentary claims; passing phases/zero exits/explicit repeated summaries/authority clauses have exact roles; no computation/execution certified",
+      "other_numeric_role_policy": {
+        "duration": "inert finite nonnegative seconds, explicit alternative clock relation when present",
+        "tool_version": "inert bounded version claim; frozen authority versions are literal clauses",
+        "host": "INERT_IPV4_CLAIM, finite octets, no network authority",
+        "port": "INERT_PORT_CLAIM, finite1..65535, no network authority",
+        "unrelated_counters": "each named transcribed count is independent unless represented prose asserts equality/order; values do not certify computation or execution"
+      }
+    },
+    {
+      "profile": "PLAIN_LITERAL_25",
+      "all_counter_slots": [
+        {
+          "alias": "v24",
+          "type": "COUNTER_CLAIM",
+          "role": "TASK_ACTIVE_PAIR",
+          "context": "\"$PWD/src\" .venv/bin/kl check-harness\n  HARNESS_CHECK_PASS tasks=68 active=66\n\nlint_passes: PASS\n  PYTHONPATH=\"$"
+        },
+        {
+          "alias": "v25",
+          "type": "COUNTER_CLAIM",
+          "role": "TASK_ACTIVE_PAIR",
+          "context": " .venv/bin/kl check-harness\n  HARNESS_CHECK_PASS tasks=68 active=66\n\nlint_passes: PASS\n  PYTHONPATH=\"$PWD/src\" ."
+        },
+        {
+          "alias": "v31",
+          "type": "COUNTER_CLAIM",
+          "role": "INDEPENDENT_INERT_COUNT_CLAIM",
+          "context": "\"\n  .venv/bin/mypy src tools tests\n  Success: no issues found in 73 source files\n\nunit_tests_pass: PASS\n  PYTHON"
+        },
+        {
+          "alias": "v34",
+          "type": "POSITIVE_COUNT_CLAIM",
+          "role": "PASSING_PHASE_TERMINAL",
+          "context": "ests_pass: PASS\n  PYTHONPATH=\"$PWD/src\" .venv/bin/kl test-unit\n  169 passed in 22.74s\n\nharness_tests_pass: PASS\n "
+        },
+        {
+          "alias": "v38",
+          "type": "POSITIVE_COUNT_CLAIM",
+          "role": "PASSING_PHASE_TERMINAL",
+          "context": "s_pass: PASS\n  PYTHONPATH=\"$PWD/src\" .venv/bin/kl test-harness\n  127 passed in 184.84s\n\nintegration_binding_tests"
+        },
+        {
+          "alias": "v42",
+          "type": "POSITIVE_COUNT_CLAIM",
+          "role": "PASSING_PHASE_TERMINAL",
+          "context": "bin/pytest -q\n  tests/harness/test_validator.py -k integration\n  20 passed, 82 deselected in 48.10s\n\ngovernance_"
+        },
+        {
+          "alias": "v43",
+          "type": "COUNTER_CLAIM",
+          "role": "INDEPENDENT_INERT_COUNT_CLAIM",
+          "context": "-q\n  tests/harness/test_validator.py -k integration\n  20 passed, 82 deselected in 48.10s\n\ngovernance_scope_exact"
+        }
+      ],
+      "semantic_obligations": [
+        {
+          "role": "PASSING_PHASE_TERMINAL",
+          "alias": "v34",
+          "prose": "169 passed",
+          "offset": 3041
+        },
+        {
+          "role": "PASSING_PHASE_TERMINAL",
+          "alias": "v38",
+          "prose": "127 passed",
+          "offset": 3140
+        },
+        {
+          "role": "PASSING_PHASE_TERMINAL",
+          "alias": "v42",
+          "prose": "20 passed",
+          "offset": 3295
+        },
+        {
+          "role": "TASK_ACTIVE_PAIR",
+          "aliases": [
+            "v24",
+            "v25"
+          ],
+          "prose": "tasks=68 active=66",
+          "offset": 2690
+        }
+      ],
+      "fixed_numeric_aliases": [],
+      "policy": "Unrelated counts remain separate inert documentary claims; passing phases/zero exits/explicit repeated summaries/authority clauses have exact roles; no computation/execution certified",
+      "other_numeric_role_policy": {
+        "duration": "inert finite nonnegative seconds, explicit alternative clock relation when present",
+        "tool_version": "inert bounded version claim; frozen authority versions are literal clauses",
+        "host": "INERT_IPV4_CLAIM, finite octets, no network authority",
+        "port": "INERT_PORT_CLAIM, finite1..65535, no network authority",
+        "unrelated_counters": "each named transcribed count is independent unless represented prose asserts equality/order; values do not certify computation or execution"
+      }
+    },
+    {
+      "profile": "PLAIN_LITERAL_26",
+      "all_counter_slots": [
+        {
+          "alias": "v11",
+          "type": "POSITIVE_COUNT_CLAIM",
+          "role": "PASSING_PHASE_TERMINAL",
+          "context": "201630e09fa4ca2\n\nPASS focused security-contract negative guard\n- 1 passed, 107 deselected in 2.64s at tested co"
+        },
+        {
+          "alias": "v12",
+          "type": "COUNTER_CLAIM",
+          "role": "INDEPENDENT_INERT_COUNT_CLAIM",
+          "context": "a4ca2\n\nPASS focused security-contract negative guard\n- 1 passed, 107 deselected in 2.64s at tested commit bcd713c"
+        },
+        {
+          "alias": "v14",
+          "type": "POSITIVE_COUNT_CLAIM",
+          "role": "PASSING_PHASE_TERMINAL",
+          "context": "e rejected for both new checks.\n\nPASS complete validator suite\n- 108 passed in 173.25s at tested commit bcd713ce4"
+        },
+        {
+          "alias": "v16",
+          "type": "POSITIVE_COUNT_CLAIM",
+          "role": "PASSING_PHASE_TERMINAL",
+          "context": "4153e5967b96d187577b36ad081c9b74.\n\nPASS complete harness suite\n- 133 passed in 175.36s at tested commit bcd713ce4"
+        },
+        {
+          "alias": "v18",
+          "type": "COUNTER_CLAIM",
+          "role": "TASK_ACTIVE_PAIR",
+          "context": "36ad081c9b74.\n\nPASS harness structure\n- HARNESS_CHECK_PASS tasks=69 active=67.\n\nPASS lint\n- All checks passed fo"
+        },
+        {
+          "alias": "v19",
+          "type": "COUNTER_CLAIM",
+          "role": "TASK_ACTIVE_PAIR",
+          "context": "74.\n\nPASS harness structure\n- HARNESS_CHECK_PASS tasks=69 active=67.\n\nPASS lint\n- All checks passed for tools/ha"
+        }
+      ],
+      "semantic_obligations": [
+        {
+          "role": "PASSING_PHASE_TERMINAL",
+          "alias": "v11",
+          "prose": "1 passed",
+          "offset": 2202
+        },
+        {
+          "role": "PASSING_PHASE_TERMINAL",
+          "alias": "v14",
+          "prose": "108 passed",
+          "offset": 2450
+        },
+        {
+          "role": "PASSING_PHASE_TERMINAL",
+          "alias": "v16",
+          "prose": "133 passed",
+          "offset": 2562
+        },
+        {
+          "role": "TASK_ACTIVE_PAIR",
+          "aliases": [
+            "v18",
+            "v19"
+          ],
+          "prose": "tasks=69 active=67",
+          "offset": 2688
+        }
+      ],
+      "fixed_numeric_aliases": [],
+      "policy": "Unrelated counts remain separate inert documentary claims; passing phases/zero exits/explicit repeated summaries/authority clauses have exact roles; no computation/execution certified",
+      "other_numeric_role_policy": {
+        "duration": "inert finite nonnegative seconds, explicit alternative clock relation when present",
+        "tool_version": "inert bounded version claim; frozen authority versions are literal clauses",
+        "host": "INERT_IPV4_CLAIM, finite octets, no network authority",
+        "port": "INERT_PORT_CLAIM, finite1..65535, no network authority",
+        "unrelated_counters": "each named transcribed count is independent unless represented prose asserts equality/order; values do not certify computation or execution"
+      }
+    },
+    {
+      "profile": "PLAIN_LITERAL_27",
+      "all_counter_slots": [
+        {
+          "alias": "v7",
+          "type": "POSITIVE_COUNT_CLAIM",
+          "role": "INDEPENDENT_INERT_COUNT_CLAIM",
+          "context": "icloop.db.cli test-harness\ntranscribed-stdout-summary: collected 167 items; 167 passed in 209.95s\noracle: The com"
+        },
+        {
+          "alias": "v8",
+          "type": "POSITIVE_COUNT_CLAIM",
+          "role": "PASSING_PHASE_TERMINAL",
+          "context": "li test-harness\ntranscribed-stdout-summary: collected 167 items; 167 passed in 209.95s\noracle: The complete harne"
+        },
+        {
+          "alias": "v12",
+          "type": "POSITIVE_COUNT_CLAIM",
+          "role": "INDEPENDENT_INERT_COUNT_CLAIM",
+          "context": "neticloop.db.cli test-unit\ntranscribed-stdout-summary: collected 186 items; 186 passed in 58.82s\n\nPASS database_t"
+        },
+        {
+          "alias": "v13",
+          "type": "POSITIVE_COUNT_CLAIM",
+          "role": "PASSING_PHASE_TERMINAL",
+          "context": "b.cli test-unit\ntranscribed-stdout-summary: collected 186 items; 186 passed in 58.82s\n\nPASS database_tests_pass\nc"
+        },
+        {
+          "alias": "v17",
+          "type": "POSITIVE_COUNT_CLAIM",
+          "role": "PASSING_PHASE_TERMINAL",
+          "context": "test -q tests/db -p no:cacheprovider\ntranscribed-stdout-summary: 214 passed in 107.17s\nexecution_context: Docker "
+        },
+        {
+          "alias": "v21",
+          "type": "COUNTER_CLAIM",
+          "role": "TASK_ACTIVE_PAIR",
+          "context": "ineticloop.db.cli check-harness\nstdout: HARNESS_CHECK_PASS tasks=70 active=67\n\nPASS lint_pass\ncommand: PYTHONPAT"
+        },
+        {
+          "alias": "v22",
+          "type": "COUNTER_CLAIM",
+          "role": "TASK_ACTIVE_PAIR",
+          "context": ".db.cli check-harness\nstdout: HARNESS_CHECK_PASS tasks=70 active=67\n\nPASS lint_pass\ncommand: PYTHONPATH=\"$PWD/sr"
+        },
+        {
+          "alias": "v27",
+          "type": "COUNTER_CLAIM",
+          "role": "INDEPENDENT_INERT_COUNT_CLAIM",
+          "context": "kineticloop.db.cli typecheck\nstdout: Success: no issues found in 85 source files\n\nPASS frozen_and_retained_scope"
+        },
+        {
+          "alias": "v35",
+          "type": "COUNTER_CLAIM",
+          "role": "EXPLICIT_ACTIVE_REDUCTION",
+          "context": "standalone\nscheduling barrier and active_task_count reduced from 68 to 67. The disposition\nclaims no task PASS, "
+        },
+        {
+          "alias": "v36",
+          "type": "COUNTER_CLAIM",
+          "role": "EXPLICIT_ACTIVE_REDUCTION",
+          "context": "lone\nscheduling barrier and active_task_count reduced from 68 to 67. The disposition\nclaims no task PASS, produc"
+        }
+      ],
+      "semantic_obligations": [
+        {
+          "role": "PASSING_PHASE_TERMINAL",
+          "alias": "v8",
+          "prose": "167 passed",
+          "offset": 376
+        },
+        {
+          "role": "PASSING_PHASE_TERMINAL",
+          "alias": "v13",
+          "prose": "186 passed",
+          "offset": 1036
+        },
+        {
+          "role": "PASSING_PHASE_TERMINAL",
+          "alias": "v17",
+          "prose": "214 passed",
+          "offset": 1219
+        },
+        {
+          "role": "TASK_ACTIVE_PAIR",
+          "aliases": [
+            "v21",
+            "v22"
+          ],
+          "prose": "tasks=70 active=67",
+          "offset": 1541
+        },
+        {
+          "role": "EXPLICIT_ACTIVE_REDUCTION",
+          "aliases": [
+            "v35",
+            "v36",
+            "v22"
+          ],
+          "prose": "active_task_count reduced from 68 to 67"
+        }
+      ],
+      "fixed_numeric_aliases": [],
+      "policy": "Unrelated counts remain separate inert documentary claims; passing phases/zero exits/explicit repeated summaries/authority clauses have exact roles; no computation/execution certified",
+      "other_numeric_role_policy": {
+        "duration": "inert finite nonnegative seconds, explicit alternative clock relation when present",
+        "tool_version": "inert bounded version claim; frozen authority versions are literal clauses",
+        "host": "INERT_IPV4_CLAIM, finite octets, no network authority",
+        "port": "INERT_PORT_CLAIM, finite1..65535, no network authority",
+        "unrelated_counters": "each named transcribed count is independent unless represented prose asserts equality/order; values do not certify computation or execution"
+      }
+    },
+    {
+      "profile": "PLAIN_LITERAL_28",
+      "all_counter_slots": [
+        {
+          "alias": "v7",
+          "type": "POSITIVE_COUNT_CLAIM",
+          "role": "PASSING_PHASE_TERMINAL",
+          "context": "URRENCY remediation at b10483943abb12d31c71694faaf8404341fd3c64: 167 harness tests passed in 183.08s, 186 unit te"
+        },
+        {
+          "alias": "v9",
+          "type": "POSITIVE_COUNT_CLAIM",
+          "role": "PASSING_PHASE_TERMINAL",
+          "context": "d31c71694faaf8404341fd3c64: 167 harness tests passed in 183.08s, 186 unit tests passed in 52.42s, 214 database te"
+        },
+        {
+          "alias": "v11",
+          "type": "POSITIVE_COUNT_CLAIM",
+          "role": "PASSING_PHASE_TERMINAL",
+          "context": "arness tests passed in 183.08s, 186 unit tests passed in 52.42s, 214 database tests passed in 101.35s, lint passe"
+        },
+        {
+          "alias": "v13",
+          "type": "COUNTER_CLAIM",
+          "role": "INDEPENDENT_INERT_COUNT_CLAIM",
+          "context": "sed in 101.35s, lint passed, and typecheck reported no issues in 85 source files. The suffix to tested commit 16"
+        },
+        {
+          "alias": "v16",
+          "type": "EXPLICIT_ZERO_EXIT_CLAIM",
+          "role": "TRANSCRIBED_ZERO_EXIT",
+          "context": "l017-venv/bin/python -m kineticloop.db.cli check-harness` exited 0 and printed `HARNESS_CHECK_PASS tasks=70 act"
+        },
+        {
+          "alias": "v17",
+          "type": "COUNTER_CLAIM",
+          "role": "TASK_ACTIVE_PAIR",
+          "context": "li check-harness` exited 0 and printed `HARNESS_CHECK_PASS tasks=70 active=67`.\n- KL-020 remained exactly ENFORC"
+        },
+        {
+          "alias": "v18",
+          "type": "COUNTER_CLAIM",
+          "role": "TASK_ACTIVE_PAIR",
+          "context": "arness` exited 0 and printed `HARNESS_CHECK_PASS tasks=70 active=67`.\n- KL-020 remained exactly ENFORCEABLE, acc"
+        }
+      ],
+      "semantic_obligations": [
+        {
+          "role": "PASSING_PHASE_TERMINAL",
+          "alias": "v7",
+          "prose": "167 harness tests passed",
+          "offset": 377
+        },
+        {
+          "role": "PASSING_PHASE_TERMINAL",
+          "alias": "v9",
+          "prose": "186 unit tests passed",
+          "offset": 414
+        },
+        {
+          "role": "PASSING_PHASE_TERMINAL",
+          "alias": "v11",
+          "prose": "214 database tests passed",
+          "offset": 447
+        },
+        {
+          "role": "TRANSCRIBED_ZERO_EXIT",
+          "alias": "v16",
+          "prose": "exited 0",
+          "offset": 1037
+        },
+        {
+          "role": "TASK_ACTIVE_PAIR",
+          "aliases": [
+            "v17",
+            "v18"
+          ],
+          "prose": "tasks=70 active=67",
+          "offset": 1078
+        }
+      ],
+      "fixed_numeric_aliases": [],
+      "policy": "Unrelated counts remain separate inert documentary claims; passing phases/zero exits/explicit repeated summaries/authority clauses have exact roles; no computation/execution certified",
+      "other_numeric_role_policy": {
+        "duration": "inert finite nonnegative seconds, explicit alternative clock relation when present",
+        "tool_version": "inert bounded version claim; frozen authority versions are literal clauses",
+        "host": "INERT_IPV4_CLAIM, finite octets, no network authority",
+        "port": "INERT_PORT_CLAIM, finite1..65535, no network authority",
+        "unrelated_counters": "each named transcribed count is independent unless represented prose asserts equality/order; values do not certify computation or execution"
+      }
+    },
+    {
+      "profile": "PLAIN_LITERAL_29",
+      "all_counter_slots": [
+        {
+          "alias": "v13",
+          "type": "COUNTER_CLAIM",
+          "role": "TASK_ACTIVE_PAIR",
+          "context": "neticloop.db.cli check-harness:\n  PASS; HARNESS_CHECK_PASS tasks=70 active=67.\n- PYTHONPATH=\"$PWD/src\" /private/"
+        },
+        {
+          "alias": "v14",
+          "type": "COUNTER_CLAIM",
+          "role": "TASK_ACTIVE_PAIR",
+          "context": "db.cli check-harness:\n  PASS; HARNESS_CHECK_PASS tasks=70 active=67.\n- PYTHONPATH=\"$PWD/src\" /private/tmp/kl017-"
+        },
+        {
+          "alias": "v16",
+          "type": "POSITIVE_COUNT_CLAIM",
+          "role": "PASSING_PHASE_TERMINAL",
+          "context": "l017-venv/bin/python -m kineticloop.db.cli test-harness:\n  PASS; 167 passed in 188.96s.\n- PYTHONPATH=\"$PWD/src\" /"
+        },
+        {
+          "alias": "v19",
+          "type": "POSITIVE_COUNT_CLAIM",
+          "role": "PASSING_PHASE_TERMINAL",
+          "context": "p/kl017-venv/bin/python -m kineticloop.db.cli test-unit:\n  PASS; 186 passed in 59.01s.\n- RUFF_CACHE_DIR=/private/"
+        },
+        {
+          "alias": "v25",
+          "type": "COUNTER_CLAIM",
+          "role": "INDEPENDENT_INERT_COUNT_CLAIM",
+          "context": "thon -m kineticloop.db.cli typecheck:\n  PASS; no issues found in 85 source files.\n- PYTHONPATH=\"$PWD/src\" /priva"
+        },
+        {
+          "alias": "v27",
+          "type": "POSITIVE_COUNT_CLAIM",
+          "role": "PASSING_PHASE_TERMINAL",
+          "context": "/bin/python -m pytest -q tests/db\n  -p no:cacheprovider:\n  PASS; 221 passed in 115.79s with approved Docker acces"
+        },
+        {
+          "alias": "v32",
+          "type": "POSITIVE_COUNT_CLAIM",
+          "role": "PASSING_PHASE_TERMINAL",
+          "context": "bin/python -m pytest -q tests/e2e\n  -p no:cacheprovider:\n  PASS; 1 passed in 2.51s with approved Docker access "
+        }
+      ],
+      "semantic_obligations": [
+        {
+          "role": "PASSING_PHASE_TERMINAL",
+          "alias": "v16",
+          "prose": "167 passed",
+          "offset": 3019
+        },
+        {
+          "role": "PASSING_PHASE_TERMINAL",
+          "alias": "v19",
+          "prose": "186 passed",
+          "offset": 3142
+        },
+        {
+          "role": "PASSING_PHASE_TERMINAL",
+          "alias": "v27",
+          "prose": "221 passed",
+          "offset": 3620
+        },
+        {
+          "role": "PASSING_PHASE_TERMINAL",
+          "alias": "v32",
+          "prose": "1 passed",
+          "offset": 3874
+        },
+        {
+          "role": "TASK_ACTIVE_PAIR",
+          "aliases": [
+            "v13",
+            "v14"
+          ],
+          "prose": "tasks=70 active=67",
+          "offset": 2896
+        }
+      ],
+      "fixed_numeric_aliases": [],
+      "policy": "Unrelated counts remain separate inert documentary claims; passing phases/zero exits/explicit repeated summaries/authority clauses have exact roles; no computation/execution certified",
+      "other_numeric_role_policy": {
+        "duration": "inert finite nonnegative seconds, explicit alternative clock relation when present",
+        "tool_version": "inert bounded version claim; frozen authority versions are literal clauses",
+        "host": "INERT_IPV4_CLAIM, finite octets, no network authority",
+        "port": "INERT_PORT_CLAIM, finite1..65535, no network authority",
+        "unrelated_counters": "each named transcribed count is independent unless represented prose asserts equality/order; values do not certify computation or execution"
+      }
+    },
+    {
+      "profile": "PLAIN_LITERAL_30",
+      "all_counter_slots": [],
+      "semantic_obligations": [],
+      "fixed_numeric_aliases": [],
+      "policy": "Unrelated counts remain separate inert documentary claims; passing phases/zero exits/explicit repeated summaries/authority clauses have exact roles; no computation/execution certified",
+      "other_numeric_role_policy": {
+        "duration": "inert finite nonnegative seconds, explicit alternative clock relation when present",
+        "tool_version": "inert bounded version claim; frozen authority versions are literal clauses",
+        "host": "INERT_IPV4_CLAIM, finite octets, no network authority",
+        "port": "INERT_PORT_CLAIM, finite1..65535, no network authority",
+        "unrelated_counters": "each named transcribed count is independent unless represented prose asserts equality/order; values do not certify computation or execution"
+      }
+    },
+    {
+      "profile": "PLAIN_LITERAL_31",
+      "all_counter_slots": [
+        {
+          "alias": "v3",
+          "type": "COUNTER_CLAIM",
+          "role": "TASK_ACTIVE_PAIR",
+          "context": "hon -m kineticloop.db.cli check-harness\nHARNESS_CHECK_PASS tasks=70 active=67\n"
+        },
+        {
+          "alias": "v4",
+          "type": "COUNTER_CLAIM",
+          "role": "TASK_ACTIVE_PAIR",
+          "context": "eticloop.db.cli check-harness\nHARNESS_CHECK_PASS tasks=70 active=67\n"
+        }
+      ],
+      "semantic_obligations": [
+        {
+          "role": "TASK_ACTIVE_PAIR",
+          "aliases": [
+            "v3",
+            "v4"
+          ],
+          "prose": "tasks=70 active=67",
+          "offset": 155
+        }
+      ],
+      "fixed_numeric_aliases": [],
+      "policy": "Unrelated counts remain separate inert documentary claims; passing phases/zero exits/explicit repeated summaries/authority clauses have exact roles; no computation/execution certified",
+      "other_numeric_role_policy": {
+        "duration": "inert finite nonnegative seconds, explicit alternative clock relation when present",
+        "tool_version": "inert bounded version claim; frozen authority versions are literal clauses",
+        "host": "INERT_IPV4_CLAIM, finite octets, no network authority",
+        "port": "INERT_PORT_CLAIM, finite1..65535, no network authority",
+        "unrelated_counters": "each named transcribed count is independent unless represented prose asserts equality/order; values do not certify computation or execution"
+      }
+    },
+    {
+      "profile": "PLAIN_LITERAL_32",
+      "all_counter_slots": [],
+      "semantic_obligations": [],
+      "fixed_numeric_aliases": [],
+      "policy": "Unrelated counts remain separate inert documentary claims; passing phases/zero exits/explicit repeated summaries/authority clauses have exact roles; no computation/execution certified",
+      "other_numeric_role_policy": {
+        "duration": "inert finite nonnegative seconds, explicit alternative clock relation when present",
+        "tool_version": "inert bounded version claim; frozen authority versions are literal clauses",
+        "host": "INERT_IPV4_CLAIM, finite octets, no network authority",
+        "port": "INERT_PORT_CLAIM, finite1..65535, no network authority",
+        "unrelated_counters": "each named transcribed count is independent unless represented prose asserts equality/order; values do not certify computation or execution"
+      }
+    },
+    {
+      "profile": "PLAIN_LITERAL_33",
+      "all_counter_slots": [
+        {
+          "alias": "v3",
+          "type": "COUNTER_CLAIM",
+          "role": "INDEPENDENT_INERT_COUNT_CLAIM",
+          "context": "thon -m kineticloop.db.cli typecheck\nSuccess: no issues found in 90 source files\n"
+        }
+      ],
+      "semantic_obligations": [],
+      "fixed_numeric_aliases": [],
+      "policy": "Unrelated counts remain separate inert documentary claims; passing phases/zero exits/explicit repeated summaries/authority clauses have exact roles; no computation/execution certified",
+      "other_numeric_role_policy": {
+        "duration": "inert finite nonnegative seconds, explicit alternative clock relation when present",
+        "tool_version": "inert bounded version claim; frozen authority versions are literal clauses",
+        "host": "INERT_IPV4_CLAIM, finite octets, no network authority",
+        "port": "INERT_PORT_CLAIM, finite1..65535, no network authority",
+        "unrelated_counters": "each named transcribed count is independent unless represented prose asserts equality/order; values do not certify computation or execution"
+      }
+    }
+  ],
+  "all33_prose_audited": true
+}
