@@ -1,0 +1,5 @@
+Traceback (most recent call last):
+  File "/private/tmp/hg065-security-r1/verify_security.py", line 183, in <module>
+    for p in git('ls-tree','-r','--name-only',oldR,'--','docs/exec-plans/evidence/HG-065').decode().splitlines():assert raw(p,oldR)==raw(p)
+                                                                                                                        ^^^^^^^^^^^^^^^^^^^
+AssertionError
