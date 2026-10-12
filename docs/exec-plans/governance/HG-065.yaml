@@ -1,7 +1,7 @@
 change_identity: harness-governance-v0.1/HG-065
 display_change_id: HG-065
 base_commit: e8e93bd32a83bd2fd6bf89951863d59b37e9d2b3
-tested_commit: 75c4244719ae0274666abfbde1686489f18ea800
+tested_commit: dfd4c20b93112e9403eb21286c705cd31847eefd
 change_status: PASS
 summary: HG065 definitions-only bounded retained representation custody and exact HG058 prospective scope/check
   refinement. Eight fresh author checks PASS at exact T with positive identities; historical execution, native whole
@@ -14,6 +14,7 @@ files_changed:
 - docs/exec-plans/evidence/HG-065/ACTUAL_CUSTODY_PROOF.json
 - docs/exec-plans/evidence/HG-065/BUDGETS.json
 - docs/exec-plans/evidence/HG-065/CALLER_MATRIX.json
+- docs/exec-plans/evidence/HG-065/CANDIDATE_INVALIDATION.json
 - docs/exec-plans/evidence/HG-065/DEFINITION.md
 - docs/exec-plans/evidence/HG-065/DELIVERY_PROVENANCE.json
 - docs/exec-plans/evidence/HG-065/DEPENDENCY_PROVENANCE.json
@@ -23,11 +24,14 @@ files_changed:
 - docs/exec-plans/evidence/HG-065/HG064_SOURCE_PROVENANCE.json
 - docs/exec-plans/evidence/HG-065/INPUT_MANIFEST.json
 - docs/exec-plans/evidence/HG-065/LOCATOR_TABLE.md
+- docs/exec-plans/evidence/HG-065/MANIFEST_CORRECTED_TESTED.json
 - docs/exec-plans/evidence/HG-065/ORIGINAL_SOURCE_BINDINGS.json
 - docs/exec-plans/evidence/HG-065/OUTPUT_SCHEMA.json
 - docs/exec-plans/evidence/HG-065/PACKET.md
 - docs/exec-plans/evidence/HG-065/POST_CAPTURE_VALIDATION.json
+- docs/exec-plans/evidence/HG-065/POST_CAPTURE_VALIDATION_dfd4c20b9311.json
 - docs/exec-plans/evidence/HG-065/PRECOMMIT_CANDIDATE1.json
+- docs/exec-plans/evidence/HG-065/PRECOMMIT_CORRECTED_TESTED.json
 - docs/exec-plans/evidence/HG-065/PRECOMMIT_TESTED.json
 - docs/exec-plans/evidence/HG-065/PREPARATION_EXIT_CLARIFICATION.json
 - docs/exec-plans/evidence/HG-065/PREPARATION_HUMAN_APPROVAL.json
@@ -43,6 +47,7 @@ files_changed:
 - docs/exec-plans/evidence/HG-065/SCOPE_PROPOSAL.md
 - docs/exec-plans/evidence/HG-065/SOURCE_ADAPTATIONS.json
 - docs/exec-plans/evidence/HG-065/STORAGE_CANDIDATE1.json
+- docs/exec-plans/evidence/HG-065/STORAGE_CORRECTED_TESTED.json
 - docs/exec-plans/evidence/HG-065/STORAGE_TESTED.json
 - docs/exec-plans/evidence/HG-065/TRUSTED_HOST_PROJECTION.md
 - docs/exec-plans/evidence/HG-065/capture_result.py
@@ -101,6 +106,21 @@ files_changed:
 - docs/exec-plans/evidence/HG-065/checks-75c4244719ae/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855.gz
 - docs/exec-plans/evidence/HG-065/checks-75c4244719ae/f2dba1b021af647cd0dd8525b7d458ffdcd9d3e1136366d807b903ef5b60c024.gz
 - docs/exec-plans/evidence/HG-065/checks-75c4244719ae/f3fce26d02759c0f303296b136ae700ee4d54e049abbc3ba1489df0d8b2fcb22.gz
+- docs/exec-plans/evidence/HG-065/checks-75c4244719ae/fresh-dfd4c20b9311-authority.json
+- docs/exec-plans/evidence/HG-065/checks-75c4244719ae/fresh-dfd4c20b9311-definitions-ACTUAL_CUSTODY_PROOF.json.json
+- docs/exec-plans/evidence/HG-065/checks-75c4244719ae/fresh-dfd4c20b9311-definitions-INHERITED_GIT_INPUTS.json.json
+- docs/exec-plans/evidence/HG-065/checks-75c4244719ae/fresh-dfd4c20b9311-definitions-NEW_GIT_INPUTS.json.json
+- docs/exec-plans/evidence/HG-065/checks-75c4244719ae/fresh-dfd4c20b9311-definitions-definition-collection.json.json
+- docs/exec-plans/evidence/HG-065/checks-75c4244719ae/fresh-dfd4c20b9311-definitions-definition-collection.log.json
+- docs/exec-plans/evidence/HG-065/checks-75c4244719ae/fresh-dfd4c20b9311-definitions-definition-execution.json.json
+- docs/exec-plans/evidence/HG-065/checks-75c4244719ae/fresh-dfd4c20b9311-definitions-inherited-components.log.json
+- docs/exec-plans/evidence/HG-065/checks-75c4244719ae/fresh-dfd4c20b9311-diff.json
+- docs/exec-plans/evidence/HG-065/checks-75c4244719ae/fresh-dfd4c20b9311-harness-collection.json.json
+- docs/exec-plans/evidence/HG-065/checks-75c4244719ae/fresh-dfd4c20b9311-harness-collection.log.json
+- docs/exec-plans/evidence/HG-065/checks-75c4244719ae/fresh-dfd4c20b9311-lint.json
+- docs/exec-plans/evidence/HG-065/checks-75c4244719ae/fresh-dfd4c20b9311-typecheck.json
+- docs/exec-plans/evidence/HG-065/checks-75c4244719ae/fresh-dfd4c20b9311-unit-collection.json.json
+- docs/exec-plans/evidence/HG-065/checks-75c4244719ae/fresh-dfd4c20b9311-validator-collection.json.json
 - docs/exec-plans/evidence/HG-065/checks-75c4244719ae/harness-collection.json.json
 - docs/exec-plans/evidence/HG-065/checks-75c4244719ae/harness-collection.log.json
 - docs/exec-plans/evidence/HG-065/checks-75c4244719ae/harness-execution.json.json
@@ -120,6 +140,50 @@ files_changed:
 - docs/exec-plans/evidence/HG-065/checks-75c4244719ae/validator-execution.json.json
 - docs/exec-plans/evidence/HG-065/checks-75c4244719ae/validator-junit.xml.json
 - docs/exec-plans/evidence/HG-065/checks-75c4244719ae/validator.json
+- docs/exec-plans/evidence/HG-065/checks-dfd4c20b9311/0e7c21916e8ed993b3cbf018649dc9623c39854d28023e83d7d742b77251d058.gz
+- docs/exec-plans/evidence/HG-065/checks-dfd4c20b9311/14d20b02d916b2ccbe9ffb76ef49ac420328fc0a7cb6911c369ad79b2fd2d35c.gz
+- docs/exec-plans/evidence/HG-065/checks-dfd4c20b9311/18674f41ddebd771eab2e1c95644cc17f7465d0b04fa47dd9854ba9707862f96.gz
+- docs/exec-plans/evidence/HG-065/checks-dfd4c20b9311/229feb23a8f52629c33f88d9d848c3d1b80856f4143d55d0df4849b7d0b5579d.gz
+- docs/exec-plans/evidence/HG-065/checks-dfd4c20b9311/400ef9f63fc00a0727fb2a4ed33496681a5f6a14d4fd716de6c7029bd03b86a0.gz
+- docs/exec-plans/evidence/HG-065/checks-dfd4c20b9311/413b8df08eae045ba8d7aff99153821a6dd4119ae5251696f32d72486bd064fd.gz
+- docs/exec-plans/evidence/HG-065/checks-dfd4c20b9311/4d00e08cc93bfe186762664039895bbb70916895da68c3c30e0d4e6fff60763a.gz
+- docs/exec-plans/evidence/HG-065/checks-dfd4c20b9311/4f0e94e3ed64e38bcbf2d7a4eb3d1eda5d2726aff16a4a1b1959e18dc0acf2e4.gz
+- docs/exec-plans/evidence/HG-065/checks-dfd4c20b9311/6b0344f51afd3d3e43b17225dda9cd09816b64d7ebd6c3c25f03db37cd27c0bb.gz
+- docs/exec-plans/evidence/HG-065/checks-dfd4c20b9311/6ee38d1e0d5cfdfbd59f77d73b899e61a62cc1d03679cc6229db203f8c92badb.gz
+- docs/exec-plans/evidence/HG-065/checks-dfd4c20b9311/70095fdafa22bcd06ccac697a641e9188f504ba397be4764bf91a511c3aae652.gz
+- docs/exec-plans/evidence/HG-065/checks-dfd4c20b9311/8d7b018c0fd3722696524f02ad3a4d6101cc32f37081f76525d13140c074bdd1.gz
+- docs/exec-plans/evidence/HG-065/checks-dfd4c20b9311/CHECK_INDEX.json
+- docs/exec-plans/evidence/HG-065/checks-dfd4c20b9311/a50a37d5a8951ddccc4d2eeef33fe69712c8f766559aa7941d66b41f7e80648d.gz
+- docs/exec-plans/evidence/HG-065/checks-dfd4c20b9311/a99600fa957ed734587283277a0845eafd13ee47eeaf0f62ef60aed74ab20a51.gz
+- docs/exec-plans/evidence/HG-065/checks-dfd4c20b9311/a9a7dff515bdc0004d5214bbb78d8a558e56c0cb8a77a9e5f3d5eb48cad0655c.gz
+- docs/exec-plans/evidence/HG-065/checks-dfd4c20b9311/d5bbe6da6dcdebdfc2493330c922af6a91933e2a4b4508982c3546ac80f122f9.gz
+- docs/exec-plans/evidence/HG-065/checks-dfd4c20b9311/d853203977ef442c25eadce0b57728200095467fc86e023bda33e88371cecaae.gz
+- docs/exec-plans/evidence/HG-065/checks-dfd4c20b9311/d900fea8afb1774ee92cdc0facc2a459cc71b09a53a1cd42856501bf741eba59.gz
+- docs/exec-plans/evidence/HG-065/checks-dfd4c20b9311/dc6ccee83c2b790c23678b2c0a7c0746126c07795fe4767e12fe7642411177b1.gz
+- docs/exec-plans/evidence/HG-065/checks-dfd4c20b9311/definitions-ACTUAL_PREPARATION_DISPOSITION.json.json
+- docs/exec-plans/evidence/HG-065/checks-dfd4c20b9311/definitions-COMMANDS.json.json
+- docs/exec-plans/evidence/HG-065/checks-dfd4c20b9311/definitions-DEFINITION_REPORT.json.json
+- docs/exec-plans/evidence/HG-065/checks-dfd4c20b9311/definitions-IMMUTABLE_COMMAND_READS.json.json
+- docs/exec-plans/evidence/HG-065/checks-dfd4c20b9311/definitions-INHERITED_COMPONENT_OBSERVATIONS.json.json
+- docs/exec-plans/evidence/HG-065/checks-dfd4c20b9311/definitions-definition-execution.log.json
+- docs/exec-plans/evidence/HG-065/checks-dfd4c20b9311/definitions-definition-junit.xml.json
+- docs/exec-plans/evidence/HG-065/checks-dfd4c20b9311/definitions-original-components.log.json
+- docs/exec-plans/evidence/HG-065/checks-dfd4c20b9311/definitions.json
+- docs/exec-plans/evidence/HG-065/checks-dfd4c20b9311/e0cb4308eb4ce6a0afd63454c0f27026af7ce92e6ae2a75aeb0c499a91c09dd8.gz
+- docs/exec-plans/evidence/HG-065/checks-dfd4c20b9311/ee9c6fd6fe3e074c613e81d87df4308008e5a45647e4aa53ba25bf2c84702d3b.gz
+- docs/exec-plans/evidence/HG-065/checks-dfd4c20b9311/harness-execution.json.json
+- docs/exec-plans/evidence/HG-065/checks-dfd4c20b9311/harness-junit.xml.json
+- docs/exec-plans/evidence/HG-065/checks-dfd4c20b9311/harness-manifest.json.json
+- docs/exec-plans/evidence/HG-065/checks-dfd4c20b9311/harness-pytest.log.json
+- docs/exec-plans/evidence/HG-065/checks-dfd4c20b9311/harness.json
+- docs/exec-plans/evidence/HG-065/checks-dfd4c20b9311/unit-collection.log.json
+- docs/exec-plans/evidence/HG-065/checks-dfd4c20b9311/unit-execution.json.json
+- docs/exec-plans/evidence/HG-065/checks-dfd4c20b9311/unit-junit.xml.json
+- docs/exec-plans/evidence/HG-065/checks-dfd4c20b9311/unit.json
+- docs/exec-plans/evidence/HG-065/checks-dfd4c20b9311/validator-collection.log.json
+- docs/exec-plans/evidence/HG-065/checks-dfd4c20b9311/validator-execution.json.json
+- docs/exec-plans/evidence/HG-065/checks-dfd4c20b9311/validator-junit.xml.json
+- docs/exec-plans/evidence/HG-065/checks-dfd4c20b9311/validator.json
 - docs/exec-plans/evidence/HG-065/custody_study.py
 - docs/exec-plans/evidence/HG-065/definition_observer.py
 - docs/exec-plans/evidence/HG-065/observe_immutable.py
@@ -139,40 +203,40 @@ files_changed:
 checks_run:
 - check_id: definitions
   command: /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python docs/exec-plans/evidence/HG-065/verify_definitions.py
-    --base e8e93bd32a83bd2fd6bf89951863d59b37e9d2b3 --tested 75c4244719ae0274666abfbde1686489f18ea800
+    --base e8e93bd32a83bd2fd6bf89951863d59b37e9d2b3 --tested dfd4c20b93112e9403eb21286c705cd31847eefd
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-065/checks-75c4244719ae/definitions.json
+  evidence_ref: docs/exec-plans/evidence/HG-065/checks-dfd4c20b9311/definitions.json
 - check_id: validator
   command: /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m pytest tests/harness/test_validator.py
-    -q -p tools.harness.parallel_observer --junitxml=/private/tmp/hg065-author-75c4244719ae/validator-junit.xml
+    -q -p tools.harness.parallel_observer --junitxml=/private/tmp/hg065-author-dfd4c20b9311/validator-junit.xml
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-065/checks-75c4244719ae/validator.json
+  evidence_ref: docs/exec-plans/evidence/HG-065/checks-dfd4c20b9311/validator.json
 - check_id: unit
   command: /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli test-unit -q -p tools.harness.parallel_observer
-    --junitxml=/private/tmp/hg065-author-75c4244719ae/unit-junit.xml
+    --junitxml=/private/tmp/hg065-author-dfd4c20b9311/unit-junit.xml
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-065/checks-75c4244719ae/unit.json
+  evidence_ref: docs/exec-plans/evidence/HG-065/checks-dfd4c20b9311/unit.json
 - check_id: harness
   command: /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli test-harness --workers
-    2 --evidence-dir /private/tmp/hg065-author-75c4244719ae/harness-run -q
+    2 --evidence-dir /private/tmp/hg065-author-dfd4c20b9311/harness-run -q
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-065/checks-75c4244719ae/harness.json
+  evidence_ref: docs/exec-plans/evidence/HG-065/checks-dfd4c20b9311/harness.json
 - check_id: lint
   command: /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli lint
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-065/checks-75c4244719ae/lint.json
+  evidence_ref: docs/exec-plans/evidence/HG-065/checks-75c4244719ae/fresh-dfd4c20b9311-lint.json
 - check_id: typecheck
   command: /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli typecheck
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-065/checks-75c4244719ae/typecheck.json
+  evidence_ref: docs/exec-plans/evidence/HG-065/checks-75c4244719ae/fresh-dfd4c20b9311-typecheck.json
 - check_id: authority
   command: /Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli check-harness
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-065/checks-75c4244719ae/authority.json
+  evidence_ref: docs/exec-plans/evidence/HG-065/checks-75c4244719ae/fresh-dfd4c20b9311-authority.json
 - check_id: diff
-  command: git diff --check e8e93bd32a83bd2fd6bf89951863d59b37e9d2b3 75c4244719ae0274666abfbde1686489f18ea800
+  command: git diff --check e8e93bd32a83bd2fd6bf89951863d59b37e9d2b3 dfd4c20b93112e9403eb21286c705cd31847eefd
   result: PASS
-  evidence_ref: docs/exec-plans/evidence/HG-065/checks-75c4244719ae/diff.json
+  evidence_ref: docs/exec-plans/evidence/HG-065/checks-75c4244719ae/fresh-dfd4c20b9311-diff.json
 frozen_impact: NONE
 authority_entries_added: []
 known_limitations:
@@ -196,9 +260,14 @@ known_limitations:
   or historical rewrite.
 - packets_refined=[] preserves the existing KL-only schema. Summary/files explicitly enumerate HG058 packet refinement;
   only prospective tools/harness/local_gate.py path and individual check-index duties are added.
-- 'The two own preliminary wrapper exit inferences in frozen PRE_T_ATTEMPTS.json are explicitly corrected by PREPARATION_EXIT_CLARIFICATION.json:
-  child exits were not separately captured and remain null. No preliminary run is acceptance evidence; all eight
-  stable-T exits are directly observed by run_checks.py.'
-- HG065 native full storage/history audits passed at both preparation candidates; this is distinct from the HG058
-  original/live/native/runtime audits, which remain NOT_RUN. Exact precommit staged-tree and every artifact hash
-  match the committed candidates.
+- Prior candidate fede00846c326c65672d69e047fd7a11f57c8bb0 failed native selected governance manifest validation
+  on an ignored cache entry absent from Git. Preserve its tested75c424 executions and all evidence as historical,
+  non-reusable for corrected T. CANDIDATE_INVALIDATION.json binds the normal-forward correction and preparation-exit
+  interpretation.
+- 'PRE_T_ATTEMPTS.json is preserved unchanged. PREPARATION_EXIT_CLARIFICATION.json is authoritative for two inferred
+  preparation exits: definitions affected1 and focused validator both observed wrapper0, child exit unknown/null.
+  Neither inferred child exit is acceptance evidence. All eight corrected stable-T exits were directly observed
+  subprocess return codes.'
+- Native full compact/storage/history and selected Git-manifest preflights passed on corrected T. These are HG065
+  delivery checks; actual whole-HG058 runtime audit, custody acceptance, installed operation and future gates remain
+  NOT_RUN.
