@@ -1,0 +1,38 @@
+{
+  "kind": "PREPARATION_OBSERVATION_PRECISION_CORRECTION",
+  "meaning": "No acceptance reuse. Preserve the exact frozen preparation artifact and external logs; correct the interpretation of two inferred exit fields. Stable T run_checks.py uses actual subprocess.returncode and all eight fresh exits were observed zero.",
+  "supersedes_exit_interpretation_only": {
+    "bytes": 2483,
+    "sha256": "00fd0206577d02de56bc9459afb756204f1dac112910715f4be7352bf31d9bdd",
+    "path": "docs/exec-plans/evidence/HG-065/PRE_T_ATTEMPTS.json",
+    "revision": "75c4244719ae0274666abfbde1686489f18ea800"
+  },
+  "observations": [
+    {
+      "check": "definitions affected1",
+      "recorded_exit_code": 1,
+      "recorded_value_was_inferred": true,
+      "observed_wrapper_exit_code": 0,
+      "child_exit_code": null,
+      "output_observed": "Unhandled KeyError for payloads key; corrected before stable T. Wrapper ended with cat; child exit was not separately captured.",
+      "log": {
+        "bytes": 777,
+        "sha256": "5c387f3f436dc12e26bb7b170155406aaaeefc236e784c09a6752caf7148c8ee",
+        "path": "/private/tmp/hg065-affected-definitions-1.log"
+      }
+    },
+    {
+      "check": "focused validator",
+      "recorded_exit_code": 0,
+      "recorded_value_was_inferred": true,
+      "observed_wrapper_exit_code": 0,
+      "child_exit_code": null,
+      "output_observed": "3 passed, 173 deselected; wrapper ended with cat and did not separately capture child exit. Fresh full validator subsequently has observed0 and176 exact positive identities.",
+      "log": {
+        "bytes": 114,
+        "sha256": "d0286ae105e2fc0d714b14885096ee5b47386144924915f56147a8f8f94fee24",
+        "path": "/private/tmp/hg065-affected-validator.log"
+      }
+    }
+  ]
+}
