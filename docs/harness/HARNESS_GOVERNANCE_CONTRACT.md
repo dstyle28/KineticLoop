@@ -651,3 +651,58 @@ versus live protected base, first5da0FAIL, every map/source pin/failure and all
 existing eight-source/four-caller/nine-metadata requirements. Root owns complete
 installation review/install, exact admission, App/fullDB/cleanup/live gates and
 normal protected merge. HG063 grants no runtime lease or old PR99/102 disposition.
+
+
+## HG065 bounded retained representation custody definitions
+
+HG065 is one definitions-only task under its exact committed PACKET.md. The eleven
+literal write patterns and eight fresh check IDs (definitions, validator, unit,
+harness, lint, typecheck, authority, diff), no authority/product projection and
+new SHA-bound GENERAL plus SECURITY_DATA_BOUNDARY reviews are enforced.
+packets_refined=[] under the unchanged KL-only HARNESS_CHANGE schema; summary/files
+name the HG058 refinement. No production reader, classifier, codec, observer, host
+controller, schema, workflow, configuration, backlog, DB or product implementation
+occurs in HG065. Its task-local156-fixture oracle checks definitions only.
+
+The ten exact reviewed appendices are incorporated conjunctively:
+[DEFINITION.md](../exec-plans/evidence/HG-065/DEFINITION.md),
+[RULE_TABLE.json](../exec-plans/evidence/HG-065/RULE_TABLE.json),
+[PROOF_SCHEMA.json](../exec-plans/evidence/HG-065/PROOF_SCHEMA.json),
+[OUTPUT_SCHEMA.json](../exec-plans/evidence/HG-065/OUTPUT_SCHEMA.json),
+[LOCATOR_TABLE.md](../exec-plans/evidence/HG-065/LOCATOR_TABLE.md),
+[BUDGETS.json](../exec-plans/evidence/HG-065/BUDGETS.json),
+[CALLER_MATRIX.json](../exec-plans/evidence/HG-065/CALLER_MATRIX.json),
+[TRUSTED_HOST_PROJECTION.md](../exec-plans/evidence/HG-065/TRUSTED_HOST_PROJECTION.md),
+[SCOPE_PROPOSAL.md](../exec-plans/evidence/HG-065/SCOPE_PROPOSAL.md),
+[GUARD_DISPOSITION.md](../exec-plans/evidence/HG-065/GUARD_DISPOSITION.md).
+[Delivery provenance](../exec-plans/evidence/HG-065/DELIVERY_PROVENANCE.json)
+and [source adaptations](../exec-plans/evidence/HG-065/SOURCE_ADAPTATIONS.json)
+resolve original embedded scratch/input references to immutable source pins and
+task-local delivery. Preserved preparation/non-grant labels describe their original
+preparation state. Normal HG065 merge makes only these prospective definitions
+authoritative; it supplies no historical or runtime PASS. The executable definition
+fixtures are synthetic premises and immutable-data observations, never production
+trust constructors. No scratch file is an acceptance dependency.
+
+The closed custody rule preserves only original representations, with every native
+original/live audit and selected/prerequisite/result/review/fullRRO/source/M3/
+admission/release obligation conjunctive. Complete native whole inventory, all-map
+history, runtime eligibility, private installed operation and all execution gates
+remain NOT_RUN until separately observed. Six representations never prove six
+executions. Keep original null6358 child/driver143, c4b mapping gap, three741>512
+denials, HG004/HG047 gaps, original5da0FAIL and every failed/interrupted attempt.
+
+This trigger supersedes all earlier HG059 through HG063 continuation triggers:
+SAME HG058 stays frozen3965 until actual normal HG065 merge, completely reviewed
+installed readiness under LOCAL_DB_CI.md and explicit root regrant of harness_core,
+harness_governance, harness_validator, evidence_storage and
+trusted_local_ci_controller. DB/App stays free and unreserved. Its prospective
+packet adds exactly tools/harness/local_gate.py for private installed ORIGINAL
+operation; every prior literal path, eight-source/four-caller/nine-metadata duty,
+map/source pin, history and check remains. No gate_validate.py/schema/config/
+workflow/permission expansion. Root owns complete installation review/install,
+exact admission, App/fullDB/cleanup/live hosted gates and normal protected merge.
+Original clean3965 first-parent and auditO9700 remain distinct from future live P.
+No PR99/102 disposition or runtime grant occurs; KL081 waits for actual HG058
+normal merge and installed readiness. Production/shadow/provider/frozen semantics
+and all current requirement statuses remain unchanged.

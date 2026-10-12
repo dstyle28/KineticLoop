@@ -1,0 +1,42 @@
+{
+  "review_only": true,
+  "runs": [
+    {
+      "argv": [
+        "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python",
+        "/private/tmp/hg065-security-r1/verify_security-attempt1.py"
+      ],
+      "exit_code": 1,
+      "script": "verify_security-attempt1.py",
+      "log": "verification-attempt1.log",
+      "disposition": "Reviewer assertion overbroad; failed script preserved. No candidate finding or acceptance reuse."
+    },
+    {
+      "argv": [
+        "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python",
+        "/private/tmp/hg065-security-r1/verify_security.py"
+      ],
+      "exit_code": 0,
+      "script": "verify_security.py",
+      "log": "verification.log"
+    },
+    {
+      "argv": [
+        "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python",
+        "/private/tmp/hg065-security-r1/supplement.py"
+      ],
+      "exit_code": 0,
+      "script": "supplement.py",
+      "log": "supplement.log"
+    }
+  ],
+  "environment": {
+    "PYTHONDONTWRITEBYTECODE": "1"
+  },
+  "sandbox_diagnostic": {
+    "command": "ps -axo pid,etime,pcpu,command",
+    "exit_code": 1,
+    "output": "zsh:1: operation not permitted: ps",
+    "no_evidence_derived": true
+  }
+}

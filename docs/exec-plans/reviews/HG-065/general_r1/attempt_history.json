@@ -1,0 +1,35 @@
+{
+  "review_only_attempts": [
+    {
+      "command": "verify.py initial invocation",
+      "observed_exit": 1,
+      "reason": "Reviewer assumed nonexistent tools/harness/local_ci_controller.py; read-only Git lookup failed. Removed nonexistent path from unchanged-file assertion."
+    },
+    {
+      "command": "verify.py second invocation",
+      "observed_exit": 1,
+      "reason": "Reviewer initially compared full predecessor member objects to the authorized consumed-path projection. Corrected assertion to exact member path and payload path projection."
+    },
+    {
+      "command": "verify.py corrected invocation",
+      "observed_exit": 0
+    },
+    {
+      "command": "probes.py",
+      "observed_exit": 0
+    },
+    {
+      "command": "precommit_verify.py",
+      "observed_exit": 0
+    },
+    {
+      "command": "source_compare.py",
+      "observed_exit": 0
+    },
+    {
+      "command": "audit.py",
+      "observed_exit": 0
+    }
+  ],
+  "meaning": "Reviewer tooling corrections only; no candidate edit or hidden candidate failure."
+}

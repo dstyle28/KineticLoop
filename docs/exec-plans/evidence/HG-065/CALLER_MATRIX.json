@@ -1,0 +1,180 @@
+{
+  "format": "custody-caller-projection-v1",
+  "not_runtime_api": true,
+  "rows": [
+    {
+      "caller": "PRIVATE_INSTALLED_ROOT_PREIMPORT_ORIGINAL",
+      "may_construct_private_context": true,
+      "may_consume_supplied_custody_receipt": false,
+      "effect": "PRESERVATION_STUDY_NO_PUBLICATION"
+    },
+    {
+      "caller": "PRIVATE_INSTALLED_HOST_FINAL_ORIGINAL",
+      "may_construct_private_context": true,
+      "may_consume_supplied_custody_receipt": false,
+      "effect": "ORIGINAL_AUDIT_COLLISION_ACCOUNTING_ONLY"
+    },
+    {
+      "caller": "PUBLIC_AUDIT_CLI",
+      "may_construct_private_context": false,
+      "may_consume_supplied_custody_receipt": false,
+      "effect": "NO_CUSTODY_DISPATCH"
+    },
+    {
+      "caller": "PUBLIC_CHECK_HARNESS",
+      "may_construct_private_context": false,
+      "may_consume_supplied_custody_receipt": false,
+      "effect": "NO_CUSTODY_DISPATCH"
+    },
+    {
+      "caller": "PUBLIC_CI_PR",
+      "may_construct_private_context": false,
+      "may_consume_supplied_custody_receipt": false,
+      "effect": "NO_CUSTODY_DISPATCH"
+    },
+    {
+      "caller": "HOSTED_EVENT",
+      "may_construct_private_context": false,
+      "may_consume_supplied_custody_receipt": false,
+      "effect": "NO_CUSTODY_DISPATCH"
+    },
+    {
+      "caller": "TEST_ONLY_CONTROLLER",
+      "may_construct_private_context": false,
+      "may_consume_supplied_custody_receipt": false,
+      "effect": "NO_CUSTODY_DISPATCH"
+    },
+    {
+      "caller": "WORKER_MERGE_GATE",
+      "may_construct_private_context": false,
+      "may_consume_supplied_custody_receipt": false,
+      "effect": "NO_CUSTODY_DISPATCH"
+    },
+    {
+      "caller": "CANDIDATE_MODULE",
+      "may_construct_private_context": false,
+      "may_consume_supplied_custody_receipt": false,
+      "effect": "NO_CUSTODY_DISPATCH"
+    },
+    {
+      "caller": "CANDIDATE_JSON",
+      "may_construct_private_context": false,
+      "may_consume_supplied_custody_receipt": false,
+      "effect": "NO_CUSTODY_DISPATCH"
+    },
+    {
+      "caller": "ENVIRONMENT",
+      "may_construct_private_context": false,
+      "may_consume_supplied_custody_receipt": false,
+      "effect": "NO_CUSTODY_DISPATCH"
+    },
+    {
+      "caller": "PR_BODY",
+      "may_construct_private_context": false,
+      "may_consume_supplied_custody_receipt": false,
+      "effect": "NO_CUSTODY_DISPATCH"
+    },
+    {
+      "caller": "REVIEW_SOURCE_INSPECTION",
+      "may_construct_private_context": false,
+      "may_consume_supplied_custody_receipt": false,
+      "effect": "NO_CUSTODY_DISPATCH"
+    },
+    {
+      "caller": "REVIEW_SOURCE_LINEAGE",
+      "may_construct_private_context": false,
+      "may_consume_supplied_custody_receipt": false,
+      "effect": "NO_CUSTODY_DISPATCH"
+    },
+    {
+      "caller": "REVIEW_EXECUTION",
+      "may_construct_private_context": false,
+      "may_consume_supplied_custody_receipt": false,
+      "effect": "NO_CUSTODY_DISPATCH"
+    },
+    {
+      "caller": "EXECUTION_OUTPUT",
+      "may_construct_private_context": false,
+      "may_consume_supplied_custody_receipt": false,
+      "effect": "NO_CUSTODY_DISPATCH"
+    },
+    {
+      "caller": "SELECTED_TASK",
+      "may_construct_private_context": false,
+      "may_consume_supplied_custody_receipt": false,
+      "effect": "NO_CUSTODY_DISPATCH"
+    },
+    {
+      "caller": "SELECTED_GOVERNANCE",
+      "may_construct_private_context": false,
+      "may_consume_supplied_custody_receipt": false,
+      "effect": "NO_CUSTODY_DISPATCH"
+    },
+    {
+      "caller": "REVIEW_RECORD_ONLY",
+      "may_construct_private_context": false,
+      "may_consume_supplied_custody_receipt": false,
+      "effect": "NO_CUSTODY_DISPATCH"
+    },
+    {
+      "caller": "M3",
+      "may_construct_private_context": false,
+      "may_consume_supplied_custody_receipt": false,
+      "effect": "NO_CUSTODY_DISPATCH"
+    },
+    {
+      "caller": "HISTORY",
+      "may_construct_private_context": false,
+      "may_consume_supplied_custody_receipt": false,
+      "effect": "NO_CUSTODY_DISPATCH"
+    },
+    {
+      "caller": "REENCODING",
+      "may_construct_private_context": false,
+      "may_consume_supplied_custody_receipt": false,
+      "effect": "NO_CUSTODY_DISPATCH"
+    },
+    {
+      "caller": "LIVE_BASE_AUDIT",
+      "may_construct_private_context": false,
+      "may_consume_supplied_custody_receipt": false,
+      "effect": "NO_CUSTODY_DISPATCH"
+    },
+    {
+      "caller": "INSTALLATION_REVIEW",
+      "may_construct_private_context": false,
+      "may_consume_supplied_custody_receipt": false,
+      "effect": "NO_CUSTODY_DISPATCH"
+    },
+    {
+      "caller": "ADMISSION",
+      "may_construct_private_context": false,
+      "may_consume_supplied_custody_receipt": false,
+      "effect": "NO_CUSTODY_DISPATCH"
+    },
+    {
+      "caller": "APP_PUBLICATION",
+      "may_construct_private_context": false,
+      "may_consume_supplied_custody_receipt": false,
+      "effect": "NO_CUSTODY_DISPATCH"
+    },
+    {
+      "caller": "PRODUCT_REQUIREMENT",
+      "may_construct_private_context": false,
+      "may_consume_supplied_custody_receipt": false,
+      "effect": "NO_CUSTODY_DISPATCH"
+    },
+    {
+      "caller": "UNKNOWN",
+      "may_construct_private_context": false,
+      "may_consume_supplied_custody_receipt": false,
+      "effect": "NO_CUSTODY_DISPATCH"
+    }
+  ],
+  "worker_arguments_unchanged": [
+    "--ci-pr-base",
+    "--ci-pr-head"
+  ],
+  "execution_source_rro_caches_separate": true,
+  "public_trust_flags": []
+}

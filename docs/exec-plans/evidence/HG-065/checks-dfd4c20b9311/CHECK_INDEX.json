@@ -1,0 +1,1687 @@
+{
+  "base_commit": "e8e93bd32a83bd2fd6bf89951863d59b37e9d2b3",
+  "tested_commit": "dfd4c20b93112e9403eb21286c705cd31847eefd",
+  "checks": [
+    {
+      "check_id": "definitions",
+      "base_commit": "e8e93bd32a83bd2fd6bf89951863d59b37e9d2b3",
+      "tested_commit": "dfd4c20b93112e9403eb21286c705cd31847eefd",
+      "argv": [
+        "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python",
+        "docs/exec-plans/evidence/HG-065/verify_definitions.py",
+        "--base",
+        "e8e93bd32a83bd2fd6bf89951863d59b37e9d2b3",
+        "--tested",
+        "dfd4c20b93112e9403eb21286c705cd31847eefd"
+      ],
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python docs/exec-plans/evidence/HG-065/verify_definitions.py --base e8e93bd32a83bd2fd6bf89951863d59b37e9d2b3 --tested dfd4c20b93112e9403eb21286c705cd31847eefd",
+      "environment": {
+        "PYTHONPATH": "/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop:/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop/src:/Users/davetian/.cache/uv/archive-v0/nnPNXkWpFSNRe9Ad:/Users/davetian/.cache/uv/archive-v0/X_H5kIMi_L692EPn"
+      },
+      "started_at_unix": 1791796888.731287,
+      "execution_state": "COMPLETED",
+      "exit_code": 0,
+      "elapsed_seconds": 28.902414798736572,
+      "cases": 156,
+      "fresh_reproduced_custody_proof": {
+        "bytes": 254352,
+        "sha256": "f2dba1b021af647cd0dd8525b7d458ffdcd9d3e1136366d807b903ef5b60c024",
+        "expected_fixture_ref": "docs/exec-plans/evidence/HG-065/ACTUAL_CUSTODY_PROOF.json",
+        "expected_fixture_identity": {
+          "bytes": 188477,
+          "sha256": "88e42cbd0cb15a56d09972890db27ac56f0620df1dcce10679bc385c5f52dc82"
+        },
+        "decoded_identity_equal": true
+      },
+      "definition_report": {
+        "base_commit": "e8e93bd32a83bd2fd6bf89951863d59b37e9d2b3",
+        "tested_commit": "dfd4c20b93112e9403eb21286c705cd31847eefd",
+        "definition_checks": 156,
+        "positive_identities": [
+          "test_custody_definition.py::test_actual_all_six_custody_predicate_is_not_runtime_eligibility",
+          "test_custody_definition.py::test_original_member_exact_binding_and_native_read_observation[original-selected-failure]",
+          "test_custody_definition.py::test_original_member_exact_binding_and_native_read_observation[original-selected-c4b]",
+          "test_custody_definition.py::test_original_member_exact_binding_and_native_read_observation[foreign-final74c]",
+          "test_custody_definition.py::test_original_member_exact_binding_and_native_read_observation[foreign-superseded09c]",
+          "test_custody_definition.py::test_original_member_exact_binding_and_native_read_observation[foreign-superseded836]",
+          "test_custody_definition.py::test_original_member_exact_binding_and_native_read_observation[foreign-interruption6358]",
+          "test_custody_definition.py::test_neutral_names_satisfy_same_structural_predicate_no_id_hash_allowlist",
+          "test_custody_definition.py::test_structural_provenance_hostile_mutation_rejects[unknown-field]",
+          "test_custody_definition.py::test_structural_provenance_hostile_mutation_rejects[display-only-identity]",
+          "test_custody_definition.py::test_structural_provenance_hostile_mutation_rejects[revision-newline]",
+          "test_custody_definition.py::test_structural_provenance_hostile_mutation_rejects[empty-group]",
+          "test_custody_definition.py::test_structural_provenance_hostile_mutation_rejects[omitted-sixth-member]",
+          "test_custody_definition.py::test_structural_provenance_hostile_mutation_rejects[duplicate-envelope]",
+          "test_custody_definition.py::test_structural_provenance_hostile_mutation_rejects[duplicate-physical-path]",
+          "test_custody_definition.py::test_structural_provenance_hostile_mutation_rejects[missing-payload]",
+          "test_custody_definition.py::test_structural_provenance_hostile_mutation_rejects[extra-inventory-path]",
+          "test_custody_definition.py::test_structural_provenance_hostile_mutation_rejects[wrong-physical-bytes]",
+          "test_custody_definition.py::test_structural_provenance_hostile_mutation_rejects[bool-physical-bytes]",
+          "test_custody_definition.py::test_structural_provenance_hostile_mutation_rejects[symlink]",
+          "test_custody_definition.py::test_structural_provenance_hostile_mutation_rejects[gitlink]",
+          "test_custody_definition.py::test_structural_provenance_hostile_mutation_rejects[directory-mode]",
+          "test_custody_definition.py::test_structural_provenance_hostile_mutation_rejects[path-traversal]",
+          "test_custody_definition.py::test_structural_provenance_hostile_mutation_rejects[absolute-path]",
+          "test_custody_definition.py::test_structural_provenance_hostile_mutation_rejects[foreign-payload]",
+          "test_custody_definition.py::test_structural_provenance_hostile_mutation_rejects[different-directory]",
+          "test_custody_definition.py::test_structural_provenance_hostile_mutation_rejects[raw-identity-conflict]",
+          "test_custody_definition.py::test_structural_provenance_hostile_mutation_rejects[plain-bulk-small-size]",
+          "test_custody_definition.py::test_structural_provenance_hostile_mutation_rejects[raw-size-bool]",
+          "test_custody_definition.py::test_structural_provenance_hostile_mutation_rejects[source-role-in-custody]",
+          "test_custody_definition.py::test_structural_provenance_hostile_mutation_rejects[unverified-byte-equality]",
+          "test_custody_definition.py::test_structural_provenance_hostile_mutation_rejects[wrong-codec]",
+          "test_custody_definition.py::test_structural_provenance_hostile_mutation_rejects[wrong-stored-sha]",
+          "test_custody_definition.py::test_structural_provenance_hostile_mutation_rejects[missing-declaration-pointers]",
+          "test_custody_definition.py::test_structural_provenance_hostile_mutation_rejects[body-string-declaration]",
+          "test_custody_definition.py::test_structural_provenance_hostile_mutation_rejects[wrong-declaration-owner]",
+          "test_custody_definition.py::test_structural_provenance_hostile_mutation_rejects[new-candidate-self-declaration]",
+          "test_custody_definition.py::test_structural_provenance_hostile_mutation_rejects[filename-declaration-inference]",
+          "test_custody_definition.py::test_structural_provenance_hostile_mutation_rejects[selected-present-in-protected]",
+          "test_custody_definition.py::test_structural_provenance_hostile_mutation_rejects[foreign-not-protected]",
+          "test_custody_definition.py::test_structural_provenance_hostile_mutation_rejects[wrong-map-owner]",
+          "test_custody_definition.py::test_structural_provenance_hostile_mutation_rejects[late-map-context]",
+          "test_custody_definition.py::test_structural_provenance_hostile_mutation_rejects[manufactured-native-audit-pass]",
+          "test_custody_definition.py::test_structural_provenance_hostile_mutation_rejects[single-parent-delivery]",
+          "test_custody_definition.py::test_structural_provenance_hostile_mutation_rejects[duplicate-parent-delivery]",
+          "test_custody_definition.py::test_structural_provenance_hostile_mutation_rejects[missing-delivery-ancestry]",
+          "test_custody_definition.py::test_structural_provenance_hostile_mutation_rejects[wrong-foreign-record]",
+          "test_custody_definition.py::test_structural_provenance_hostile_mutation_rejects[wrong-delivered-owner]",
+          "test_custody_definition.py::test_structural_provenance_hostile_mutation_rejects[missing-history-edge]",
+          "test_custody_definition.py::test_structural_provenance_hostile_mutation_rejects[missing-payload-edge]",
+          "test_custody_definition.py::test_structural_provenance_hostile_mutation_rejects[duplicate-edge]",
+          "test_custody_definition.py::test_structural_provenance_hostile_mutation_rejects[missing-introduction]",
+          "test_custody_definition.py::test_structural_provenance_hostile_mutation_rejects[missing-boundary]",
+          "test_custody_definition.py::test_structural_provenance_hostile_mutation_rejects[invented-import]",
+          "test_custody_definition.py::test_transient_deletion_and_restoration_rejected_despite_equal_endpoints",
+          "test_custody_definition.py::test_reversed_original_foreign_import_parent_order_rejected",
+          "test_custody_definition.py::test_wide_structural_input_denied_before_large_pending_allocation",
+          "test_custody_definition.py::test_structure_caps_fail_closed[unchanged-list-cap]",
+          "test_custody_definition.py::test_structure_caps_fail_closed[depth-cap]",
+          "test_custody_definition.py::test_budget_exact_boundary_positive_then_overrun_preserves_observed_charge",
+          "test_custody_definition.py::test_budget_invalid_counter_type_rejects[negative]",
+          "test_custody_definition.py::test_budget_invalid_counter_type_rejects[bool]",
+          "test_custody_definition.py::test_budget_invalid_counter_type_rejects[float]",
+          "test_custody_definition.py::test_deadline_exact_boundary_then_actual_overrun_preserved",
+          "test_custody_definition.py::test_mixed_group_exhaustion_discards_every_positive_result",
+          "test_custody_definition.py::test_cross_group_duplicate_paths_reject_without_double_accounting",
+          "test_custody_definition.py::test_cross_task_context_discards_every_group",
+          "test_custody_definition.py::test_cache_every_context_dimension_separates_verdict[cache-repository]",
+          "test_custody_definition.py::test_cache_every_context_dimension_separates_verdict[cache-object_format]",
+          "test_custody_definition.py::test_cache_every_context_dimension_separates_verdict[cache-installed_release]",
+          "test_custody_definition.py::test_cache_every_context_dimension_separates_verdict[cache-controller_assets_sha256]",
+          "test_custody_definition.py::test_cache_every_context_dimension_separates_verdict[cache-authority_sha256]",
+          "test_custody_definition.py::test_cache_every_context_dimension_separates_verdict[cache-selected_identity]",
+          "test_custody_definition.py::test_cache_every_context_dimension_separates_verdict[cache-original_base]",
+          "test_custody_definition.py::test_cache_every_context_dimension_separates_verdict[cache-protected_base]",
+          "test_custody_definition.py::test_cache_every_context_dimension_separates_verdict[cache-original_selected]",
+          "test_custody_definition.py::test_cache_every_context_dimension_separates_verdict[cache-head]",
+          "test_custody_definition.py::test_cache_every_context_dimension_separates_verdict[cache-packet_blob]",
+          "test_custody_definition.py::test_cache_every_context_dimension_separates_verdict[cache-map_blob]",
+          "test_custody_definition.py::test_cache_every_context_dimension_separates_verdict[cache-source]",
+          "test_custody_definition.py::test_cache_every_context_dimension_separates_verdict[cache-admission]",
+          "test_custody_definition.py::test_cache_every_context_dimension_separates_verdict[cache-declaration_blob]",
+          "test_custody_definition.py::test_cache_every_context_dimension_separates_verdict[cache-delivery]",
+          "test_custody_definition.py::test_cache_every_context_dimension_separates_verdict[cache-group_sha256]",
+          "test_custody_definition.py::test_cache_every_context_dimension_separates_verdict[cache-edges_sha256]",
+          "test_custody_definition.py::test_cache_every_context_dimension_separates_verdict[cache-invocation]",
+          "test_custody_definition.py::test_cache_purpose_cannot_cross_into_custody[EXECUTION]",
+          "test_custody_definition.py::test_cache_purpose_cannot_cross_into_custody[REVIEW_SOURCE_LINEAGE]",
+          "test_custody_definition.py::test_cache_purpose_cannot_cross_into_custody[RRO]",
+          "test_custody_definition.py::test_cache_purpose_cannot_cross_into_custody[M3]",
+          "test_custody_definition.py::test_cache_purpose_cannot_cross_into_custody[ADMISSION]",
+          "test_custody_definition.py::test_cache_purpose_cannot_cross_into_custody[LIVE_BASE]",
+          "test_custody_definition.py::test_cache_purpose_cannot_cross_into_custody[UNKNOWN]",
+          "test_custody_definition.py::test_invalid_invocation_rejects[]",
+          "test_custody_definition.py::test_invalid_invocation_rejects[xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]",
+          "test_custody_definition.py::test_invalid_invocation_rejects[unicode-\\u4e2d]",
+          "test_custody_definition.py::test_invalid_invocation_rejects[x\\n]",
+          "test_custody_definition.py::test_context_unknown_field_is_not_credential",
+          "test_custody_definition.py::test_closed_output_denied_example_is_diagnostic_only",
+          "test_custody_definition.py::test_closed_output_cannot_relabel_custody_as_acceptance[acceptance_eligible-True]",
+          "test_custody_definition.py::test_closed_output_cannot_relabel_custody_as_acceptance[execution_reuse-True]",
+          "test_custody_definition.py::test_closed_output_cannot_relabel_custody_as_acceptance[execution_attribution-PASS]",
+          "test_custody_definition.py::test_closed_output_cannot_relabel_custody_as_acceptance[type-ACCOUNTED_PROTECTED_IMPORT]",
+          "test_custody_definition.py::test_closed_output_cannot_relabel_custody_as_acceptance[audit_phase-LIVE]",
+          "test_custody_definition.py::test_closed_output_cannot_relabel_custody_as_acceptance[accounted_paths-1]",
+          "test_custody_definition.py::test_closed_output_cannot_relabel_custody_as_acceptance[accounted_bytes-1]",
+          "test_custody_definition.py::test_closed_output_cannot_relabel_custody_as_acceptance[elapsed_ns-True]",
+          "test_custody_definition.py::test_closed_output_cannot_relabel_custody_as_acceptance[complete-True]",
+          "test_custody_definition.py::test_closed_output_cannot_relabel_custody_as_acceptance[unknown-True]",
+          "test_custody_definition.py::test_accounted_output_requires_both_native_original_and_strict_live_observed",
+          "test_custody_definition.py::test_accounted_output_exact_physical_counts_and_deadline[accounted_paths-7]",
+          "test_custody_definition.py::test_accounted_output_exact_physical_counts_and_deadline[accounted_bytes-12745]",
+          "test_custody_definition.py::test_accounted_output_exact_physical_counts_and_deadline[elapsed_ns-120000000001]",
+          "test_custody_definition.py::test_inherited_map_actual_components_and_original_schema_bindings",
+          "test_custody_definition.py::test_unchanged_native_codec_preserves_exact_ordinary_bytes[gzip-v1]",
+          "test_custody_definition.py::test_unchanged_native_codec_preserves_exact_ordinary_bytes[xz-v1]",
+          "test_custody_definition.py::test_native_codec_integrity_denials_preserved[trailing-gzip-v1]",
+          "test_custody_definition.py::test_native_codec_integrity_denials_preserved[trailing-xz-v1]",
+          "test_custody_definition.py::test_native_codec_integrity_denials_preserved[truncated-gzip-v1]",
+          "test_custody_definition.py::test_native_codec_integrity_denials_preserved[truncated-xz-v1]",
+          "test_custody_definition.py::test_native_codec_integrity_denials_preserved[wrong-bound-gzip-v1]",
+          "test_custody_definition.py::test_native_codec_integrity_denials_preserved[wrong-bound-xz-v1]",
+          "test_custody_definition.py::test_native_reserved_classifier_duties_not_suppressed[{\"kineticloop_evidence\":]",
+          "test_custody_definition.py::test_native_reserved_classifier_duties_not_suppressed[[{\"kineticloop_evidence\":\"gzip-v1\"}]]",
+          "test_custody_definition.py::test_native_reserved_classifier_duties_not_suppressed[{\"kineticloop_evidence\":1,\"kineticloop_evidence\":2}]",
+          "test_custody_definition.py::test_native_reserved_classifier_duties_not_suppressed[{\"payload\":\"x\",\"stored_sha256\":\"x\",\"raw_sha256\":\"x\"]",
+          "test_custody_definition.py::test_native_storage_limits_identical_to_current_authority_and_prior_rule",
+          "test_custody_definition.py::test_original6358_child_unknown_remains_separate_from_driver143",
+          "test_custody_definition.py::test_public_and_worker_callers_have_no_custody_dispatch_or_receipt_input",
+          "test_custody_definition.py::test_complete_definition_input_hashes_and_snapshots_match_manifest",
+          "test_custody_definition.py::test_no_native_full_audit_or_historical_script_execution_claim",
+          "test_custody_definition.py::test_r2_contradictory_member_source_delivery_and_endpoint_rejects[swapped-envelope-history]",
+          "test_custody_definition.py::test_r2_contradictory_member_source_delivery_and_endpoint_rejects[envelope-used-for-payload-history]",
+          "test_custody_definition.py::test_r2_contradictory_member_source_delivery_and_endpoint_rejects[foreign-used-for-selected-payload-history]",
+          "test_custody_definition.py::test_r2_contradictory_member_source_delivery_and_endpoint_rejects[same-declaration-tuple-conflicting-blob]",
+          "test_custody_definition.py::test_r2_contradictory_member_source_delivery_and_endpoint_rejects[reversed-top-level-delivery]",
+          "test_custody_definition.py::test_r2_contradictory_member_source_delivery_and_endpoint_rejects[nonexistent-top-level-delivery]",
+          "test_custody_definition.py::test_r2_contradictory_member_source_delivery_and_endpoint_rejects[wrong-original-declaration-pointer]",
+          "test_custody_definition.py::test_r2_contradictory_member_source_delivery_and_endpoint_rejects[other-member-pointer]",
+          "test_custody_definition.py::test_r2_contradictory_member_source_delivery_and_endpoint_rejects[duplicate-pointer]",
+          "test_custody_definition.py::test_r2_contradictory_member_source_delivery_and_endpoint_rejects[wrong-protected-endpoint]",
+          "test_custody_definition.py::test_r2_contradictory_member_source_delivery_and_endpoint_rejects[wrong-original-base-and-map-claim]",
+          "test_custody_definition.py::test_r2_disconnected_self_cycle_and_disconnected_acyclic_chain_reject",
+          "test_custody_definition.py::test_r2_independent_original_source_corruption_and_absence_reject",
+          "test_custody_definition.py::test_r2_original_native_record_lists_and_projected_proof_lists_keep_their_own_limits",
+          "test_custody_definition.py::test_r2_each_complete_output_counter_exact_boundary_and_overrun_denial",
+          "test_custody_definition.py::test_r2_each_actual_exceeded_counter_discards_every_group_and_preserves_counter",
+          "test_custody_definition.py::test_r2_complete_ordinary_denial_deadline_exact_boundary_and_overrun",
+          "test_custody_definition.py::test_r2_deadline_expires_after_last_unchanged_predicate_discards_result",
+          "test_custody_definition.py::test_r2_deadline_final_publication_check_after_complete_predicate",
+          "test_custody_definition.py::test_r2_post_predicate_counter_overrun_discards_mixed_invocation",
+          "test_custody_definition.py::test_r2_unperformed_status_has_exact_unperformed_reason_and_no_accounting",
+          "test_custody_definition.py::test_r2_mixed_counter_and_deadline_overruns_preserve_both_actual_observations",
+          "test_custody_definition.py::test_r2_late_exhaustion_on_ordinary_predicate_denial_is_incomplete",
+          "test_custody_definition.py::test_r2_missing_independent_original_source_cannot_claim_complete_invocation",
+          "test_custody_definition.py::test_r2_completed_ordinary_denial_with_valid_context_has_zero_accounting"
+        ],
+        "delivery": {
+          "original_git_bindings": 239,
+          "preparation_pins": 646,
+          "normative": 10
+        },
+        "six_envelopes": 6,
+        "physical_paths": 8,
+        "original_map_components": "FRESH_COMPONENT_OBSERVATIONS_ONLY",
+        "historical_execution": "UNVERIFIED",
+        "native_whole_inventory": "NOT_RUN",
+        "private_installed_runtime": "NOT_RUN",
+        "observations": "/private/tmp/hg065-definitions-r2w8kabo",
+        "runs": [
+          {
+            "name": "original-components",
+            "argv": [
+              "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python",
+              "/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop/docs/exec-plans/evidence/HG-065/observe_immutable.py"
+            ],
+            "cwd": "/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop/docs/exec-plans/evidence/HG-065",
+            "exit_code": 0,
+            "elapsed_ns": 8642997167,
+            "environment": {
+              "PYTHONPATH": "/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop/docs/exec-plans/evidence/HG-065:/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop:/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop/src",
+              "PYTHONDONTWRITEBYTECODE": "1",
+              "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
+              "HG065_OBSERVATIONS": "/private/tmp/hg065-definitions-r2w8kabo"
+            },
+            "sha256": "6b0344f51afd3d3e43b17225dda9cd09816b64d7ebd6c3c25f03db37cd27c0bb"
+          },
+          {
+            "name": "inherited-components",
+            "argv": [
+              "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python",
+              "/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop/docs/exec-plans/evidence/HG-065/observe_inherited_components.py"
+            ],
+            "cwd": "/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop/docs/exec-plans/evidence/HG-065",
+            "exit_code": 0,
+            "elapsed_ns": 764662833,
+            "environment": {
+              "PYTHONPATH": "/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop/docs/exec-plans/evidence/HG-065:/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop:/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop/src",
+              "PYTHONDONTWRITEBYTECODE": "1",
+              "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
+              "HG065_OBSERVATIONS": "/private/tmp/hg065-definitions-r2w8kabo"
+            },
+            "sha256": "6c77c87d4d2ea1eb91cf07d173831221c27c76e1e877ac3745696a0e470accd3"
+          },
+          {
+            "name": "definition-collection",
+            "argv": [
+              "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python",
+              "-m",
+              "pytest",
+              "test_custody_definition.py",
+              "-q",
+              "--import-mode=importlib",
+              "--rootdir=/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop/docs/exec-plans/evidence/HG-065",
+              "--confcutdir=/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop/docs/exec-plans/evidence/HG-065",
+              "-c",
+              "/dev/null",
+              "-p",
+              "definition_observer",
+              "-p",
+              "no:cacheprovider",
+              "-o",
+              "xfail_strict=true",
+              "--collect-only",
+              "-q"
+            ],
+            "cwd": "/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop/docs/exec-plans/evidence/HG-065",
+            "exit_code": 0,
+            "elapsed_ns": 4131739958,
+            "environment": {
+              "PYTHONPATH": "/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop/docs/exec-plans/evidence/HG-065:/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop:/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop/src",
+              "PYTHONDONTWRITEBYTECODE": "1",
+              "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
+              "HG065_OBSERVATIONS": "/private/tmp/hg065-definitions-r2w8kabo",
+              "CUSTODY_STUDY_OBSERVER": "/private/tmp/hg065-definitions-r2w8kabo/definition-collection.json"
+            },
+            "sha256": "7375e7f4f8f3929753c817d54e94ea88a64da419f62232d96161d3074a939c36"
+          },
+          {
+            "name": "definition-execution",
+            "argv": [
+              "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python",
+              "-m",
+              "pytest",
+              "test_custody_definition.py",
+              "-q",
+              "--import-mode=importlib",
+              "--rootdir=/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop/docs/exec-plans/evidence/HG-065",
+              "--confcutdir=/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop/docs/exec-plans/evidence/HG-065",
+              "-c",
+              "/dev/null",
+              "-p",
+              "definition_observer",
+              "-p",
+              "no:cacheprovider",
+              "-o",
+              "xfail_strict=true",
+              "--junitxml=/private/tmp/hg065-definitions-r2w8kabo/definition-junit.xml"
+            ],
+            "cwd": "/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop/docs/exec-plans/evidence/HG-065",
+            "exit_code": 0,
+            "elapsed_ns": 10905604375,
+            "environment": {
+              "PYTHONPATH": "/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop/docs/exec-plans/evidence/HG-065:/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop:/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop/src",
+              "PYTHONDONTWRITEBYTECODE": "1",
+              "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
+              "HG065_OBSERVATIONS": "/private/tmp/hg065-definitions-r2w8kabo",
+              "CUSTODY_STUDY_OBSERVER": "/private/tmp/hg065-definitions-r2w8kabo/definition-execution.json"
+            },
+            "sha256": "a9a7dff515bdc0004d5214bbb78d8a558e56c0cb8a77a9e5f3d5eb48cad0655c"
+          }
+        ]
+      },
+      "artifacts": [
+        {
+          "source_file": "/private/tmp/hg065-author-dfd4c20b9311/definitions.log",
+          "evidence_ref": "docs/exec-plans/evidence/HG-065/checks-dfd4c20b9311/definitions.json",
+          "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python docs/exec-plans/evidence/HG-065/verify_definitions.py --base e8e93bd32a83bd2fd6bf89951863d59b37e9d2b3 --tested dfd4c20b93112e9403eb21286c705cd31847eefd",
+          "environment": {
+            "PYTHONPATH": "/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop:/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop/src:/Users/davetian/.cache/uv/archive-v0/nnPNXkWpFSNRe9Ad:/Users/davetian/.cache/uv/archive-v0/X_H5kIMi_L692EPn"
+          },
+          "raw_identity": {
+            "bytes": 21245,
+            "sha256": "4d00e08cc93bfe186762664039895bbb70916895da68c3c30e0d4e6fff60763a"
+          },
+          "envelope_identity": {
+            "bytes": 777,
+            "sha256": "f3f6fafbe56cac345ccc1c2e91d125aa16d912e2ea4b8680d9ad4c834f3e91f0"
+          },
+          "payload_identity": {
+            "bytes": 3513,
+            "sha256": "94fa8b14b3199ffd48701c58df81ded5f5e0075f08175260c9db053f6e457d96"
+          }
+        },
+        {
+          "source_file": "/private/tmp/hg065-definitions-r2w8kabo/ACTUAL_CUSTODY_PROOF.json",
+          "evidence_ref": "docs/exec-plans/evidence/HG-065/checks-75c4244719ae/fresh-dfd4c20b9311-definitions-ACTUAL_CUSTODY_PROOF.json.json",
+          "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python docs/exec-plans/evidence/HG-065/verify_definitions.py --base e8e93bd32a83bd2fd6bf89951863d59b37e9d2b3 --tested dfd4c20b93112e9403eb21286c705cd31847eefd",
+          "environment": {
+            "PYTHONPATH": "/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop:/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop/src:/Users/davetian/.cache/uv/archive-v0/nnPNXkWpFSNRe9Ad:/Users/davetian/.cache/uv/archive-v0/X_H5kIMi_L692EPn"
+          },
+          "raw_identity": {
+            "bytes": 254352,
+            "sha256": "f2dba1b021af647cd0dd8525b7d458ffdcd9d3e1136366d807b903ef5b60c024"
+          },
+          "envelope_identity": {
+            "bytes": 778,
+            "sha256": "9b9bf4679cd588ae6422f8bdc238e4e968b27cf65dd39347d2b35c81b1947de4"
+          },
+          "payload_identity": {
+            "bytes": 9680,
+            "sha256": "e50934266361c898adb57aa4b9ba7c41fa37581533e07e376153c1f704452f8d"
+          }
+        },
+        {
+          "source_file": "/private/tmp/hg065-definitions-r2w8kabo/ACTUAL_PREPARATION_DISPOSITION.json",
+          "evidence_ref": "docs/exec-plans/evidence/HG-065/checks-dfd4c20b9311/definitions-ACTUAL_PREPARATION_DISPOSITION.json.json",
+          "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python docs/exec-plans/evidence/HG-065/verify_definitions.py --base e8e93bd32a83bd2fd6bf89951863d59b37e9d2b3 --tested dfd4c20b93112e9403eb21286c705cd31847eefd",
+          "environment": {
+            "PYTHONPATH": "/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop:/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop/src:/Users/davetian/.cache/uv/archive-v0/nnPNXkWpFSNRe9Ad:/Users/davetian/.cache/uv/archive-v0/X_H5kIMi_L692EPn"
+          },
+          "raw_identity": {
+            "bytes": 41725,
+            "sha256": "229feb23a8f52629c33f88d9d848c3d1b80856f4143d55d0df4849b7d0b5579d"
+          },
+          "envelope_identity": {
+            "bytes": 777,
+            "sha256": "106b7a6a4d419ecc4c830c055e32bd01c8ddd9279abc171438ec556c761b3c50"
+          },
+          "payload_identity": {
+            "bytes": 6819,
+            "sha256": "42363137c2be1c2123e3ea6c15091c9b53f3b5e6058194a3d743ad11278c53ed"
+          }
+        },
+        {
+          "source_file": "/private/tmp/hg065-definitions-r2w8kabo/COMMANDS.json",
+          "evidence_ref": "docs/exec-plans/evidence/HG-065/checks-dfd4c20b9311/definitions-COMMANDS.json.json",
+          "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python docs/exec-plans/evidence/HG-065/verify_definitions.py --base e8e93bd32a83bd2fd6bf89951863d59b37e9d2b3 --tested dfd4c20b93112e9403eb21286c705cd31847eefd",
+          "environment": {
+            "PYTHONPATH": "/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop:/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop/src:/Users/davetian/.cache/uv/archive-v0/nnPNXkWpFSNRe9Ad:/Users/davetian/.cache/uv/archive-v0/X_H5kIMi_L692EPn"
+          },
+          "raw_identity": {
+            "bytes": 4896,
+            "sha256": "dc6ccee83c2b790c23678b2c0a7c0746126c07795fe4767e12fe7642411177b1"
+          },
+          "envelope_identity": {
+            "bytes": 775,
+            "sha256": "aed7a96b34060762acac9005d27f96d8da966d5ebe667fe9e67f674b00c07b71"
+          },
+          "payload_identity": {
+            "bytes": 857,
+            "sha256": "d2733a45ac73ea818fe5a8c3c6b9ae5f4ee227252e0305f9e1199fa896d256f4"
+          }
+        },
+        {
+          "source_file": "/private/tmp/hg065-definitions-r2w8kabo/DEFINITION_REPORT.json",
+          "evidence_ref": "docs/exec-plans/evidence/HG-065/checks-dfd4c20b9311/definitions-DEFINITION_REPORT.json.json",
+          "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python docs/exec-plans/evidence/HG-065/verify_definitions.py --base e8e93bd32a83bd2fd6bf89951863d59b37e9d2b3 --tested dfd4c20b93112e9403eb21286c705cd31847eefd",
+          "environment": {
+            "PYTHONPATH": "/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop:/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop/src:/Users/davetian/.cache/uv/archive-v0/nnPNXkWpFSNRe9Ad:/Users/davetian/.cache/uv/archive-v0/X_H5kIMi_L692EPn"
+          },
+          "raw_identity": {
+            "bytes": 22585,
+            "sha256": "d5bbe6da6dcdebdfc2493330c922af6a91933e2a4b4508982c3546ac80f122f9"
+          },
+          "envelope_identity": {
+            "bytes": 777,
+            "sha256": "55ce746ed18d323e42544409d0f89a119dbfdc602e6cd3c8d65a18fd469f8bb5"
+          },
+          "payload_identity": {
+            "bytes": 3551,
+            "sha256": "43f184e772d5fd73b4e7978e1e5caac6cea96d5bd549025773f1eb081b0aa870"
+          }
+        },
+        {
+          "source_file": "/private/tmp/hg065-definitions-r2w8kabo/IMMUTABLE_COMMAND_READS.json",
+          "evidence_ref": "docs/exec-plans/evidence/HG-065/checks-dfd4c20b9311/definitions-IMMUTABLE_COMMAND_READS.json.json",
+          "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python docs/exec-plans/evidence/HG-065/verify_definitions.py --base e8e93bd32a83bd2fd6bf89951863d59b37e9d2b3 --tested dfd4c20b93112e9403eb21286c705cd31847eefd",
+          "environment": {
+            "PYTHONPATH": "/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop:/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop/src:/Users/davetian/.cache/uv/archive-v0/nnPNXkWpFSNRe9Ad:/Users/davetian/.cache/uv/archive-v0/X_H5kIMi_L692EPn"
+          },
+          "raw_identity": {
+            "bytes": 264658,
+            "sha256": "413b8df08eae045ba8d7aff99153821a6dd4119ae5251696f32d72486bd064fd"
+          },
+          "envelope_identity": {
+            "bytes": 779,
+            "sha256": "443b69c2b55034ebfe372c5ef5dc770d3d168697970b500029c85b05b032a467"
+          },
+          "payload_identity": {
+            "bytes": 13557,
+            "sha256": "bd55e413bdacea4da71948407cd7aab0d052df43bbb6c2a129fcc54d6c232c9a"
+          }
+        },
+        {
+          "source_file": "/private/tmp/hg065-definitions-r2w8kabo/INHERITED_COMPONENT_OBSERVATIONS.json",
+          "evidence_ref": "docs/exec-plans/evidence/HG-065/checks-dfd4c20b9311/definitions-INHERITED_COMPONENT_OBSERVATIONS.json.json",
+          "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python docs/exec-plans/evidence/HG-065/verify_definitions.py --base e8e93bd32a83bd2fd6bf89951863d59b37e9d2b3 --tested dfd4c20b93112e9403eb21286c705cd31847eefd",
+          "environment": {
+            "PYTHONPATH": "/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop:/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop/src:/Users/davetian/.cache/uv/archive-v0/nnPNXkWpFSNRe9Ad:/Users/davetian/.cache/uv/archive-v0/X_H5kIMi_L692EPn"
+          },
+          "raw_identity": {
+            "bytes": 15665,
+            "sha256": "4f0e94e3ed64e38bcbf2d7a4eb3d1eda5d2726aff16a4a1b1959e18dc0acf2e4"
+          },
+          "envelope_identity": {
+            "bytes": 777,
+            "sha256": "d8ee0c6ffb89db28c7ade49adf3dd02a7b03da3f36a3d4965149c6f1ef6a8b01"
+          },
+          "payload_identity": {
+            "bytes": 2700,
+            "sha256": "93d5acd4b1f9cfee1ebabff8f13b99f9345b8fd42c437372b1cff20db7729030"
+          }
+        },
+        {
+          "source_file": "/private/tmp/hg065-definitions-r2w8kabo/INHERITED_GIT_INPUTS.json",
+          "evidence_ref": "docs/exec-plans/evidence/HG-065/checks-75c4244719ae/fresh-dfd4c20b9311-definitions-INHERITED_GIT_INPUTS.json.json",
+          "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python docs/exec-plans/evidence/HG-065/verify_definitions.py --base e8e93bd32a83bd2fd6bf89951863d59b37e9d2b3 --tested dfd4c20b93112e9403eb21286c705cd31847eefd",
+          "environment": {
+            "PYTHONPATH": "/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop:/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop/src:/Users/davetian/.cache/uv/archive-v0/nnPNXkWpFSNRe9Ad:/Users/davetian/.cache/uv/archive-v0/X_H5kIMi_L692EPn"
+          },
+          "raw_identity": {
+            "bytes": 7826,
+            "sha256": "56ff55fd942040d1dd0f137f9570031be8e5e5dad917169081c0a3e085ebabcc"
+          },
+          "envelope_identity": {
+            "bytes": 776,
+            "sha256": "6fc982c0cf8c914590c269e9faca49e46e9b71f2f34b3b479394edd2602e48df"
+          },
+          "payload_identity": {
+            "bytes": 1392,
+            "sha256": "c1941971ea40f181464c917abc8c7588b801d062d9ccef258602d111f63687f3"
+          }
+        },
+        {
+          "source_file": "/private/tmp/hg065-definitions-r2w8kabo/NEW_GIT_INPUTS.json",
+          "evidence_ref": "docs/exec-plans/evidence/HG-065/checks-75c4244719ae/fresh-dfd4c20b9311-definitions-NEW_GIT_INPUTS.json.json",
+          "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python docs/exec-plans/evidence/HG-065/verify_definitions.py --base e8e93bd32a83bd2fd6bf89951863d59b37e9d2b3 --tested dfd4c20b93112e9403eb21286c705cd31847eefd",
+          "environment": {
+            "PYTHONPATH": "/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop:/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop/src:/Users/davetian/.cache/uv/archive-v0/nnPNXkWpFSNRe9Ad:/Users/davetian/.cache/uv/archive-v0/X_H5kIMi_L692EPn"
+          },
+          "raw_identity": {
+            "bytes": 26767,
+            "sha256": "0be21f18d13e0c310e874cfc64dc5c85ae3838fe1148b4c47cdba65d67dbbd88"
+          },
+          "envelope_identity": {
+            "bytes": 777,
+            "sha256": "1593b6ade08c6fb49d60a75b4c15ae38cb51c91299562e27bc42859dc331fce6"
+          },
+          "payload_identity": {
+            "bytes": 2401,
+            "sha256": "2d922373c41327257a77524779c8c85579acc9f166e56bb54a1c68694f9371c5"
+          }
+        },
+        {
+          "source_file": "/private/tmp/hg065-definitions-r2w8kabo/definition-collection.json",
+          "evidence_ref": "docs/exec-plans/evidence/HG-065/checks-75c4244719ae/fresh-dfd4c20b9311-definitions-definition-collection.json.json",
+          "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python docs/exec-plans/evidence/HG-065/verify_definitions.py --base e8e93bd32a83bd2fd6bf89951863d59b37e9d2b3 --tested dfd4c20b93112e9403eb21286c705cd31847eefd",
+          "environment": {
+            "PYTHONPATH": "/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop:/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop/src:/Users/davetian/.cache/uv/archive-v0/nnPNXkWpFSNRe9Ad:/Users/davetian/.cache/uv/archive-v0/X_H5kIMi_L692EPn"
+          },
+          "raw_identity": {
+            "bytes": 16181,
+            "sha256": "bb9d6049d9eb5ca98cf4e082c30e4d2f3b7a8b204691d32ed8f3bed8563fdc41"
+          },
+          "envelope_identity": {
+            "bytes": 777,
+            "sha256": "dd2a26227cbf84e7de390199714bd5e6fd1eca4f55058cd1c2374be92a55524a"
+          },
+          "payload_identity": {
+            "bytes": 2508,
+            "sha256": "285750c8c658525304d47520d1029445a813909bc4784355a6d2497bad227940"
+          }
+        },
+        {
+          "source_file": "/private/tmp/hg065-definitions-r2w8kabo/definition-collection.log",
+          "evidence_ref": "docs/exec-plans/evidence/HG-065/checks-75c4244719ae/fresh-dfd4c20b9311-definitions-definition-collection.log.json",
+          "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python docs/exec-plans/evidence/HG-065/verify_definitions.py --base e8e93bd32a83bd2fd6bf89951863d59b37e9d2b3 --tested dfd4c20b93112e9403eb21286c705cd31847eefd",
+          "environment": {
+            "PYTHONPATH": "/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop:/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop/src:/Users/davetian/.cache/uv/archive-v0/nnPNXkWpFSNRe9Ad:/Users/davetian/.cache/uv/archive-v0/X_H5kIMi_L692EPn"
+          },
+          "raw_identity": {
+            "bytes": 33,
+            "sha256": "7375e7f4f8f3929753c817d54e94ea88a64da419f62232d96161d3074a939c36"
+          },
+          "envelope_identity": {
+            "bytes": 772,
+            "sha256": "71c6bc5046a280fa770338fd2fec6d8b4bf58060824299edad2233dffe2ed2a5"
+          },
+          "payload_identity": {
+            "bytes": 53,
+            "sha256": "ae0be997c9f352d4e59e8147a651aec194845a34b25132f2b2ab1e80e79d407a"
+          }
+        },
+        {
+          "source_file": "/private/tmp/hg065-definitions-r2w8kabo/definition-execution.json",
+          "evidence_ref": "docs/exec-plans/evidence/HG-065/checks-75c4244719ae/fresh-dfd4c20b9311-definitions-definition-execution.json.json",
+          "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python docs/exec-plans/evidence/HG-065/verify_definitions.py --base e8e93bd32a83bd2fd6bf89951863d59b37e9d2b3 --tested dfd4c20b93112e9403eb21286c705cd31847eefd",
+          "environment": {
+            "PYTHONPATH": "/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop:/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop/src:/Users/davetian/.cache/uv/archive-v0/nnPNXkWpFSNRe9Ad:/Users/davetian/.cache/uv/archive-v0/X_H5kIMi_L692EPn"
+          },
+          "raw_identity": {
+            "bytes": 109483,
+            "sha256": "3b8284986bbdbca98d2cc4b2880553f835c96ba0befbd347f27082e45d30ecc1"
+          },
+          "envelope_identity": {
+            "bytes": 778,
+            "sha256": "ac7b175e0ad1e652a767c1cf660c2e0910fea4bc5a2c3e28ee1fd5e849e36449"
+          },
+          "payload_identity": {
+            "bytes": 6475,
+            "sha256": "15b4f0a99d781cbb90e4f5d5efc6ec6894a445ac6cf287249d447d4aa86a3575"
+          }
+        },
+        {
+          "source_file": "/private/tmp/hg065-definitions-r2w8kabo/definition-execution.log",
+          "evidence_ref": "docs/exec-plans/evidence/HG-065/checks-dfd4c20b9311/definitions-definition-execution.log.json",
+          "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python docs/exec-plans/evidence/HG-065/verify_definitions.py --base e8e93bd32a83bd2fd6bf89951863d59b37e9d2b3 --tested dfd4c20b93112e9403eb21286c705cd31847eefd",
+          "environment": {
+            "PYTHONPATH": "/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop:/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop/src:/Users/davetian/.cache/uv/archive-v0/nnPNXkWpFSNRe9Ad:/Users/davetian/.cache/uv/archive-v0/X_H5kIMi_L692EPn"
+          },
+          "raw_identity": {
+            "bytes": 346,
+            "sha256": "a9a7dff515bdc0004d5214bbb78d8a558e56c0cb8a77a9e5f3d5eb48cad0655c"
+          },
+          "envelope_identity": {
+            "bytes": 795,
+            "sha256": "f94bcec2984363a9bf0001793ee318c44e8dc51a8db5f4c8e377c515722b3a17"
+          },
+          "payload_identity": {
+            "bytes": 140,
+            "sha256": "f0a7bf8da9920f3262910c7406e1bc23293502ac630ee724c4b9ee72431dd070"
+          }
+        },
+        {
+          "source_file": "/private/tmp/hg065-definitions-r2w8kabo/definition-junit.xml",
+          "evidence_ref": "docs/exec-plans/evidence/HG-065/checks-dfd4c20b9311/definitions-definition-junit.xml.json",
+          "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python docs/exec-plans/evidence/HG-065/verify_definitions.py --base e8e93bd32a83bd2fd6bf89951863d59b37e9d2b3 --tested dfd4c20b93112e9403eb21286c705cd31847eefd",
+          "environment": {
+            "PYTHONPATH": "/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop:/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop/src:/Users/davetian/.cache/uv/archive-v0/nnPNXkWpFSNRe9Ad:/Users/davetian/.cache/uv/archive-v0/X_H5kIMi_L692EPn"
+          },
+          "raw_identity": {
+            "bytes": 22392,
+            "sha256": "6ee38d1e0d5cfdfbd59f77d73b899e61a62cc1d03679cc6229db203f8c92badb"
+          },
+          "envelope_identity": {
+            "bytes": 777,
+            "sha256": "4e702c5ba086b07af67bfef820aac815b51a2b5233199105ea2073dfb750cf06"
+          },
+          "payload_identity": {
+            "bytes": 2878,
+            "sha256": "a2915deb7239d3bf35624bb4efcc9d0c52acb415c6a12493d07f947138e85e02"
+          }
+        },
+        {
+          "source_file": "/private/tmp/hg065-definitions-r2w8kabo/inherited-components.log",
+          "evidence_ref": "docs/exec-plans/evidence/HG-065/checks-75c4244719ae/fresh-dfd4c20b9311-definitions-inherited-components.log.json",
+          "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python docs/exec-plans/evidence/HG-065/verify_definitions.py --base e8e93bd32a83bd2fd6bf89951863d59b37e9d2b3 --tested dfd4c20b93112e9403eb21286c705cd31847eefd",
+          "environment": {
+            "PYTHONPATH": "/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop:/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop/src:/Users/davetian/.cache/uv/archive-v0/nnPNXkWpFSNRe9Ad:/Users/davetian/.cache/uv/archive-v0/X_H5kIMi_L692EPn"
+          },
+          "raw_identity": {
+            "bytes": 124,
+            "sha256": "6c77c87d4d2ea1eb91cf07d173831221c27c76e1e877ac3745696a0e470accd3"
+          },
+          "envelope_identity": {
+            "bytes": 774,
+            "sha256": "c3e330eba5ef097e372d1c1141aea679bfa840faa22fdeeea1b36062b9279965"
+          },
+          "payload_identity": {
+            "bytes": 124,
+            "sha256": "1fa2bcab8e5f5d19727aa7604088262900ca2e4bb17be15136b35dc777cdd719"
+          }
+        },
+        {
+          "source_file": "/private/tmp/hg065-definitions-r2w8kabo/original-components.log",
+          "evidence_ref": "docs/exec-plans/evidence/HG-065/checks-dfd4c20b9311/definitions-original-components.log.json",
+          "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python docs/exec-plans/evidence/HG-065/verify_definitions.py --base e8e93bd32a83bd2fd6bf89951863d59b37e9d2b3 --tested dfd4c20b93112e9403eb21286c705cd31847eefd",
+          "environment": {
+            "PYTHONPATH": "/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop:/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop/src:/Users/davetian/.cache/uv/archive-v0/nnPNXkWpFSNRe9Ad:/Users/davetian/.cache/uv/archive-v0/X_H5kIMi_L692EPn"
+          },
+          "raw_identity": {
+            "bytes": 187,
+            "sha256": "6b0344f51afd3d3e43b17225dda9cd09816b64d7ebd6c3c25f03db37cd27c0bb"
+          },
+          "envelope_identity": {
+            "bytes": 774,
+            "sha256": "438ebd75227f5c4885fc2a96859a3d1837cf938b069216b1fc413a2cba354699"
+          },
+          "payload_identity": {
+            "bytes": 172,
+            "sha256": "9c750216686ba772adb94cae5a77139d0bda5dc65cf9d201cc8f975682841494"
+          }
+        }
+      ],
+      "output_ref": "docs/exec-plans/evidence/HG-065/checks-dfd4c20b9311/definitions.json"
+    },
+    {
+      "check_id": "validator",
+      "base_commit": "e8e93bd32a83bd2fd6bf89951863d59b37e9d2b3",
+      "tested_commit": "dfd4c20b93112e9403eb21286c705cd31847eefd",
+      "argv": [
+        "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/harness/test_validator.py",
+        "-q",
+        "-p",
+        "tools.harness.parallel_observer",
+        "--junitxml=/private/tmp/hg065-author-dfd4c20b9311/validator-junit.xml"
+      ],
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m pytest tests/harness/test_validator.py -q -p tools.harness.parallel_observer --junitxml=/private/tmp/hg065-author-dfd4c20b9311/validator-junit.xml",
+      "environment": {
+        "PYTHONPATH": "/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop:/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop/src:/Users/davetian/.cache/uv/archive-v0/nnPNXkWpFSNRe9Ad:/Users/davetian/.cache/uv/archive-v0/X_H5kIMi_L692EPn",
+        "KINETICLOOP_HARNESS_ROOT": "/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop",
+        "KINETICLOOP_HARNESS_WORKERS": "1",
+        "KINETICLOOP_HARNESS_OBSERVER": "/private/tmp/hg065-author-dfd4c20b9311/validator-execution.json"
+      },
+      "started_at_unix": 1791796917.652002,
+      "execution_state": "COMPLETED",
+      "exit_code": 0,
+      "collection_argv": [
+        "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/harness/test_validator.py",
+        "--collect-only",
+        "-q",
+        "-p",
+        "tools.harness.parallel_observer"
+      ],
+      "collection_command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m pytest tests/harness/test_validator.py --collect-only -q -p tools.harness.parallel_observer",
+      "collection_environment": {
+        "PYTHONPATH": "/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop:/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop/src:/Users/davetian/.cache/uv/archive-v0/nnPNXkWpFSNRe9Ad:/Users/davetian/.cache/uv/archive-v0/X_H5kIMi_L692EPn",
+        "KINETICLOOP_HARNESS_ROOT": "/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop",
+        "KINETICLOOP_HARNESS_WORKERS": "1",
+        "KINETICLOOP_HARNESS_OBSERVER": "/private/tmp/hg065-author-dfd4c20b9311/validator-collection.json"
+      },
+      "collection_exit": 0,
+      "elapsed_seconds": 583.1802108287811,
+      "cases": 176,
+      "artifacts": [
+        {
+          "source_file": "/private/tmp/hg065-author-dfd4c20b9311/validator.log",
+          "evidence_ref": "docs/exec-plans/evidence/HG-065/checks-dfd4c20b9311/validator.json",
+          "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m pytest tests/harness/test_validator.py -q -p tools.harness.parallel_observer --junitxml=/private/tmp/hg065-author-dfd4c20b9311/validator-junit.xml",
+          "environment": {
+            "PYTHONPATH": "/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop:/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop/src:/Users/davetian/.cache/uv/archive-v0/nnPNXkWpFSNRe9Ad:/Users/davetian/.cache/uv/archive-v0/X_H5kIMi_L692EPn",
+            "KINETICLOOP_HARNESS_ROOT": "/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop",
+            "KINETICLOOP_HARNESS_WORKERS": "1",
+            "KINETICLOOP_HARNESS_OBSERVER": "/private/tmp/hg065-author-dfd4c20b9311/validator-execution.json"
+          },
+          "raw_identity": {
+            "bytes": 355,
+            "sha256": "14d20b02d916b2ccbe9ffb76ef49ac420328fc0a7cb6911c369ad79b2fd2d35c"
+          },
+          "envelope_identity": {
+            "bytes": 793,
+            "sha256": "bbcd8f29ab61780a55baf7e28b2e581264c9e2178b239b82cce1159869018ed5"
+          },
+          "payload_identity": {
+            "bytes": 152,
+            "sha256": "4e3e557b4d3581aba974470684eb42021168fa757be2f43ee86c2365b11f4862"
+          }
+        },
+        {
+          "source_file": "/private/tmp/hg065-author-dfd4c20b9311/validator-collection.log",
+          "evidence_ref": "docs/exec-plans/evidence/HG-065/checks-dfd4c20b9311/validator-collection.log.json",
+          "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m pytest tests/harness/test_validator.py --collect-only -q -p tools.harness.parallel_observer",
+          "environment": {
+            "PYTHONPATH": "/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop:/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop/src:/Users/davetian/.cache/uv/archive-v0/nnPNXkWpFSNRe9Ad:/Users/davetian/.cache/uv/archive-v0/X_H5kIMi_L692EPn",
+            "KINETICLOOP_HARNESS_ROOT": "/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop",
+            "KINETICLOOP_HARNESS_WORKERS": "1",
+            "KINETICLOOP_HARNESS_OBSERVER": "/private/tmp/hg065-author-dfd4c20b9311/validator-collection.json"
+          },
+          "raw_identity": {
+            "bytes": 18509,
+            "sha256": "70095fdafa22bcd06ccac697a641e9188f504ba397be4764bf91a511c3aae652"
+          },
+          "envelope_identity": {
+            "bytes": 720,
+            "sha256": "aa51cd279353ad555ee4aba5a2454e7d23f8e7fc4d4e44b5ca580ca0f933f854"
+          },
+          "payload_identity": {
+            "bytes": 2811,
+            "sha256": "88d7d6f7b6c4bd77522dc10cd35bdc42c534ebd2e40412428896e2cc742b2cac"
+          }
+        },
+        {
+          "source_file": "/private/tmp/hg065-author-dfd4c20b9311/validator-collection.json",
+          "evidence_ref": "docs/exec-plans/evidence/HG-065/checks-75c4244719ae/fresh-dfd4c20b9311-validator-collection.json.json",
+          "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m pytest tests/harness/test_validator.py --collect-only -q -p tools.harness.parallel_observer",
+          "environment": {
+            "PYTHONPATH": "/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop:/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop/src:/Users/davetian/.cache/uv/archive-v0/nnPNXkWpFSNRe9Ad:/Users/davetian/.cache/uv/archive-v0/X_H5kIMi_L692EPn",
+            "KINETICLOOP_HARNESS_ROOT": "/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop",
+            "KINETICLOOP_HARNESS_WORKERS": "1",
+            "KINETICLOOP_HARNESS_OBSERVER": "/private/tmp/hg065-author-dfd4c20b9311/validator-collection.json"
+          },
+          "raw_identity": {
+            "bytes": 20179,
+            "sha256": "d7cc633fa66c4156d69874c18648cbd1fa87a150be52928734002a87cd0bbea5"
+          },
+          "envelope_identity": {
+            "bytes": 720,
+            "sha256": "1a4ec2b46dc5b2d0acc3e75e796763632618a4c98272674bd558067064025bc3"
+          },
+          "payload_identity": {
+            "bytes": 2872,
+            "sha256": "df98fda8af545588b53abe8aaa9cd76423281603222f4d5821e08e493e0ac21d"
+          }
+        },
+        {
+          "source_file": "/private/tmp/hg065-author-dfd4c20b9311/validator-execution.json",
+          "evidence_ref": "docs/exec-plans/evidence/HG-065/checks-dfd4c20b9311/validator-execution.json.json",
+          "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m pytest tests/harness/test_validator.py -q -p tools.harness.parallel_observer --junitxml=/private/tmp/hg065-author-dfd4c20b9311/validator-junit.xml",
+          "environment": {
+            "PYTHONPATH": "/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop:/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop/src:/Users/davetian/.cache/uv/archive-v0/nnPNXkWpFSNRe9Ad:/Users/davetian/.cache/uv/archive-v0/X_H5kIMi_L692EPn",
+            "KINETICLOOP_HARNESS_ROOT": "/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop",
+            "KINETICLOOP_HARNESS_WORKERS": "1",
+            "KINETICLOOP_HARNESS_OBSERVER": "/private/tmp/hg065-author-dfd4c20b9311/validator-execution.json"
+          },
+          "raw_identity": {
+            "bytes": 173876,
+            "sha256": "18674f41ddebd771eab2e1c95644cc17f7465d0b04fa47dd9854ba9707862f96"
+          },
+          "envelope_identity": {
+            "bytes": 777,
+            "sha256": "e3b2b212dc6469c7e053963167a9c48e1c1da9b109d9b3f62c7f52df622a5ab5"
+          },
+          "payload_identity": {
+            "bytes": 13919,
+            "sha256": "6cd4f23a5917ebd466ec7f244e89f82fdcfe8344ef1fcd9f777f67c91490ec79"
+          }
+        },
+        {
+          "source_file": "/private/tmp/hg065-author-dfd4c20b9311/validator-junit.xml",
+          "evidence_ref": "docs/exec-plans/evidence/HG-065/checks-dfd4c20b9311/validator-junit.xml.json",
+          "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m pytest tests/harness/test_validator.py -q -p tools.harness.parallel_observer --junitxml=/private/tmp/hg065-author-dfd4c20b9311/validator-junit.xml",
+          "environment": {
+            "PYTHONPATH": "/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop:/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop/src:/Users/davetian/.cache/uv/archive-v0/nnPNXkWpFSNRe9Ad:/Users/davetian/.cache/uv/archive-v0/X_H5kIMi_L692EPn",
+            "KINETICLOOP_HARNESS_ROOT": "/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop",
+            "KINETICLOOP_HARNESS_WORKERS": "1",
+            "KINETICLOOP_HARNESS_OBSERVER": "/private/tmp/hg065-author-dfd4c20b9311/validator-execution.json"
+          },
+          "raw_identity": {
+            "bytes": 25627,
+            "sha256": "8d7b018c0fd3722696524f02ad3a4d6101cc32f37081f76525d13140c074bdd1"
+          },
+          "envelope_identity": {
+            "bytes": 775,
+            "sha256": "9610e424fc9a8237f041b1bc4f0749bf158fa6caf63bc57b2e5a6278a194318e"
+          },
+          "payload_identity": {
+            "bytes": 3674,
+            "sha256": "5ff30a5e0fef62699862d9d859f9bb0e1c1feb1a02635a345ae92ee2e2b9f8a4"
+          }
+        }
+      ],
+      "output_ref": "docs/exec-plans/evidence/HG-065/checks-dfd4c20b9311/validator.json"
+    },
+    {
+      "check_id": "unit",
+      "base_commit": "e8e93bd32a83bd2fd6bf89951863d59b37e9d2b3",
+      "tested_commit": "dfd4c20b93112e9403eb21286c705cd31847eefd",
+      "argv": [
+        "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python",
+        "-m",
+        "kineticloop.cli",
+        "test-unit",
+        "-q",
+        "-p",
+        "tools.harness.parallel_observer",
+        "--junitxml=/private/tmp/hg065-author-dfd4c20b9311/unit-junit.xml"
+      ],
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli test-unit -q -p tools.harness.parallel_observer --junitxml=/private/tmp/hg065-author-dfd4c20b9311/unit-junit.xml",
+      "environment": {
+        "PYTHONPATH": "/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop:/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop/src:/Users/davetian/.cache/uv/archive-v0/nnPNXkWpFSNRe9Ad:/Users/davetian/.cache/uv/archive-v0/X_H5kIMi_L692EPn",
+        "KINETICLOOP_HARNESS_ROOT": "/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop",
+        "KINETICLOOP_HARNESS_WORKERS": "1",
+        "KINETICLOOP_HARNESS_OBSERVER": "/private/tmp/hg065-author-dfd4c20b9311/unit-execution.json"
+      },
+      "started_at_unix": 1791797500.844413,
+      "execution_state": "COMPLETED",
+      "exit_code": 0,
+      "collection_argv": [
+        "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/unit",
+        "--collect-only",
+        "-q",
+        "-p",
+        "tools.harness.parallel_observer"
+      ],
+      "collection_command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m pytest tests/unit --collect-only -q -p tools.harness.parallel_observer",
+      "collection_environment": {
+        "PYTHONPATH": "/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop:/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop/src:/Users/davetian/.cache/uv/archive-v0/nnPNXkWpFSNRe9Ad:/Users/davetian/.cache/uv/archive-v0/X_H5kIMi_L692EPn",
+        "KINETICLOOP_HARNESS_ROOT": "/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop",
+        "KINETICLOOP_HARNESS_WORKERS": "1",
+        "KINETICLOOP_HARNESS_OBSERVER": "/private/tmp/hg065-author-dfd4c20b9311/unit-collection.json"
+      },
+      "collection_exit": 0,
+      "elapsed_seconds": 463.52080392837524,
+      "cases": 247,
+      "artifacts": [
+        {
+          "source_file": "/private/tmp/hg065-author-dfd4c20b9311/unit.log",
+          "evidence_ref": "docs/exec-plans/evidence/HG-065/checks-dfd4c20b9311/unit.json",
+          "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli test-unit -q -p tools.harness.parallel_observer --junitxml=/private/tmp/hg065-author-dfd4c20b9311/unit-junit.xml",
+          "environment": {
+            "PYTHONPATH": "/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop:/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop/src:/Users/davetian/.cache/uv/archive-v0/nnPNXkWpFSNRe9Ad:/Users/davetian/.cache/uv/archive-v0/X_H5kIMi_L692EPn",
+            "KINETICLOOP_HARNESS_ROOT": "/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop",
+            "KINETICLOOP_HARNESS_WORKERS": "1",
+            "KINETICLOOP_HARNESS_OBSERVER": "/private/tmp/hg065-author-dfd4c20b9311/unit-execution.json"
+          },
+          "raw_identity": {
+            "bytes": 433,
+            "sha256": "a99600fa957ed734587283277a0845eafd13ee47eeaf0f62ef60aed74ab20a51"
+          },
+          "envelope_identity": {
+            "bytes": 775,
+            "sha256": "6fdc49cebf18a76d6071ead0d15c30529bbe0fcd52d375f93e5c79c166fb1508"
+          },
+          "payload_identity": {
+            "bytes": 154,
+            "sha256": "57f6dc9d494ca8d57f91919735094cb2bc5a1104451c2c43a322bd879af670d6"
+          }
+        },
+        {
+          "source_file": "/private/tmp/hg065-author-dfd4c20b9311/unit-collection.log",
+          "evidence_ref": "docs/exec-plans/evidence/HG-065/checks-dfd4c20b9311/unit-collection.log.json",
+          "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m pytest tests/unit --collect-only -q -p tools.harness.parallel_observer",
+          "environment": {
+            "PYTHONPATH": "/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop:/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop/src:/Users/davetian/.cache/uv/archive-v0/nnPNXkWpFSNRe9Ad:/Users/davetian/.cache/uv/archive-v0/X_H5kIMi_L692EPn",
+            "KINETICLOOP_HARNESS_ROOT": "/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop",
+            "KINETICLOOP_HARNESS_WORKERS": "1",
+            "KINETICLOOP_HARNESS_OBSERVER": "/private/tmp/hg065-author-dfd4c20b9311/unit-collection.json"
+          },
+          "raw_identity": {
+            "bytes": 24068,
+            "sha256": "a50a37d5a8951ddccc4d2eeef33fe69712c8f766559aa7941d66b41f7e80648d"
+          },
+          "envelope_identity": {
+            "bytes": 699,
+            "sha256": "1e1b4a37eb3db026730aceaab190eb305c03405f26588200f397271f4f00d1da"
+          },
+          "payload_identity": {
+            "bytes": 4165,
+            "sha256": "10958cb6c3e89b2f13e8a09d9a5cd349014a9d435f898aebc46887323a97d7c3"
+          }
+        },
+        {
+          "source_file": "/private/tmp/hg065-author-dfd4c20b9311/unit-collection.json",
+          "evidence_ref": "docs/exec-plans/evidence/HG-065/checks-75c4244719ae/fresh-dfd4c20b9311-unit-collection.json.json",
+          "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m pytest tests/unit --collect-only -q -p tools.harness.parallel_observer",
+          "environment": {
+            "PYTHONPATH": "/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop:/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop/src:/Users/davetian/.cache/uv/archive-v0/nnPNXkWpFSNRe9Ad:/Users/davetian/.cache/uv/archive-v0/X_H5kIMi_L692EPn",
+            "KINETICLOOP_HARNESS_ROOT": "/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop",
+            "KINETICLOOP_HARNESS_WORKERS": "1",
+            "KINETICLOOP_HARNESS_OBSERVER": "/private/tmp/hg065-author-dfd4c20b9311/unit-collection.json"
+          },
+          "raw_identity": {
+            "bytes": 26433,
+            "sha256": "aa44ef95cbd9dfea6a741f359cb2c8884c51e7d9c1909eed35d63d526de16280"
+          },
+          "envelope_identity": {
+            "bytes": 699,
+            "sha256": "7e53480d7a1a38658fadf5c82026579ea839d2b79e520d7356e8a885ed39c14b"
+          },
+          "payload_identity": {
+            "bytes": 4250,
+            "sha256": "abe7c2b06447434d53e1a7c744d6e00cbc2f19dbe131844a0732941d6557a13f"
+          }
+        },
+        {
+          "source_file": "/private/tmp/hg065-author-dfd4c20b9311/unit-execution.json",
+          "evidence_ref": "docs/exec-plans/evidence/HG-065/checks-dfd4c20b9311/unit-execution.json.json",
+          "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli test-unit -q -p tools.harness.parallel_observer --junitxml=/private/tmp/hg065-author-dfd4c20b9311/unit-junit.xml",
+          "environment": {
+            "PYTHONPATH": "/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop:/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop/src:/Users/davetian/.cache/uv/archive-v0/nnPNXkWpFSNRe9Ad:/Users/davetian/.cache/uv/archive-v0/X_H5kIMi_L692EPn",
+            "KINETICLOOP_HARNESS_ROOT": "/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop",
+            "KINETICLOOP_HARNESS_WORKERS": "1",
+            "KINETICLOOP_HARNESS_OBSERVER": "/private/tmp/hg065-author-dfd4c20b9311/unit-execution.json"
+          },
+          "raw_identity": {
+            "bytes": 235679,
+            "sha256": "0e7c21916e8ed993b3cbf018649dc9623c39854d28023e83d7d742b77251d058"
+          },
+          "envelope_identity": {
+            "bytes": 759,
+            "sha256": "87b1faddabe24bf5e7fdb2e879154b0802a0774ea2f028bb1f5ceb8babc9c917"
+          },
+          "payload_identity": {
+            "bytes": 19978,
+            "sha256": "ae7fbb1c521c6ad721bf5bbdd018601ac8d646decad49c3369358936f2fc9c69"
+          }
+        },
+        {
+          "source_file": "/private/tmp/hg065-author-dfd4c20b9311/unit-junit.xml",
+          "evidence_ref": "docs/exec-plans/evidence/HG-065/checks-dfd4c20b9311/unit-junit.xml.json",
+          "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli test-unit -q -p tools.harness.parallel_observer --junitxml=/private/tmp/hg065-author-dfd4c20b9311/unit-junit.xml",
+          "environment": {
+            "PYTHONPATH": "/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop:/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop/src:/Users/davetian/.cache/uv/archive-v0/nnPNXkWpFSNRe9Ad:/Users/davetian/.cache/uv/archive-v0/X_H5kIMi_L692EPn",
+            "KINETICLOOP_HARNESS_ROOT": "/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop",
+            "KINETICLOOP_HARNESS_WORKERS": "1",
+            "KINETICLOOP_HARNESS_OBSERVER": "/private/tmp/hg065-author-dfd4c20b9311/unit-execution.json"
+          },
+          "raw_identity": {
+            "bytes": 34564,
+            "sha256": "e0cb4308eb4ce6a0afd63454c0f27026af7ce92e6ae2a75aeb0c499a91c09dd8"
+          },
+          "envelope_identity": {
+            "bytes": 757,
+            "sha256": "d0515132f27fd6354f5c883f7143729bdb337683caa1542e9f644498c189e08b"
+          },
+          "payload_identity": {
+            "bytes": 4604,
+            "sha256": "5b76ffc65837254ee5af73b01ab102e46a5d7516d719d6f2993ae5cebf7f6368"
+          }
+        }
+      ],
+      "output_ref": "docs/exec-plans/evidence/HG-065/checks-dfd4c20b9311/unit.json"
+    },
+    {
+      "check_id": "harness",
+      "base_commit": "e8e93bd32a83bd2fd6bf89951863d59b37e9d2b3",
+      "tested_commit": "dfd4c20b93112e9403eb21286c705cd31847eefd",
+      "argv": [
+        "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python",
+        "-m",
+        "kineticloop.cli",
+        "test-harness",
+        "--workers",
+        "2",
+        "--evidence-dir",
+        "/private/tmp/hg065-author-dfd4c20b9311/harness-run",
+        "-q"
+      ],
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli test-harness --workers 2 --evidence-dir /private/tmp/hg065-author-dfd4c20b9311/harness-run -q",
+      "environment": {
+        "PYTHONPATH": "/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop:/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop/src:/Users/davetian/.cache/uv/archive-v0/nnPNXkWpFSNRe9Ad:/Users/davetian/.cache/uv/archive-v0/X_H5kIMi_L692EPn"
+      },
+      "started_at_unix": 1791797964.3809521,
+      "execution_state": "COMPLETED",
+      "exit_code": 0,
+      "elapsed_seconds": 5595.080217838287,
+      "cases": 1785,
+      "inner_environment_provenance": "Exact environment additions from tested tools/harness/run_harness_tests.py and recorded outer environment",
+      "execution_environment": {
+        "PYTHONPATH": "/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop:/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop/src:/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop:/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop/src:/Users/davetian/.cache/uv/archive-v0/nnPNXkWpFSNRe9Ad:/Users/davetian/.cache/uv/archive-v0/X_H5kIMi_L692EPn",
+        "KINETICLOOP_HARNESS_ROOT": "/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop",
+        "KINETICLOOP_HARNESS_WORKERS": "2",
+        "KINETICLOOP_HARNESS_OBSERVER": "/private/tmp/hg065-author-dfd4c20b9311/harness-run/execution.json"
+      },
+      "collection_environment": {
+        "PYTHONPATH": "/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop:/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop/src:/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop:/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop/src:/Users/davetian/.cache/uv/archive-v0/nnPNXkWpFSNRe9Ad:/Users/davetian/.cache/uv/archive-v0/X_H5kIMi_L692EPn",
+        "KINETICLOOP_HARNESS_ROOT": "/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop",
+        "KINETICLOOP_HARNESS_WORKERS": "2",
+        "KINETICLOOP_HARNESS_OBSERVER": "/private/tmp/hg065-author-dfd4c20b9311/harness-run/collection.json"
+      },
+      "harness_manifest": {
+        "format": "kineticloop-developer-harness-run-v1",
+        "tested_commit": "dfd4c20b93112e9403eb21286c705cd31847eefd",
+        "dirty_source": false,
+        "workers": 2,
+        "command": [
+          "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python",
+          "-m",
+          "pytest",
+          "-p",
+          "tools.harness.parallel_observer",
+          "tests/harness",
+          "-q",
+          "-n",
+          "2",
+          "--dist",
+          "load",
+          "--maxprocesses",
+          "4",
+          "--max-worker-restart",
+          "0",
+          "--maxschedchunk",
+          "1",
+          "--junitxml=/private/tmp/hg065-author-dfd4c20b9311/harness-run/junit.xml"
+        ],
+        "python": "3.12.14 (main, Aug 25 2026, 13:50:33) [Clang 22.1.3 ]",
+        "platform": "macOS-26.6.2-arm64-arm-64bit",
+        "versions": {
+          "pytest": "8.4.2",
+          "pytest-xdist": "3.8.0",
+          "execnet": "2.1.2"
+        },
+        "collection_command": [
+          "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python",
+          "-m",
+          "pytest",
+          "-p",
+          "tools.harness.parallel_observer",
+          "tests/harness",
+          "-q",
+          "--collect-only",
+          "-q",
+          "-n",
+          "0"
+        ],
+        "collection_wall_seconds": 0.795545042026788,
+        "wall_seconds": 3734.1108375419863,
+        "pytest_exit_code": 0,
+        "mode": "EXECUTION",
+        "execution_complete": true,
+        "requested_junitxml": null,
+        "exit_code": 0,
+        "errors": [],
+        "files": [
+          {
+            "path": "collection.json",
+            "bytes": 3355677,
+            "sha256": "b1ea26a32b2901dd32fbfa95b5be94923571c129ee602d44e168d4e08277afd3"
+          },
+          {
+            "path": "collection.log",
+            "bytes": 1216,
+            "sha256": "dccd5d8ad110c97c176f471519783a7d7cd0e64042f7807507296c0477cb815c"
+          },
+          {
+            "path": "execution.json",
+            "bytes": 20864118,
+            "sha256": "400ef9f63fc00a0727fb2a4ed33496681a5f6a14d4fd716de6c7029bd03b86a0"
+          },
+          {
+            "path": "junit.xml",
+            "bytes": 3587445,
+            "sha256": "d853203977ef442c25eadce0b57728200095467fc86e023bda33e88371cecaae"
+          },
+          {
+            "path": "pytest.log",
+            "bytes": 2162,
+            "sha256": "d900fea8afb1774ee92cdc0facc2a459cc71b09a53a1cd42856501bf741eba59"
+          }
+        ],
+        "evidence_scope": "developer-harness; App-bound local-db-gate still required"
+      },
+      "artifacts": [
+        {
+          "source_file": "/private/tmp/hg065-author-dfd4c20b9311/harness.log",
+          "evidence_ref": "docs/exec-plans/evidence/HG-065/checks-dfd4c20b9311/harness.json",
+          "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli test-harness --workers 2 --evidence-dir /private/tmp/hg065-author-dfd4c20b9311/harness-run -q",
+          "environment": {
+            "PYTHONPATH": "/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop:/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop/src:/Users/davetian/.cache/uv/archive-v0/nnPNXkWpFSNRe9Ad:/Users/davetian/.cache/uv/archive-v0/X_H5kIMi_L692EPn"
+          },
+          "raw_identity": {
+            "bytes": 2162,
+            "sha256": "d900fea8afb1774ee92cdc0facc2a459cc71b09a53a1cd42856501bf741eba59"
+          },
+          "envelope_identity": {
+            "bytes": 758,
+            "sha256": "279a9a168000f315cd1a6821e41eef649b475d0c843e2cedf6fb15ab34087606"
+          },
+          "payload_identity": {
+            "bytes": 232,
+            "sha256": "6a8806e96267764ddcfe94c373e06c7d1d5399f36d4a2a5ccfb1e12c571d29d8"
+          }
+        },
+        {
+          "source_file": "/private/tmp/hg065-author-dfd4c20b9311/harness-run/collection.json",
+          "evidence_ref": "docs/exec-plans/evidence/HG-065/checks-75c4244719ae/fresh-dfd4c20b9311-harness-collection.json.json",
+          "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m pytest -p tools.harness.parallel_observer tests/harness -q --collect-only -q -n 0",
+          "environment": {
+            "PYTHONPATH": "/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop:/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop/src:/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop:/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop/src:/Users/davetian/.cache/uv/archive-v0/nnPNXkWpFSNRe9Ad:/Users/davetian/.cache/uv/archive-v0/X_H5kIMi_L692EPn",
+            "KINETICLOOP_HARNESS_ROOT": "/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop",
+            "KINETICLOOP_HARNESS_WORKERS": "2",
+            "KINETICLOOP_HARNESS_OBSERVER": "/private/tmp/hg065-author-dfd4c20b9311/harness-run/collection.json"
+          },
+          "raw_identity": {
+            "bytes": 3355677,
+            "sha256": "b1ea26a32b2901dd32fbfa95b5be94923571c129ee602d44e168d4e08277afd3"
+          },
+          "envelope_identity": {
+            "bytes": 841,
+            "sha256": "69464f93a36502e1d2c0791365e73d2996029297a3c831e3b149c98890d5fc6e"
+          },
+          "payload_identity": {
+            "bytes": 401696,
+            "sha256": "612f07a5a67cede9b02b1023515a88e7814f265ca97f73fd81d19d3e8ed39d09"
+          }
+        },
+        {
+          "source_file": "/private/tmp/hg065-author-dfd4c20b9311/harness-run/collection.log",
+          "evidence_ref": "docs/exec-plans/evidence/HG-065/checks-75c4244719ae/fresh-dfd4c20b9311-harness-collection.log.json",
+          "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m pytest -p tools.harness.parallel_observer tests/harness -q --collect-only -q -n 0",
+          "environment": {
+            "PYTHONPATH": "/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop:/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop/src:/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop:/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop/src:/Users/davetian/.cache/uv/archive-v0/nnPNXkWpFSNRe9Ad:/Users/davetian/.cache/uv/archive-v0/X_H5kIMi_L692EPn",
+            "KINETICLOOP_HARNESS_ROOT": "/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop",
+            "KINETICLOOP_HARNESS_WORKERS": "2",
+            "KINETICLOOP_HARNESS_OBSERVER": "/private/tmp/hg065-author-dfd4c20b9311/harness-run/collection.json"
+          },
+          "raw_identity": {
+            "bytes": 1216,
+            "sha256": "dccd5d8ad110c97c176f471519783a7d7cd0e64042f7807507296c0477cb815c"
+          },
+          "envelope_identity": {
+            "bytes": 708,
+            "sha256": "a20b654ebc2f69e77f54bbff427334a0bf64a8bedb3a59919fffe229ab45b065"
+          },
+          "payload_identity": {
+            "bytes": 401,
+            "sha256": "549679d6e79a56fafb0c0eb4d567619547fd4260264959d1680e430372a98d4c"
+          }
+        },
+        {
+          "source_file": "/private/tmp/hg065-author-dfd4c20b9311/harness-run/execution.json",
+          "evidence_ref": "docs/exec-plans/evidence/HG-065/checks-dfd4c20b9311/harness-execution.json.json",
+          "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m pytest -p tools.harness.parallel_observer tests/harness -q -n 2 --dist load --maxprocesses 4 --max-worker-restart 0 --maxschedchunk 1 --junitxml=/private/tmp/hg065-author-dfd4c20b9311/harness-run/junit.xml",
+          "environment": {
+            "PYTHONPATH": "/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop:/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop/src:/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop:/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop/src:/Users/davetian/.cache/uv/archive-v0/nnPNXkWpFSNRe9Ad:/Users/davetian/.cache/uv/archive-v0/X_H5kIMi_L692EPn",
+            "KINETICLOOP_HARNESS_ROOT": "/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop",
+            "KINETICLOOP_HARNESS_WORKERS": "2",
+            "KINETICLOOP_HARNESS_OBSERVER": "/private/tmp/hg065-author-dfd4c20b9311/harness-run/execution.json"
+          },
+          "raw_identity": {
+            "bytes": 20864118,
+            "sha256": "400ef9f63fc00a0727fb2a4ed33496681a5f6a14d4fd716de6c7029bd03b86a0"
+          },
+          "envelope_identity": {
+            "bytes": 967,
+            "sha256": "86b3c659e85011e5efa678981b0f883b09a9b2578be9030a0a63bb335ed6c2ee"
+          },
+          "payload_identity": {
+            "bytes": 2448293,
+            "sha256": "59611589deee21d336efbf41ae876f9362b5d69b14c16dd9526ed2eb6b4fefd9"
+          }
+        },
+        {
+          "source_file": "/private/tmp/hg065-author-dfd4c20b9311/harness-run/junit.xml",
+          "evidence_ref": "docs/exec-plans/evidence/HG-065/checks-dfd4c20b9311/harness-junit.xml.json",
+          "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m pytest -p tools.harness.parallel_observer tests/harness -q -n 2 --dist load --maxprocesses 4 --max-worker-restart 0 --maxschedchunk 1 --junitxml=/private/tmp/hg065-author-dfd4c20b9311/harness-run/junit.xml",
+          "environment": {
+            "PYTHONPATH": "/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop:/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop/src:/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop:/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop/src:/Users/davetian/.cache/uv/archive-v0/nnPNXkWpFSNRe9Ad:/Users/davetian/.cache/uv/archive-v0/X_H5kIMi_L692EPn",
+            "KINETICLOOP_HARNESS_ROOT": "/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop",
+            "KINETICLOOP_HARNESS_WORKERS": "2",
+            "KINETICLOOP_HARNESS_OBSERVER": "/private/tmp/hg065-author-dfd4c20b9311/harness-run/execution.json"
+          },
+          "raw_identity": {
+            "bytes": 3587445,
+            "sha256": "d853203977ef442c25eadce0b57728200095467fc86e023bda33e88371cecaae"
+          },
+          "envelope_identity": {
+            "bytes": 965,
+            "sha256": "a4aa0c679024766d5735e9294ebb857c998a00be7c189bf2f56cc64147015033"
+          },
+          "payload_identity": {
+            "bytes": 411994,
+            "sha256": "9c1277d1bdcf4600bb2f0bfad3f080b0534d8494348d94e524bc837658a5bbf7"
+          }
+        },
+        {
+          "source_file": "/private/tmp/hg065-author-dfd4c20b9311/harness-run/manifest.json",
+          "evidence_ref": "docs/exec-plans/evidence/HG-065/checks-dfd4c20b9311/harness-manifest.json.json",
+          "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli test-harness --workers 2 --evidence-dir /private/tmp/hg065-author-dfd4c20b9311/harness-run -q",
+          "environment": {
+            "PYTHONPATH": "/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop:/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop/src:/Users/davetian/.cache/uv/archive-v0/nnPNXkWpFSNRe9Ad:/Users/davetian/.cache/uv/archive-v0/X_H5kIMi_L692EPn"
+          },
+          "raw_identity": {
+            "bytes": 2115,
+            "sha256": "ee9c6fd6fe3e074c613e81d87df4308008e5a45647e4aa53ba25bf2c84702d3b"
+          },
+          "envelope_identity": {
+            "bytes": 736,
+            "sha256": "7439b322e84fefc88b0371caf9ef0bec4892886c8fc08651f9f654c1c9c8494c"
+          },
+          "payload_identity": {
+            "bytes": 961,
+            "sha256": "bb101455ae397962c33788ba1645066d33da58f9d090dc4ee688cde62f5d5aa9"
+          }
+        },
+        {
+          "source_file": "/private/tmp/hg065-author-dfd4c20b9311/harness-run/pytest.log",
+          "evidence_ref": "docs/exec-plans/evidence/HG-065/checks-dfd4c20b9311/harness-pytest.log.json",
+          "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m pytest -p tools.harness.parallel_observer tests/harness -q -n 2 --dist load --maxprocesses 4 --max-worker-restart 0 --maxschedchunk 1 --junitxml=/private/tmp/hg065-author-dfd4c20b9311/harness-run/junit.xml",
+          "environment": {
+            "PYTHONPATH": "/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop:/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop/src:/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop:/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop/src:/Users/davetian/.cache/uv/archive-v0/nnPNXkWpFSNRe9Ad:/Users/davetian/.cache/uv/archive-v0/X_H5kIMi_L692EPn",
+            "KINETICLOOP_HARNESS_ROOT": "/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop",
+            "KINETICLOOP_HARNESS_WORKERS": "2",
+            "KINETICLOOP_HARNESS_OBSERVER": "/private/tmp/hg065-author-dfd4c20b9311/harness-run/execution.json"
+          },
+          "raw_identity": {
+            "bytes": 2162,
+            "sha256": "d900fea8afb1774ee92cdc0facc2a459cc71b09a53a1cd42856501bf741eba59"
+          },
+          "envelope_identity": {
+            "bytes": 854,
+            "sha256": "b3ac7402a9688f3aa9a7766ee02dd80a0b9172b81ab0ed92b05a4738527b7619"
+          },
+          "payload_identity": {
+            "bytes": 232,
+            "sha256": "6a8806e96267764ddcfe94c373e06c7d1d5399f36d4a2a5ccfb1e12c571d29d8"
+          }
+        }
+      ],
+      "output_ref": "docs/exec-plans/evidence/HG-065/checks-dfd4c20b9311/harness.json"
+    },
+    {
+      "check_id": "lint",
+      "base_commit": "e8e93bd32a83bd2fd6bf89951863d59b37e9d2b3",
+      "tested_commit": "dfd4c20b93112e9403eb21286c705cd31847eefd",
+      "argv": [
+        "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python",
+        "-m",
+        "kineticloop.cli",
+        "lint"
+      ],
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli lint",
+      "environment": {
+        "PYTHONPATH": "/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop:/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop/src:/Users/davetian/.cache/uv/archive-v0/nnPNXkWpFSNRe9Ad:/Users/davetian/.cache/uv/archive-v0/X_H5kIMi_L692EPn"
+      },
+      "started_at_unix": 1791803559.470878,
+      "execution_state": "COMPLETED",
+      "exit_code": 0,
+      "elapsed_seconds": 0.09029912948608398,
+      "artifacts": [
+        {
+          "source_file": "/private/tmp/hg065-author-dfd4c20b9311/lint.log",
+          "evidence_ref": "docs/exec-plans/evidence/HG-065/checks-75c4244719ae/fresh-dfd4c20b9311-lint.json",
+          "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli lint",
+          "environment": {
+            "PYTHONPATH": "/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop:/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop/src:/Users/davetian/.cache/uv/archive-v0/nnPNXkWpFSNRe9Ad:/Users/davetian/.cache/uv/archive-v0/X_H5kIMi_L692EPn"
+          },
+          "raw_identity": {
+            "bytes": 19,
+            "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+          },
+          "envelope_identity": {
+            "bytes": 644,
+            "sha256": "83f12e0ca7123331035ea19097ad2eb962143ecf5ad6985cb6cbf2ccf61457f1"
+          },
+          "payload_identity": {
+            "bytes": 39,
+            "sha256": "7162964741fdb747d7ab27df2d1a1b64fa0636c4b7fe50ea8493de14cb62cbd4"
+          }
+        }
+      ],
+      "output_ref": "docs/exec-plans/evidence/HG-065/checks-75c4244719ae/fresh-dfd4c20b9311-lint.json"
+    },
+    {
+      "check_id": "typecheck",
+      "base_commit": "e8e93bd32a83bd2fd6bf89951863d59b37e9d2b3",
+      "tested_commit": "dfd4c20b93112e9403eb21286c705cd31847eefd",
+      "argv": [
+        "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python",
+        "-m",
+        "kineticloop.cli",
+        "typecheck"
+      ],
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli typecheck",
+      "environment": {
+        "PYTHONPATH": "/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop:/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop/src:/Users/davetian/.cache/uv/archive-v0/nnPNXkWpFSNRe9Ad:/Users/davetian/.cache/uv/archive-v0/X_H5kIMi_L692EPn"
+      },
+      "started_at_unix": 1791803559.5717518,
+      "execution_state": "COMPLETED",
+      "exit_code": 0,
+      "elapsed_seconds": 0.2081773281097412,
+      "artifacts": [
+        {
+          "source_file": "/private/tmp/hg065-author-dfd4c20b9311/typecheck.log",
+          "evidence_ref": "docs/exec-plans/evidence/HG-065/checks-75c4244719ae/fresh-dfd4c20b9311-typecheck.json",
+          "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli typecheck",
+          "environment": {
+            "PYTHONPATH": "/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop:/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop/src:/Users/davetian/.cache/uv/archive-v0/nnPNXkWpFSNRe9Ad:/Users/davetian/.cache/uv/archive-v0/X_H5kIMi_L692EPn"
+          },
+          "raw_identity": {
+            "bytes": 45,
+            "sha256": "bad84ae458ed0b1339e9ee07060b39569951bea401de790a17ecace58d345afb"
+          },
+          "envelope_identity": {
+            "bytes": 649,
+            "sha256": "f8697a39cae10e5ebab3bdc73aa352d36280916e29e86ab7e44b8114a508df52"
+          },
+          "payload_identity": {
+            "bytes": 65,
+            "sha256": "71cf10ca54add3b2d8104b2dd6013c5ad7b5c98f0ac58192347de8e0e9ebf894"
+          }
+        }
+      ],
+      "output_ref": "docs/exec-plans/evidence/HG-065/checks-75c4244719ae/fresh-dfd4c20b9311-typecheck.json"
+    },
+    {
+      "check_id": "authority",
+      "base_commit": "e8e93bd32a83bd2fd6bf89951863d59b37e9d2b3",
+      "tested_commit": "dfd4c20b93112e9403eb21286c705cd31847eefd",
+      "argv": [
+        "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python",
+        "-m",
+        "kineticloop.cli",
+        "check-harness"
+      ],
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli check-harness",
+      "environment": {
+        "PYTHONPATH": "/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop:/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop/src:/Users/davetian/.cache/uv/archive-v0/nnPNXkWpFSNRe9Ad:/Users/davetian/.cache/uv/archive-v0/X_H5kIMi_L692EPn"
+      },
+      "started_at_unix": 1791803559.7900958,
+      "execution_state": "COMPLETED",
+      "exit_code": 0,
+      "elapsed_seconds": 393.0187771320343,
+      "artifacts": [
+        {
+          "source_file": "/private/tmp/hg065-author-dfd4c20b9311/authority.log",
+          "evidence_ref": "docs/exec-plans/evidence/HG-065/checks-75c4244719ae/fresh-dfd4c20b9311-authority.json",
+          "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli check-harness",
+          "environment": {
+            "PYTHONPATH": "/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop:/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop/src:/Users/davetian/.cache/uv/archive-v0/nnPNXkWpFSNRe9Ad:/Users/davetian/.cache/uv/archive-v0/X_H5kIMi_L692EPn"
+          },
+          "raw_identity": {
+            "bytes": 38,
+            "sha256": "575c27614271c1c49c6a8e1968a2a6c79b664c9c880dde43ec8113846e575f94"
+          },
+          "envelope_identity": {
+            "bytes": 653,
+            "sha256": "83456f86c37d41c664940777eca85c5e70c6ec46193ba9b22820bc77ca92e0e6"
+          },
+          "payload_identity": {
+            "bytes": 58,
+            "sha256": "122c46f8f3635090a9e773c9e23f9ac43943b9f08568cb1c1369c85cd113852d"
+          }
+        }
+      ],
+      "output_ref": "docs/exec-plans/evidence/HG-065/checks-75c4244719ae/fresh-dfd4c20b9311-authority.json"
+    },
+    {
+      "check_id": "diff",
+      "base_commit": "e8e93bd32a83bd2fd6bf89951863d59b37e9d2b3",
+      "tested_commit": "dfd4c20b93112e9403eb21286c705cd31847eefd",
+      "argv": [
+        "git",
+        "diff",
+        "--check",
+        "e8e93bd32a83bd2fd6bf89951863d59b37e9d2b3",
+        "dfd4c20b93112e9403eb21286c705cd31847eefd"
+      ],
+      "command": "git diff --check e8e93bd32a83bd2fd6bf89951863d59b37e9d2b3 dfd4c20b93112e9403eb21286c705cd31847eefd",
+      "environment": {
+        "PYTHONPATH": "/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop:/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop/src:/Users/davetian/.cache/uv/archive-v0/nnPNXkWpFSNRe9Ad:/Users/davetian/.cache/uv/archive-v0/X_H5kIMi_L692EPn"
+      },
+      "started_at_unix": 1791803952.818329,
+      "execution_state": "COMPLETED",
+      "exit_code": 0,
+      "elapsed_seconds": 0.03911590576171875,
+      "artifacts": [
+        {
+          "source_file": "/private/tmp/hg065-author-dfd4c20b9311/diff.log",
+          "evidence_ref": "docs/exec-plans/evidence/HG-065/checks-75c4244719ae/fresh-dfd4c20b9311-diff.json",
+          "command": "git diff --check e8e93bd32a83bd2fd6bf89951863d59b37e9d2b3 dfd4c20b93112e9403eb21286c705cd31847eefd",
+          "environment": {
+            "PYTHONPATH": "/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop:/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop/src:/Users/davetian/.cache/uv/archive-v0/nnPNXkWpFSNRe9Ad:/Users/davetian/.cache/uv/archive-v0/X_H5kIMi_L692EPn"
+          },
+          "raw_identity": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "envelope_identity": {
+            "bytes": 655,
+            "sha256": "5258d1609d0204e504d2089cac35c99d5daaaeac63fadc2bfb20d7c7adc05b03"
+          },
+          "payload_identity": {
+            "bytes": 20,
+            "sha256": "f1b651238a58fe290baec6c5e32f3bdb1943dd2bd582f02569231f7a757c7837"
+          }
+        }
+      ],
+      "output_ref": "docs/exec-plans/evidence/HG-065/checks-75c4244719ae/fresh-dfd4c20b9311-diff.json"
+    }
+  ],
+  "runtime": {
+    "executable": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python",
+    "version": "3.12.14 (main, Aug 25 2026, 13:50:33) [Clang 22.1.3 ]",
+    "platform": "macOS-26.6.2-arm64-arm-64bit",
+    "fallback_reason": "uv unavailable; approved existing Python3.12 environment and dependency paths"
+  },
+  "dependency_provenance": {
+    "python_executable": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python",
+    "python_version": "3.12.14 (main, Aug 25 2026, 13:50:33) [Clang 22.1.3 ]",
+    "uv_available": null,
+    "method": "HG065 fresh existing-environment version/source/metadata/pytest11 preflight; no installation",
+    "packages": [
+      {
+        "name": "pytest-xdist",
+        "version": "3.8.0",
+        "package_root": "/Users/davetian/.cache/uv/archive-v0/nnPNXkWpFSNRe9Ad/xdist",
+        "source_files": [
+          {
+            "path": "/Users/davetian/.cache/uv/archive-v0/nnPNXkWpFSNRe9Ad/xdist/__init__.py",
+            "bytes": 357,
+            "sha256": "164b4229983b8f3db54e8f27e799deb51aee5593b85d4c1b98bab1977f2daabd"
+          },
+          {
+            "path": "/Users/davetian/.cache/uv/archive-v0/nnPNXkWpFSNRe9Ad/xdist/_path.py",
+            "bytes": 666,
+            "sha256": "2bd5a866dd8b2ad0c17159e95d6cca103871bb8653ce6963d16c9f1099758e2a"
+          },
+          {
+            "path": "/Users/davetian/.cache/uv/archive-v0/nnPNXkWpFSNRe9Ad/xdist/_version.py",
+            "bytes": 511,
+            "sha256": "1cd94691c150b24dac11a969f5d0b0dcfe0ae16aa683b2ff1595249aa8d6fce2"
+          },
+          {
+            "path": "/Users/davetian/.cache/uv/archive-v0/nnPNXkWpFSNRe9Ad/xdist/dsession.py",
+            "bytes": 22727,
+            "sha256": "1b78c9e7efe0a1884048e075608fffac56c2c8c5a8e3f9e6a96d9f5137bb387e"
+          },
+          {
+            "path": "/Users/davetian/.cache/uv/archive-v0/nnPNXkWpFSNRe9Ad/xdist/looponfail.py",
+            "bytes": 10143,
+            "sha256": "84971024df50889ecfd562daaf5f13dd64941f901f138c91611b9fa95bc65da4"
+          },
+          {
+            "path": "/Users/davetian/.cache/uv/archive-v0/nnPNXkWpFSNRe9Ad/xdist/newhooks.py",
+            "bytes": 3509,
+            "sha256": "14b53ea2371c243a316924b7c0d1d772d8d62ed9818e0d2fdacadb9f1ac7930c"
+          },
+          {
+            "path": "/Users/davetian/.cache/uv/archive-v0/nnPNXkWpFSNRe9Ad/xdist/plugin.py",
+            "bytes": 13921,
+            "sha256": "62df71dfe342969ab667cb3a4f2280a93be9c11bc9a4c2d9ead271c979d2afd8"
+          },
+          {
+            "path": "/Users/davetian/.cache/uv/archive-v0/nnPNXkWpFSNRe9Ad/xdist/remote.py",
+            "bytes": 14693,
+            "sha256": "86d2f8132b3ef7e190f622c2b3cfd83cde464a4dd07ccd75486b27b161336b3d"
+          },
+          {
+            "path": "/Users/davetian/.cache/uv/archive-v0/nnPNXkWpFSNRe9Ad/xdist/report.py",
+            "bytes": 993,
+            "sha256": "811e5bb28e4bbe6279b34bef5d6832359dd2ac09053467d11f998e08cb2b5c7c"
+          },
+          {
+            "path": "/Users/davetian/.cache/uv/archive-v0/nnPNXkWpFSNRe9Ad/xdist/scheduler/__init__.py",
+            "bytes": 521,
+            "sha256": "858a4d13a95b64fc24ebddbefd7371a8eaa1392be37ef3afe43babcba72a56f3"
+          },
+          {
+            "path": "/Users/davetian/.cache/uv/archive-v0/nnPNXkWpFSNRe9Ad/xdist/scheduler/each.py",
+            "bytes": 5728,
+            "sha256": "7ef6f21911b65afca3a7916b27db671135f0aef8cc93ebce55c0b5bef7224fd1"
+          },
+          {
+            "path": "/Users/davetian/.cache/uv/archive-v0/nnPNXkWpFSNRe9Ad/xdist/scheduler/load.py",
+            "bytes": 13188,
+            "sha256": "51781738dbc5088b26ed0f1a26feb9293a35373935fed436811a51fbf49a4128"
+          },
+          {
+            "path": "/Users/davetian/.cache/uv/archive-v0/nnPNXkWpFSNRe9Ad/xdist/scheduler/loadfile.py",
+            "bytes": 2308,
+            "sha256": "e00d0cfa66ea39caf7af1a4b94dbc5ea635363584c804de3afba181fc24b61cb"
+          },
+          {
+            "path": "/Users/davetian/.cache/uv/archive-v0/nnPNXkWpFSNRe9Ad/xdist/scheduler/loadgroup.py",
+            "bytes": 2273,
+            "sha256": "9ac209b15c0dffffa74ddad508bd6f83393583d27cc4e234844f9f906f36bdef"
+          },
+          {
+            "path": "/Users/davetian/.cache/uv/archive-v0/nnPNXkWpFSNRe9Ad/xdist/scheduler/loadscope.py",
+            "bytes": 15490,
+            "sha256": "1eb3b1031d74b120e0537593a7cfcedc9ca8142d41eda0eb22c3df6dc8dc0951"
+          },
+          {
+            "path": "/Users/davetian/.cache/uv/archive-v0/nnPNXkWpFSNRe9Ad/xdist/scheduler/protocol.py",
+            "bytes": 1063,
+            "sha256": "1416e7389656b8e3e9f99642c03c14628905ed6e2f7b4062739b3b60fff35b74"
+          },
+          {
+            "path": "/Users/davetian/.cache/uv/archive-v0/nnPNXkWpFSNRe9Ad/xdist/scheduler/worksteal.py",
+            "bytes": 12438,
+            "sha256": "af8b131d8668a32aa1bf492e81a89fd49f9334c6dd0af42a4c895476fea5f847"
+          },
+          {
+            "path": "/Users/davetian/.cache/uv/archive-v0/nnPNXkWpFSNRe9Ad/xdist/workermanage.py",
+            "bytes": 18850,
+            "sha256": "efbca7d514fb94bd16ef566862a435dc7a541cb1ffd1d3826fc0cf2026fca3de"
+          }
+        ],
+        "metadata_files": [
+          {
+            "path": "/Users/davetian/.cache/uv/archive-v0/nnPNXkWpFSNRe9Ad/pytest_xdist-3.8.0.dist-info/licenses/LICENSE",
+            "bytes": 1088,
+            "sha256": "36c15bf831b218a24d122e3b30256b3e1ca285716c24937fe6d8475074ee9032"
+          },
+          {
+            "path": "/Users/davetian/.cache/uv/archive-v0/nnPNXkWpFSNRe9Ad/pytest_xdist-3.8.0.dist-info/METADATA",
+            "bytes": 2988,
+            "sha256": "298f16af52794d340c358fc2eb20b054a29db2922f22fea90a35b459ecbcc18f"
+          },
+          {
+            "path": "/Users/davetian/.cache/uv/archive-v0/nnPNXkWpFSNRe9Ad/pytest_xdist-3.8.0.dist-info/WHEEL",
+            "bytes": 91,
+            "sha256": "ff309ddcdd65ebd02bc724dbf2bcc4a0ff53a5b61792a44548d383e4ebb19d3b"
+          },
+          {
+            "path": "/Users/davetian/.cache/uv/archive-v0/nnPNXkWpFSNRe9Ad/pytest_xdist-3.8.0.dist-info/entry_points.txt",
+            "bytes": 68,
+            "sha256": "a1e58a40c9a12dcae385a5c15979a046fdf183a0409f651917d3e8476150dfae"
+          },
+          {
+            "path": "/Users/davetian/.cache/uv/archive-v0/nnPNXkWpFSNRe9Ad/pytest_xdist-3.8.0.dist-info/top_level.txt",
+            "bytes": 6,
+            "sha256": "07d232eab031e94bf2f894c8bbd37b62ffee835f84cc3de75ff081fa87536ab6"
+          },
+          {
+            "path": "/Users/davetian/.cache/uv/archive-v0/nnPNXkWpFSNRe9Ad/pytest_xdist-3.8.0.dist-info/RECORD",
+            "bytes": 1926,
+            "sha256": "4a65824446fad10f397c52ad8ee9396764b3a1f2f33ae3be344ad5f455ef92db"
+          }
+        ],
+        "entry_points": [
+          {
+            "group": "pytest11",
+            "name": "xdist",
+            "value": "xdist.plugin"
+          },
+          {
+            "group": "pytest11",
+            "name": "xdist.looponfail",
+            "value": "xdist.looponfail"
+          }
+        ]
+      },
+      {
+        "name": "execnet",
+        "version": "2.1.2",
+        "package_root": "/Users/davetian/.cache/uv/archive-v0/X_H5kIMi_L692EPn/execnet",
+        "source_files": [
+          {
+            "path": "/Users/davetian/.cache/uv/archive-v0/X_H5kIMi_L692EPn/execnet/__init__.py",
+            "bytes": 1157,
+            "sha256": "3b962eb4963760c96488d0f4efbdbb96ca768b4c121ae7359892db582e6135b0"
+          },
+          {
+            "path": "/Users/davetian/.cache/uv/archive-v0/X_H5kIMi_L692EPn/execnet/_version.py",
+            "bytes": 704,
+            "sha256": "d477d4e57e309c99a2bb395e8cac12aae28cde973abff1d4a000f553df1e08ec"
+          },
+          {
+            "path": "/Users/davetian/.cache/uv/archive-v0/X_H5kIMi_L692EPn/execnet/gateway.py",
+            "bytes": 7785,
+            "sha256": "894230c6d098575c8aa5b8b6f9a3a53a21d28e3b887d743d26ab5e266739f24a"
+          },
+          {
+            "path": "/Users/davetian/.cache/uv/archive-v0/X_H5kIMi_L692EPn/execnet/gateway_base.py",
+            "bytes": 59089,
+            "sha256": "bc91d2c7f6dc7172d4c6c02f9cee49fed743a47f2ad14e8e3cd5d9d7cd0378dc"
+          },
+          {
+            "path": "/Users/davetian/.cache/uv/archive-v0/X_H5kIMi_L692EPn/execnet/gateway_bootstrap.py",
+            "bytes": 2770,
+            "sha256": "728b9d7771e04e7058af037f7b290b15e2c9afcd9f1d6b2494a60c2ded1dc62b"
+          },
+          {
+            "path": "/Users/davetian/.cache/uv/archive-v0/X_H5kIMi_L692EPn/execnet/gateway_io.py",
+            "bytes": 8052,
+            "sha256": "724705d252297c888481135f57fa97fd12158beb932f361f865917c0aa01bb91"
+          },
+          {
+            "path": "/Users/davetian/.cache/uv/archive-v0/X_H5kIMi_L692EPn/execnet/gateway_socket.py",
+            "bytes": 2956,
+            "sha256": "ad04eea5587d5f503030c79866c4e4b6a42d39fc0c42350690e2b369c900ee9f"
+          },
+          {
+            "path": "/Users/davetian/.cache/uv/archive-v0/X_H5kIMi_L692EPn/execnet/multi.py",
+            "bytes": 11713,
+            "sha256": "adb8715003372cdd430179135053093bb7766ea7fea14d4f17c243037a57eaaa"
+          },
+          {
+            "path": "/Users/davetian/.cache/uv/archive-v0/X_H5kIMi_L692EPn/execnet/rsync.py",
+            "bytes": 8871,
+            "sha256": "caf2232780eb88f648b5be0ed88cdd0bc8e3bb30f3a7a858c8c94e8793c44b95"
+          },
+          {
+            "path": "/Users/davetian/.cache/uv/archive-v0/X_H5kIMi_L692EPn/execnet/rsync_remote.py",
+            "bytes": 4208,
+            "sha256": "b0c5c23f7c3b145b891bf5b21676f5b3e4e18924673fa2f3e050c41e0d2b0440"
+          },
+          {
+            "path": "/Users/davetian/.cache/uv/archive-v0/X_H5kIMi_L692EPn/execnet/script/__init__.py",
+            "bytes": 2,
+            "sha256": "32c4858e22cc2c967b42150fa550562a2c839c2cebcaab91cabdf6f4da020022"
+          },
+          {
+            "path": "/Users/davetian/.cache/uv/archive-v0/X_H5kIMi_L692EPn/execnet/script/loop_socketserver.py",
+            "bytes": 418,
+            "sha256": "4d862f997ac0ef062295c009f6da1b0bf93e7335efc5f9412af975317e5c68ce"
+          },
+          {
+            "path": "/Users/davetian/.cache/uv/archive-v0/X_H5kIMi_L692EPn/execnet/script/quitserver.py",
+            "bytes": 304,
+            "sha256": "e4aedcdc9ccd8cd5cefc13cb5293258b5c35f8c2b5e3567d81f75cfd9bd3604f"
+          },
+          {
+            "path": "/Users/davetian/.cache/uv/archive-v0/X_H5kIMi_L692EPn/execnet/script/shell.py",
+            "bytes": 2605,
+            "sha256": "8453898be0aa8c2b392047c867b9c88711e159624debaa35fa9a795007147f24"
+          },
+          {
+            "path": "/Users/davetian/.cache/uv/archive-v0/X_H5kIMi_L692EPn/execnet/script/socketserver.py",
+            "bytes": 3934,
+            "sha256": "b6a4cc478f3ea93b2c0c139ace638515c87d0570003f85cd7c94d9139e720328"
+          },
+          {
+            "path": "/Users/davetian/.cache/uv/archive-v0/X_H5kIMi_L692EPn/execnet/script/socketserverservice.py",
+            "bytes": 3183,
+            "sha256": "8f56c218fda8298d5cdeb25fc22300eda4589d837d3858efdfa196299f0a5594"
+          },
+          {
+            "path": "/Users/davetian/.cache/uv/archive-v0/X_H5kIMi_L692EPn/execnet/xspec.py",
+            "bytes": 2256,
+            "sha256": "965b8db33ad82a397557dc9084aa6b45327feac3c68bab8fc26cf7c9eb4b6b4e"
+          }
+        ],
+        "metadata_files": [
+          {
+            "path": "/Users/davetian/.cache/uv/archive-v0/X_H5kIMi_L692EPn/execnet-2.1.2.dist-info/METADATA",
+            "bytes": 2905,
+            "sha256": "7343015d62b2eaa1841ec06a7c7c132aeb482921f73ab6e0fd18331495684c61"
+          },
+          {
+            "path": "/Users/davetian/.cache/uv/archive-v0/X_H5kIMi_L692EPn/execnet-2.1.2.dist-info/WHEEL",
+            "bytes": 87,
+            "sha256": "aad0b0a12256807936d52d4a6f88a1773236ae527564a688bab4e3fe780e8724"
+          },
+          {
+            "path": "/Users/davetian/.cache/uv/archive-v0/X_H5kIMi_L692EPn/execnet-2.1.2.dist-info/licenses/LICENSE",
+            "bytes": 1054,
+            "sha256": "e89eed1074d3a943198ba139b80844f5b445b860bba74a8aeadc0610566164ea"
+          },
+          {
+            "path": "/Users/davetian/.cache/uv/archive-v0/X_H5kIMi_L692EPn/execnet-2.1.2.dist-info/RECORD",
+            "bytes": 1741,
+            "sha256": "22b18aafbfd4df08e3474283065920b8b65e3a8d0f268935514d8388d2b86429"
+          }
+        ],
+        "entry_points": []
+      }
+    ],
+    "verified_versions": {
+      "pytest-xdist": "3.8.0",
+      "execnet": "2.1.2"
+    }
+  },
+  "meaning": "Eight HG065 author checks only; historical execution, production recognizer and root gates are unclaimed"
+}

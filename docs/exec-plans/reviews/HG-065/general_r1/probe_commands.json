@@ -1,0 +1,72 @@
+[
+  {
+    "name": "original",
+    "argv": [
+      "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python",
+      "/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop/docs/exec-plans/evidence/HG-065/observe_immutable.py"
+    ],
+    "cwd": "/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop/docs/exec-plans/evidence/HG-065",
+    "exit_code": 0,
+    "elapsed_seconds": 8.752571208402514,
+    "output_bytes": 187,
+    "output_sha256": "5002a1f4ca4311cd363c8be433fb69d99ca5b8494035018982f949b807e44f2b"
+  },
+  {
+    "name": "inherited",
+    "argv": [
+      "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python",
+      "/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop/docs/exec-plans/evidence/HG-065/observe_inherited_components.py"
+    ],
+    "cwd": "/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop/docs/exec-plans/evidence/HG-065",
+    "exit_code": 0,
+    "elapsed_seconds": 0.7106325002387166,
+    "output_bytes": 124,
+    "output_sha256": "6c77c87d4d2ea1eb91cf07d173831221c27c76e1e877ac3745696a0e470accd3"
+  },
+  {
+    "name": "definitions",
+    "argv": [
+      "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python",
+      "-m",
+      "pytest",
+      "test_custody_definition.py",
+      "-q",
+      "-q",
+      "--import-mode=importlib",
+      "--rootdir=/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop/docs/exec-plans/evidence/HG-065",
+      "--confcutdir=/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop/docs/exec-plans/evidence/HG-065",
+      "-c",
+      "/dev/null",
+      "-p",
+      "no:cacheprovider",
+      "-o",
+      "xfail_strict=true",
+      "--junitxml=/private/tmp/hg065-general-r1/scratch/probe-junit.xml"
+    ],
+    "cwd": "/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop/docs/exec-plans/evidence/HG-065",
+    "exit_code": 0,
+    "elapsed_seconds": 11.026252707932144,
+    "output_bytes": 321,
+    "output_sha256": "b6642d9158bdccf0ba56f9696401189aa6b25ab77c36a5d4c3d7797f6c01cf91"
+  },
+  {
+    "name": "scope",
+    "argv": [
+      "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python",
+      "-m",
+      "pytest",
+      "tests/harness/test_validator.py",
+      "-q",
+      "-k",
+      "hg065",
+      "-p",
+      "no:cacheprovider",
+      "--basetemp=/private/tmp/hg065-general-r1/scratch/pytest"
+    ],
+    "cwd": "/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop",
+    "exit_code": 0,
+    "elapsed_seconds": 6.325740207917988,
+    "output_bytes": 114,
+    "output_sha256": "ea8d25d3bb3ef0c5b2cb0b04e130281453729412c96fd1d93f665a017138948a"
+  }
+]

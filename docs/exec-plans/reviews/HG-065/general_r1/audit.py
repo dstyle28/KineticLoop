@@ -1,0 +1,4 @@
+import hashlib,json,subprocess,sys,time
+from pathlib import Path
+R=Path('/Users/davetian/.codex/worktrees/hg065-custody-delivery/KineticLoop');O=Path('/private/tmp/hg065-general-r1');P='/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python'
+argv=[P,'tools/harness/compact_evidence.py','audit','--base','e8e93bd32a83bd2fd6bf89951863d59b37e9d2b3','--head','a2f2ff79565375e9bd0cca9013b11e61bf607cac','--identity','HG-065'];start=time.monotonic();p=subprocess.run(argv,cwd=R,capture_output=True);raw=p.stdout+p.stderr;(O/'storage-audit.json').write_bytes(raw);(O/'audit_command.json').write_text(json.dumps(dict(argv=argv,exit_code=p.returncode,elapsed_seconds=time.monotonic()-start,output_bytes=len(raw),output_sha256=hashlib.sha256(raw).hexdigest()),indent=2)+'\n');print(p.returncode,raw.decode());assert p.returncode==0

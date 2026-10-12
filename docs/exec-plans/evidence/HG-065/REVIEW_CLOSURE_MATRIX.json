@@ -1,0 +1,97 @@
+{
+  "status": "AUTHOR_CORRECTION_MATRIX_NOT_INDEPENDENT_REVIEW",
+  "prior_manifest_sha256": "6991dd7275165c1d70bdc4deaca6497f77a7f8349c5ba473e93e4da875643093",
+  "reviews": {
+    "general": {
+      "path": "inputs/custody-reviews-r1/general/GENERAL_DRAFT_REVIEW.json",
+      "sha256": "86af7e74cc53f25b67a9b198f5ed04aead3713acf31917a00b1f88c72dd09374"
+    },
+    "security": {
+      "path": "inputs/custody-reviews-r1/security/SECURITY_DRAFT_REVIEW.json",
+      "sha256": "1d8424a4e1d4a0a4c120af4ea35bd851add1249e9088823776252202d3accd98"
+    }
+  },
+  "findings": [
+    {
+      "finding": "GENERAL-CUSTODY-R1-01",
+      "author_disposition": "CORRECTED_PENDING_NEW_FULL_REVIEW",
+      "definition_files": [
+        "DEFINITION.md",
+        "custody_study.py",
+        "test_custody_definition.py"
+      ],
+      "changes": [
+        "exact envelope/payload history equality",
+        "source original declaration pointer resolution",
+        "delivery/ordered-parent/import and F/J/D/P/Q endpoint cross-checks",
+        "connected acyclic relevant intervals"
+      ],
+      "affected_test_prefix": "test_r2_contradictory_"
+    },
+    {
+      "finding": "SEC-CUSTODY-01",
+      "author_disposition": "CORRECTED_PENDING_NEW_FULL_REVIEW",
+      "definition_files": [
+        "DEFINITION.md",
+        "custody_study.py",
+        "source_fixture.py",
+        "test_custody_definition.py"
+      ],
+      "changes": [
+        "one declaration object per revision/path",
+        "independent original bytes/schema and exact membership",
+        "consistent parent metadata and shared physical histories",
+        "cyclic/disconnected relevant graph denial"
+      ],
+      "affected_tests": [
+        "test_r2_disconnected_self_cycle_and_disconnected_acyclic_chain_reject",
+        "test_r2_independent_original_source_corruption_and_absence_reject",
+        "test_r2_original_native_record_lists_and_projected_proof_lists_keep_their_own_limits"
+      ]
+    },
+    {
+      "finding": "SEC-CUSTODY-02",
+      "author_disposition": "CORRECTED_PENDING_NEW_FULL_REVIEW",
+      "definition_files": [
+        "OUTPUT_SCHEMA.json",
+        "DEFINITION.md",
+        "custody_study.py",
+        "test_custody_definition.py"
+      ],
+      "changes": [
+        "every complete output independently bounds all counters and deadline",
+        "post-predicate/denial/publication/final observation checks",
+        "zero surviving groups/zero accounting on exhaustion",
+        "actual overrun values/reasons preserved"
+      ],
+      "affected_tests": [
+        "test_r2_each_complete_output_counter_exact_boundary_and_overrun_denial",
+        "test_r2_each_actual_exceeded_counter_discards_every_group_and_preserves_counter",
+        "test_r2_deadline_expires_after_last_unchanged_predicate_discards_result",
+        "test_r2_deadline_final_publication_check_after_complete_predicate",
+        "test_r2_post_predicate_counter_overrun_discards_mixed_invocation",
+        "test_r2_late_exhaustion_on_ordinary_predicate_denial_is_incomplete"
+      ]
+    },
+    {
+      "finding": "SEC-CUSTODY-03",
+      "author_disposition": "CORRECTED_PENDING_NEW_FULL_REVIEW",
+      "definition_files": [
+        "OUTPUT_SCHEMA.json",
+        "DEFINITION.md",
+        "test_custody_definition.py"
+      ],
+      "changes": [
+        "UNPERFORMED status requires exactly UNPERFORMED reason, incomplete/no accounting/NOT_RUN guards",
+        "actual exhaustion remains DENIED with proper reasons"
+      ],
+      "affected_tests": [
+        "test_r2_unperformed_status_has_exact_unperformed_reason_and_no_accounting"
+      ]
+    }
+  ],
+  "native_caps_increased": false,
+  "execution_gaps_resolved": false,
+  "fresh_review": "NOT_RUN",
+  "runtime": "NOT_RUN"
+}

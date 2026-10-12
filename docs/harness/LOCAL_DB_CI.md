@@ -210,3 +210,57 @@ forward re-encoding. Stale installed_commit metadata, an old receipt or hosted
 check cannot substitute for those pins/admission. The HG054 worker neither installs
 its candidate nor accesses signing credentials or publishes App results. Existing
 isolated trusted full database validation remains required; no docs-only waiver.
+
+
+## HG065 private installed ORIGINAL custody operation (prospective)
+
+No executable privilege is added by HG065. Its closed definition requires a private
+installed host ORIGINAL audit, separate from the unchanged strict live P-to-H
+worker audit. Public CLI, environment, JSON, worker or caller-supplied trust flags
+cannot request/import a custody verdict. The installed host derives authority
+itself from its authenticated snapshot, exact installed assets/admission and owned
+Git clone; it imports no candidate Python and propagates every ORIGINAL failure.
+
+The ten exact reviewed appendices are incorporated conjunctively:
+[DEFINITION.md](../exec-plans/evidence/HG-065/DEFINITION.md),
+[RULE_TABLE.json](../exec-plans/evidence/HG-065/RULE_TABLE.json),
+[PROOF_SCHEMA.json](../exec-plans/evidence/HG-065/PROOF_SCHEMA.json),
+[OUTPUT_SCHEMA.json](../exec-plans/evidence/HG-065/OUTPUT_SCHEMA.json),
+[LOCATOR_TABLE.md](../exec-plans/evidence/HG-065/LOCATOR_TABLE.md),
+[BUDGETS.json](../exec-plans/evidence/HG-065/BUDGETS.json),
+[CALLER_MATRIX.json](../exec-plans/evidence/HG-065/CALLER_MATRIX.json),
+[TRUSTED_HOST_PROJECTION.md](../exec-plans/evidence/HG-065/TRUSTED_HOST_PROJECTION.md),
+[SCOPE_PROPOSAL.md](../exec-plans/evidence/HG-065/SCOPE_PROPOSAL.md),
+[GUARD_DISPOSITION.md](../exec-plans/evidence/HG-065/GUARD_DISPOSITION.md).
+[Delivery provenance](../exec-plans/evidence/HG-065/DELIVERY_PROVENANCE.json)
+and [source adaptations](../exec-plans/evidence/HG-065/SOURCE_ADAPTATIONS.json)
+resolve original embedded scratch/input references to immutable source pins and
+task-local delivery. Preserved preparation/non-grant labels describe their original
+preparation state. Normal HG065 merge makes only these prospective definitions
+authoritative; it supplies no historical or runtime PASS. The executable definition
+fixtures are synthetic premises and immutable-data observations, never production
+trust constructors. No scratch file is an acceptance dependency.
+
+For final admitted operation, unchanged native selected-record rules select S from
+the live P-to-H diff after installed authentication, admission and owned clone
+verification and before run_worker. Require final P ancestor H. Execute complete
+original O-to-H native inventory/codec/classifier/storage/history/all-map checks and
+closed custody accounting, retaining all non-duplicate errors. Record the host's
+actual exit, original inventory and diagnostic output; no supplied study/receipt
+can substitute. Authenticate unchanged App snapshots before/after the operation,
+after worker and before publication. Any failure or movement invalidates the run.
+
+Private root preimport is a distinct read-only original operation using existing
+root-owned selected task authority and the exact protected packet/Q/map context.
+It reads frozen Q as Git data with authenticated P; final forward merge/ancestry,
+native live selection, runtime/admission/execution/publication stay NOT_RUN. O-to-Q
+also contains a normally imported foreign record, so it is never a final native
+one-selected-record diff. Public task/base arguments cannot acquire this purpose.
+
+Worker ci-pr/gate_validate arguments remain strict actual --ci-pr-base P and
+--ci-pr-head H with no custody credential. Every original/live/native/selected/
+prerequisite/result/review/fullRRO/source/M3/admission/release/App/hosted obligation
+remains required. Complete independently reviewed installed assets/controller_files,
+installation-wide lock, isolation, exact admission, unit/harness/fullDB/cleanup
+and normal merge remain unchanged. This definition installs nothing and grants
+no DB/App lease, signing permission or evidence-import path.
