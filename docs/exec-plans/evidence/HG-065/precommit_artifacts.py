@@ -24,6 +24,10 @@ def inspect():
     receipt = Path(args.receipt)
     assert not receipt.is_relative_to(ROOT)
     paths = subprocess.check_output(['git', 'diff', '--cached', 'e8e93bd32a83bd2fd6bf89951863d59b37e9d2b3', '--name-only', '--diff-filter=ACMRT', '-z'], cwd=ROOT).decode().split('\0')[:-1]
+    # Git's staged inventory excludes all ignored caches and other unstaged files.
+    staged_paths = set(subprocess.check_output(['git', 'ls-files', '--cached', '-z'], cwd=ROOT).decode().split('\0')[:-1])
+    delivery = json.loads((ROOT / 'HARNESS_DOCUMENT_MANIFEST.json').read_bytes())
+    assert all(entry['path'] in staged_paths for entry in delivery['files']), 'manifest-path-not-staged'
     rows, errors, payloads, bulk = [], [], set(), {}
     total = 0
     for path in sorted(paths):

@@ -1,0 +1,36 @@
+{
+  "kind": "CANDIDATE_INVALIDATION_AND_PROSPECTIVE_CORRECTION",
+  "identity": "harness-governance-v0.1/HG-065",
+  "invalidated_candidate": "fede00846c326c65672d69e047fd7a11f57c8bb0",
+  "historical_tested_commit": "75c4244719ae0274666abfbde1686489f18ea800",
+  "reason": "Native governance_manifest_errors rejected an ignored Python cache inventory entry absent from the candidate Git tree. Eight observed author exits remain historical facts, not reusable for the new tested revision.",
+  "diagnostic": {
+    "files_equal": true,
+    "scope": true,
+    "local_manifest_errors": [
+      "governance-manifest-addition:docs/exec-plans/evidence/HG-065/__pycache__/portable_support.cpython-312.pyc"
+    ],
+    "git_manifest_errors": [
+      "governance-manifest-addition:docs/exec-plans/evidence/HG-065/__pycache__/portable_support.cpython-312.pyc",
+      "governance-manifest-bytes:docs/exec-plans/evidence/HG-065/__pycache__/portable_support.cpython-312.pyc"
+    ]
+  },
+  "correction": "Remove the spurious manifest entry. Prospective precommit inventory must select only staged Git files, excluding ignored caches generically; native selected governance manifest and full storage/history audit must pass before the new eight-check cycle.",
+  "prior_evidence_unchanged": true,
+  "old_checks_reusable": false,
+  "preparation_exit_authority": {
+    "path": "docs/exec-plans/evidence/HG-065/PREPARATION_EXIT_CLARIFICATION.json",
+    "sha256": "c95c411c70aaed6de390c4ae2c4ede330f93624efe489cd3a4132ccc139d88b6",
+    "bytes": 1756,
+    "interpretation": "For both definitions affected1 and focused validator, observed wrapper exit is zero; child exit is unknown (null). The original PRE_T_ATTEMPTS exit fields were inferred, not observed child exits. No preparation acceptance reuse."
+  },
+  "original_preparation_record": {
+    "path": "docs/exec-plans/evidence/HG-065/PRE_T_ATTEMPTS.json",
+    "sha256": "00fd0206577d02de56bc9459afb756204f1dac112910715f4be7352bf31d9bdd",
+    "bytes": 2483,
+    "retained_unchanged": true
+  },
+  "actual_hg058_runtime_gates": "NOT_RUN",
+  "custody_acceptance_eligible": false,
+  "execution_reuse": false
+}
