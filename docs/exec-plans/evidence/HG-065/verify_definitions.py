@@ -72,7 +72,7 @@ def run():
     base = [sys.executable, "-m", "pytest", "test_custody_definition.py", "-q", "--import-mode=importlib",
             "--rootdir=" + str(E), "--confcutdir=" + str(E), "-c", "/dev/null", "-p", "definition_observer",
             "-p", "no:cacheprovider", "-o", "xfail_strict=true"]
-    for phase, extra in [("collection", ["--collect-only"]), ("execution", ["--junitxml=" + str(scratch / "definition-junit.xml")])]:
+    for phase, extra in [("collection", ["--collect-only", "-q"]), ("execution", ["--junitxml=" + str(scratch / "definition-junit.xml")])]:
         observe("definition-" + phase, base + extra, {"CUSTODY_STUDY_OBSERVER": str(scratch / ("definition-" + phase + ".json"))})
     c = json.loads((scratch / "definition-collection.json").read_bytes())
     x = json.loads((scratch / "definition-execution.json").read_bytes())

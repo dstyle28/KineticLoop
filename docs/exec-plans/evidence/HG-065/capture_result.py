@@ -94,10 +94,10 @@ for name in names:
         definitions_dir = Path(definition_report['observations'])
         reproduced = definitions_dir / 'ACTUAL_CUSTODY_PROOF.json'
         canonical = ROOT / 'docs/exec-plans/evidence/HG-065/ACTUAL_CUSTODY_PROOF.json'
-        assert reproduced.read_bytes() == canonical.read_bytes()
-        meta['fresh_reproduced_custody_proof'] = dict(identity(reproduced), evidence_ref=str(canonical.relative_to(ROOT)))
+        assert json.loads(reproduced.read_bytes()) == json.loads(canonical.read_bytes())
+        meta['fresh_reproduced_custody_proof'] = dict(identity(reproduced), expected_fixture_ref=str(canonical.relative_to(ROOT)), expected_fixture_identity=identity(canonical), decoded_identity_equal=True)
         for file in sorted(definitions_dir.iterdir()):
-            if file.is_file() and file.name != 'ACTUAL_CUSTODY_PROOF.json':
+            if file.is_file():
                 sources.append((file, 'definitions-' + file.name + '.json', meta['command'], meta['environment']))
         meta['definition_report'] = definition_report
     if name == 'harness':

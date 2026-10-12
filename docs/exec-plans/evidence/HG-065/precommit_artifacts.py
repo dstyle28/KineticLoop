@@ -23,7 +23,7 @@ def inspect():
     args = parser.parse_args()
     receipt = Path(args.receipt)
     assert not receipt.is_relative_to(ROOT)
-    paths = subprocess.check_output(['git', 'diff', '--cached', '--name-only', '--diff-filter=ACMRT', '-z'], cwd=ROOT).decode().split('\0')[:-1]
+    paths = subprocess.check_output(['git', 'diff', '--cached', 'e8e93bd32a83bd2fd6bf89951863d59b37e9d2b3', '--name-only', '--diff-filter=ACMRT', '-z'], cwd=ROOT).decode().split('\0')[:-1]
     rows, errors, payloads, bulk = [], [], set(), {}
     total = 0
     for path in sorted(paths):
