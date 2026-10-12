@@ -1,0 +1,61 @@
+[
+  {
+    "kind": "GENERAL",
+    "source": "/private/tmp/hg058-custody-general-r2/GENERAL_DRAFT_REVIEW.json",
+    "bytes": 110124,
+    "sha256": "18ed6d2a3eb855ac20cb6adf95f888f316b54dfd23ffdaa3bf0e15a49bb4a0bd",
+    "review": {
+      "format": "INDEPENDENT_GENERAL_CUSTODY_DRAFT_REVIEW_V2",
+      "review_type": "GENERAL",
+      "review_scope": "FRESH_FULL_APPROVED_SEVEN_CONSTRAINTS_NOT_DELTA",
+      "candidate": {
+        "manifest": "/private/tmp/hg058-custody-rule-r2/CANDIDATE_MANIFEST.json",
+        "sha256": "73bc70e560791de77c04da8c229db5c2bc90135fd3a2b574c63ad05600af5e7e",
+        "handoff_sha256": "13d41fb17c78f97e58f6503458422354bd548a32b8683af1a1e32b1daf5ef98b",
+        "protected_base": "e8e93bd32a83bd2fd6bf89951863d59b37e9d2b3",
+        "frozen_owner_head": "3965cac382d333bd97f6c67fec8ecbe805b5932f"
+      },
+      "approved_direction": {
+        "proposal_sha256": "491e755a9f95bf85f3e98a24853d31a7d015cbafaab850b09210c08a7f000d04",
+        "human_approval_sha256": "8677ef9fa5d81082932cc6afa0ce931ce523b93cdb7e8d5bb83ce24e879e34cc",
+        "new_human_decision_required": false
+      },
+      "verdict": "PASS_DEFINITION_ONLY",
+      "findings": [],
+      "closure": [
+        {
+          "id": "GENERAL-CUSTODY-R1-01",
+          "status": "CLOSED_BY_FRESH_FULL_GENERAL_REVIEW",
+          "evidence": "Exact histories/member objects; original pointer/schema resolution; delivery ordered parents and connected acyclic endpoints verified. Six swapped-member histories and coordinated contradictions independently deny."
+        },
+        {
+          "id": "SEC-CUSTODY-01",
+          "status": "INDEPENDENT_GENERAL_CORROBORATION_CLOSED",
+          "evidence": "Source object uniqueness, independent original schema/ref membership, graph connectivity/cycle checks and crossbinding tests reproduced; SECURITY reviewer determines its own closure."
+        },
+        {
+          "id": "SEC-CUSTODY-02",
+          "status": "INDEPENDENT_GENERAL_CORROBORATION_CLOSED",
+          "evidence": "156-test reproduction includes all-counter complete output bounds, late predicate/publication overrun and mixed invocation discard. Supplemental simultaneous counter/deadline case preserves both failures; SECURITY reviewer determines its own closure."
+        },
+        {
+          "id": "SEC-CUSTODY-03",
+          "status": "INDEPENDENT_GENERAL_CORROBORATION_CLOSED",
+          "evidence": "UNPERFORMED exact reason/status pairing passes and every other reason rejects; SECURITY reviewer determines its own closure."
+        }
+      ]
+    }
+  },
+  {
+    "kind": "SECURITY",
+    "source": "/private/tmp/hg058-custody-security-r2/SECURITY_DRAFT_REVIEW.json",
+    "bytes": 20710,
+    "sha256": "0f8a6cc9e714f17d023cd498bcbf6f9e2fea10dc775d265d0b831abef09d1307",
+    "review": {
+      "format": "hg058-custody-independent-draft-review-v2",
+      "review_type": "SECURITY_DATA_BOUNDARY",
+      "verdict": "PASS_DEFINITION_ONLY",
+      "findings": []
+    }
+  }
+]

@@ -1,0 +1,90 @@
+{
+  "candidate_manifest_sha256": "73bc70e560791de77c04da8c229db5c2bc90135fd3a2b574c63ad05600af5e7e",
+  "normative": [
+    {
+      "path": "DEFINITION.md",
+      "bytes": 17101,
+      "sha256": "6ec6fdc89314138b1fda3eba387cf1262054531d4a946a75808411ae152aa05d"
+    },
+    {
+      "path": "RULE_TABLE.json",
+      "bytes": 4792,
+      "sha256": "b5e02bf4357f1757468fbc25711402ee86cca2f837c49ca70c245add2710f400"
+    },
+    {
+      "path": "PROOF_SCHEMA.json",
+      "bytes": 26045,
+      "sha256": "88431adcbea559ceaf583006add51429e844f193d791ab14b425a0b863460322"
+    },
+    {
+      "path": "OUTPUT_SCHEMA.json",
+      "bytes": 27564,
+      "sha256": "ae9d743ca468035946eb43dfa463e2451823392aa12068537638cc83340ae14d"
+    },
+    {
+      "path": "LOCATOR_TABLE.md",
+      "bytes": 4807,
+      "sha256": "b777424a9f32f4acf6db23e1dfed803b63c83744289d1f2dc4b518ccf0bdc9d6"
+    },
+    {
+      "path": "BUDGETS.json",
+      "bytes": 3092,
+      "sha256": "9434173e7bec5759b5830e4b1358762399cff8a4ba7529586d0d40da4ae13c61"
+    },
+    {
+      "path": "CALLER_MATRIX.json",
+      "bytes": 5490,
+      "sha256": "a018b46f272f26139b0586056cdfa5696e4bbe9e4f7e03d86143d4b38d8ce2ef"
+    },
+    {
+      "path": "TRUSTED_HOST_PROJECTION.md",
+      "bytes": 3868,
+      "sha256": "254401ae35472097dfd006b7703db8e483753c0e61be30c4abbff6f230596efe"
+    },
+    {
+      "path": "SCOPE_PROPOSAL.md",
+      "bytes": 3218,
+      "sha256": "0f69ccb3804717657e5a8d9a669d13738eefab4a3c1d552c86986b48b8d15125"
+    },
+    {
+      "path": "GUARD_DISPOSITION.md",
+      "bytes": 6584,
+      "sha256": "b99977e0bd2da07e7d5b2a23869433e15056d07d762beb4f268854284404d117"
+    }
+  ],
+  "fixture_projections": [
+    {
+      "source": "inputs/prior-r4/BOUNDED_GROUP.json",
+      "source_bytes": 8268,
+      "source_sha256": "41462f9a5d23de764777b79310280c3bc6acee8f2f24a850aaefedcd08a7d122",
+      "projection_sha256": "dc0dd5bd05d82a4e4ebb75c5255acf951753ff413f51d343f0deaab22b6eb755",
+      "projection_field": "group"
+    },
+    {
+      "source": "inputs/prior-r4/BOUNDED_NATIVE_CLOSURE.json",
+      "source_bytes": 709922,
+      "source_sha256": "93ab949125a702dc844490ae77727e761ee28657c818b0509d0b7a043ea79e80",
+      "projection_sha256": "8060a121deb5ac9fab4a630e300d3063f054a052bc527aee24b3b2ca9ca18294",
+      "projection_field": "closure"
+    },
+    {
+      "source": "inputs/prior-r4/PATH_INVENTORY.json",
+      "source_bytes": 162209,
+      "source_sha256": "4d20f2923deac7d7c294d3328b6ab830e9fdd26a058f65dfa3fb7975fc8474fa",
+      "projection_sha256": "9b3a3b2abc1346cf0589992afcf2a4afd16073c00bd040a48ffdb970eca88f70",
+      "projection_field": "inventory_paths"
+    },
+    {
+      "source": "inputs/prior-r4/RULE_TABLE.json",
+      "source_bytes": 8258,
+      "source_sha256": "1fd0a36b5d14168d3f821379a07a4efd932ac610f917b830833eb52367661e39",
+      "projection_sha256": "b8da8afc541f30be8319022c575c676d3139b41f8b5e70f1752166ff4f50b3c7",
+      "projection_field": "prior_rule"
+    }
+  ],
+  "context": "Preserved preparation labels and embedded scratch paths identify original research only. Normal HG065 merge incorporates exactly ten normative documents prospectively; no historical execution, task/runtime/installed gate PASS. Embedded inputs resolve by INPUT_MANIFEST original pins, ORIGINAL_SOURCE_BINDINGS Git data, FIXTURE_INPUTS exact projections and PREPARATION_PROPOSAL/HUMAN_APPROVAL. ACTUAL_CUSTODY_PROOF is an expected fixture, independently rederived at every check. Prior candidate/review/failure histories stay externally preserved, pinned by INPUT_MANIFEST; unavailable scratch never changes acceptance.",
+  "input_count": 646,
+  "git_binding_count": 239,
+  "reference_resolution": "REFERENCE_RESOLUTION.json",
+  "fixture_projection_note": "group retains exact consumed ordered member paths and payload paths only. Original full objects are independently Git-read and native-classified by observe_immutable.py; no historical body is recast as valid."
+}

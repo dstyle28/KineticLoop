@@ -1,0 +1,54 @@
+{
+  "purpose": "Exact original reference resolution, no scratch acceptance dependency",
+  "normative_base": "docs/exec-plans/evidence/HG-065/",
+  "references": [
+    {
+      "original": "inputs/custody-direction/PROPOSAL.md",
+      "delivery": "PREPARATION_PROPOSAL.md",
+      "kind": "BYTE_EXACT"
+    },
+    {
+      "original": "human approval",
+      "delivery": "PREPARATION_HUMAN_APPROVAL.json",
+      "kind": "BYTE_EXACT"
+    },
+    {
+      "original": "INPUT_MANIFEST",
+      "delivery": "INPUT_MANIFEST.json",
+      "kind": "ALL646_ORIGINAL_PINS_BYTE_EXACT"
+    },
+    {
+      "original": "all immutable original Git sources",
+      "delivery": "ORIGINAL_SOURCE_BINDINGS.json",
+      "kind": "GIT_DATA_ONLY_ON_DEMAND"
+    },
+    {
+      "original": "inputs/prior-r4/BOUNDED_GROUP.json; BOUNDED_NATIVE_CLOSURE.json; PATH_INVENTORY.json; RULE_TABLE.json",
+      "delivery": "FIXTURE_INPUTS.json",
+      "kind": "EXACT_CONSUMED_PROJECTIONS; SOURCE_AND_CANONICAL_DECODED_HASHES_IN_DELIVERY_PROVENANCE"
+    },
+    {
+      "original": "ACTUAL_CUSTODY_PROOF",
+      "delivery": "ACTUAL_CUSTODY_PROOF.json",
+      "kind": "BYTE_EXACT_EXPECTATION; FRESH_REDERIVATION_REQUIRED"
+    },
+    {
+      "original": "ACTUAL_PREPARATION_DISPOSITION; INHERITED_COMPONENT_OBSERVATIONS; IMMUTABLE_COMMAND_READS",
+      "delivery": "verify_definitions.py fresh scratch then own check-index captures",
+      "kind": "FRESH_OBSERVATION_ONLY; NO_PRIOR_ACCEPTANCE"
+    },
+    {
+      "original": "R1-R4 and prior full reviews/failures",
+      "delivery": "INPUT_MANIFEST.json; PREPARATION_REVIEWS.json; REVIEW_CLOSURE_MATRIX.json",
+      "kind": "PINNED_HISTORICAL_CONTEXT_ONLY; COMPLETE_EXTERNAL_HISTORY_PRESERVED"
+    },
+    {
+      "original": "definition_observer; custody_study; source_fixture; test_custody_definition; immutable observation helpers",
+      "delivery": "SOURCE_ADAPTATIONS.json",
+      "kind": "BYTE_EXACT_OR_REVERSE_VERIFIABLE_PORTABLE_ADAPTATION"
+    }
+  ],
+  "native_original_inventory": "NOT_RUN",
+  "installed_host": "NOT_RUN",
+  "no_historical_source_execution": true
+}

@@ -1,0 +1,41 @@
+{
+  "meaning": "HG065 preparation only, no stable-T acceptance; all originals preserved externally",
+  "attempts": [
+    {
+      "check": "definitions affected1",
+      "exit_code": 1,
+      "reason": "new packaging assertion key payloads should be payload_paths; corrected, no oracle change",
+      "path": "/private/tmp/hg065-affected-definitions-1.log",
+      "sha256": "5c387f3f436dc12e26bb7b170155406aaaeefc236e784c09a6752caf7148c8ee"
+    },
+    {
+      "check": "focused validator",
+      "exit_code": 0,
+      "cases": 3,
+      "deselected": 173,
+      "path": "/private/tmp/hg065-affected-validator.log"
+    },
+    {
+      "check": "lint initial sandbox invocation",
+      "state": "FAILED_CACHE_PERMISSION",
+      "reason": "sandbox .ruff_cache write denied; repeat with worktree write authorization"
+    },
+    {
+      "check": "definitions affected2",
+      "driver_exit_code": 1,
+      "child_exit_code": null,
+      "child_completed_report": true,
+      "definition_cases": 156,
+      "reason": "All definition observations completed; shell failed assigning reserved zsh status variable after child. Not reusable author acceptance.",
+      "path": "/private/tmp/hg065-affected-definitions-2.log",
+      "sha256": "b0570a46cbb836d28ad9798cd6389a191e3019f038cfcec54e8a2794e381baef"
+    },
+    {
+      "check": "lint affected2",
+      "driver_exit_code": 1,
+      "child_exit_code": null,
+      "output": "All checks passed!",
+      "reason": "shell failed assigning reserved zsh status variable after child; stable check will observe exit directly"
+    }
+  ]
+}

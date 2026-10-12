@@ -1,0 +1,1298 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "type",
+    "status",
+    "invocation_id",
+    "selected_identity",
+    "original_base",
+    "protected_base",
+    "head",
+    "audit_phase",
+    "complete",
+    "accounted_paths",
+    "accounted_bytes",
+    "physical_paths",
+    "execution_attribution",
+    "acceptance_eligible",
+    "execution_reuse",
+    "original_guard_status",
+    "live_guard_status",
+    "denial_reasons",
+    "elapsed_ns",
+    "consumed"
+  ],
+  "properties": {
+    "type": {
+      "const": "RETAINED_REPRESENTATION_CUSTODY_V1"
+    },
+    "status": {
+      "enum": [
+        "CUSTODY_ACCOUNTED_ORIGINAL_INVENTORY",
+        "CUSTODY_DENIED",
+        "CUSTODY_UNPERFORMED"
+      ]
+    },
+    "invocation_id": {
+      "type": "string",
+      "pattern": "^[!-~]+$",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "selected_identity": {
+      "type": "string",
+      "pattern": "^(harness-governance-v0\\.1/HG-[0-9]{3}|harness-backlog-v0\\.2/KL-[0-9]{3}[A-Z]?)$",
+      "minLength": 1,
+      "maxLength": 80
+    },
+    "original_base": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$",
+      "minLength": 40,
+      "maxLength": 40
+    },
+    "protected_base": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$",
+      "minLength": 40,
+      "maxLength": 40
+    },
+    "head": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$",
+      "minLength": 40,
+      "maxLength": 40
+    },
+    "audit_phase": {
+      "const": "ORIGINAL"
+    },
+    "complete": {
+      "type": "boolean"
+    },
+    "accounted_paths": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 4096
+    },
+    "accounted_bytes": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 16777216
+    },
+    "physical_paths": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "path",
+          "mode",
+          "blob",
+          "bytes",
+          "sha256"
+        ],
+        "properties": {
+          "path": {
+            "type": "string",
+            "pattern": "^[^\\\\\u0000]+$",
+            "minLength": 1,
+            "maxLength": 1024
+          },
+          "mode": {
+            "enum": [
+              "100644",
+              "100755"
+            ]
+          },
+          "blob": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{40}$",
+            "minLength": 40,
+            "maxLength": 40
+          },
+          "bytes": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 8388608
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$",
+            "minLength": 64,
+            "maxLength": 64
+          }
+        }
+      },
+      "maxItems": 512
+    },
+    "execution_attribution": {
+      "const": "UNVERIFIED"
+    },
+    "acceptance_eligible": {
+      "const": false
+    },
+    "execution_reuse": {
+      "const": false
+    },
+    "original_guard_status": {
+      "enum": [
+        "ALL_NATIVE_OBSERVED",
+        "NOT_RUN",
+        "DENIED"
+      ]
+    },
+    "live_guard_status": {
+      "enum": [
+        "ALL_NATIVE_OBSERVED",
+        "NOT_RUN",
+        "DENIED"
+      ]
+    },
+    "denial_reasons": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "DECLARATION_INVALID",
+          "OBJECT_MISMATCH",
+          "HISTORY_CHANGED",
+          "INTRODUCTION_NOT_PROVED",
+          "DELIVERY_INVALID",
+          "INVENTORY_MISMATCH",
+          "MAP_CONTEXT_INVALID",
+          "GROUP_OWNER_OR_RAW",
+          "PAYLOAD_OWNER_OR_DIRECTORY",
+          "MULTIPLE_OWNER_PAYLOADS",
+          "REPRESENTATION_INVALID",
+          "CALLER_OR_INVOCATION_INVALID",
+          "INVALID_SHAPE",
+          "INVALID_IDENTITY",
+          "INVALID_REVISION",
+          "INVALID_PATH",
+          "INVALID_OWNER",
+          "INVALID_OBJECT",
+          "INVALID_ENVELOPE_MEMBERSHIP",
+          "INVALID_RAW_IDENTITY",
+          "SELECTED_CUSTODY_INVALID",
+          "FOREIGN_CUSTODY_INVALID",
+          "INVALID_EDGE",
+          "INVALID_IMPORT",
+          "DUPLICATE_PHYSICAL_PATH",
+          "CONTRADICTORY_PROVENANCE",
+          "LIMIT_EXHAUSTED",
+          "DEADLINE_EXCEEDED",
+          "INCOMPLETE_CONTEXT",
+          "INCOMPLETE_HISTORY",
+          "GROUP_INCOMPLETE",
+          "UNPERFORMED",
+          "NATIVE_GUARD_DENIED",
+          "LIVE_GUARD_DENIED",
+          "HISTORY_CYCLE",
+          "HISTORY_DISCONNECTED",
+          "DECLARATION_SOURCE_UNAVAILABLE",
+          "DECLARATION_SOURCE_INVALID"
+        ]
+      },
+      "maxItems": 512
+    },
+    "elapsed_ns": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "consumed": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "commits",
+        "parent_edges",
+        "path_entries",
+        "paths",
+        "captures",
+        "groups",
+        "git_operations",
+        "git_output_bytes",
+        "decoded_bytes",
+        "comparison_bytes",
+        "json_depth",
+        "json_nodes",
+        "command_chars",
+        "path_chars",
+        "owner_chars",
+        "timestamp_chars",
+        "list_entries",
+        "output_bytes",
+        "blob_cache_objects",
+        "blob_cache_bytes",
+        "proof_cache_groups",
+        "proof_cache_bytes"
+      ],
+      "properties": {
+        "commits": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "parent_edges": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "path_entries": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "paths": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "captures": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "groups": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "git_operations": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "git_output_bytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "decoded_bytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "comparison_bytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "json_depth": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "json_nodes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "command_chars": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "path_chars": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "owner_chars": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "timestamp_chars": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "list_entries": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "output_bytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "blob_cache_objects": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "blob_cache_bytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "proof_cache_groups": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "proof_cache_bytes": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "CUSTODY_ACCOUNTED_ORIGINAL_INVENTORY"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "complete": {
+            "const": true
+          },
+          "accounted_paths": {
+            "minimum": 1
+          },
+          "accounted_bytes": {
+            "minimum": 1
+          },
+          "original_guard_status": {
+            "const": "ALL_NATIVE_OBSERVED"
+          },
+          "live_guard_status": {
+            "const": "ALL_NATIVE_OBSERVED"
+          },
+          "denial_reasons": {
+            "maxItems": 0
+          },
+          "consumed": {
+            "properties": {
+              "commits": {
+                "maximum": 4096
+              },
+              "parent_edges": {
+                "maximum": 8192
+              },
+              "path_entries": {
+                "maximum": 65536
+              },
+              "paths": {
+                "maximum": 4096
+              },
+              "captures": {
+                "maximum": 512
+              },
+              "groups": {
+                "maximum": 128
+              },
+              "git_operations": {
+                "maximum": 16384
+              },
+              "git_output_bytes": {
+                "maximum": 67108864
+              },
+              "decoded_bytes": {
+                "maximum": 268435456
+              },
+              "comparison_bytes": {
+                "maximum": 268435456
+              },
+              "json_depth": {
+                "maximum": 32
+              },
+              "json_nodes": {
+                "maximum": 65536
+              },
+              "command_chars": {
+                "maximum": 4096
+              },
+              "path_chars": {
+                "maximum": 1024
+              },
+              "owner_chars": {
+                "maximum": 80
+              },
+              "timestamp_chars": {
+                "maximum": 80
+              },
+              "list_entries": {
+                "maximum": 512
+              },
+              "output_bytes": {
+                "maximum": 1048576
+              },
+              "blob_cache_objects": {
+                "maximum": 1024
+              },
+              "blob_cache_bytes": {
+                "maximum": 16777216
+              },
+              "proof_cache_groups": {
+                "maximum": 128
+              },
+              "proof_cache_bytes": {
+                "maximum": 1048576
+              }
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "accounted_paths": {
+            "const": 0
+          },
+          "accounted_bytes": {
+            "const": 0
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "CUSTODY_UNPERFORMED"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "complete": {
+            "const": false
+          },
+          "denial_reasons": {
+            "const": [
+              "UNPERFORMED"
+            ]
+          },
+          "original_guard_status": {
+            "const": "NOT_RUN"
+          },
+          "live_guard_status": {
+            "const": "NOT_RUN"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "denial_reasons": {
+            "contains": {
+              "const": "UNPERFORMED"
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "status": {
+            "const": "CUSTODY_UNPERFORMED"
+          },
+          "denial_reasons": {
+            "const": [
+              "UNPERFORMED"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "denial_reasons": {
+            "contains": {
+              "enum": [
+                "LIMIT_EXHAUSTED",
+                "DEADLINE_EXCEEDED",
+                "INCOMPLETE_CONTEXT",
+                "INCOMPLETE_HISTORY",
+                "GROUP_INCOMPLETE",
+                "DECLARATION_SOURCE_UNAVAILABLE"
+              ]
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "complete": {
+            "const": false
+          },
+          "status": {
+            "const": "CUSTODY_DENIED"
+          },
+          "accounted_paths": {
+            "const": 0
+          },
+          "accounted_bytes": {
+            "const": 0
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "consumed": {
+            "properties": {
+              "commits": {
+                "minimum": 4097
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "complete": {
+            "const": false
+          },
+          "status": {
+            "const": "CUSTODY_DENIED"
+          },
+          "accounted_paths": {
+            "const": 0
+          },
+          "accounted_bytes": {
+            "const": 0
+          },
+          "denial_reasons": {
+            "contains": {
+              "const": "LIMIT_EXHAUSTED"
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "consumed": {
+            "properties": {
+              "parent_edges": {
+                "minimum": 8193
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "complete": {
+            "const": false
+          },
+          "status": {
+            "const": "CUSTODY_DENIED"
+          },
+          "accounted_paths": {
+            "const": 0
+          },
+          "accounted_bytes": {
+            "const": 0
+          },
+          "denial_reasons": {
+            "contains": {
+              "const": "LIMIT_EXHAUSTED"
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "consumed": {
+            "properties": {
+              "path_entries": {
+                "minimum": 65537
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "complete": {
+            "const": false
+          },
+          "status": {
+            "const": "CUSTODY_DENIED"
+          },
+          "accounted_paths": {
+            "const": 0
+          },
+          "accounted_bytes": {
+            "const": 0
+          },
+          "denial_reasons": {
+            "contains": {
+              "const": "LIMIT_EXHAUSTED"
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "consumed": {
+            "properties": {
+              "paths": {
+                "minimum": 4097
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "complete": {
+            "const": false
+          },
+          "status": {
+            "const": "CUSTODY_DENIED"
+          },
+          "accounted_paths": {
+            "const": 0
+          },
+          "accounted_bytes": {
+            "const": 0
+          },
+          "denial_reasons": {
+            "contains": {
+              "const": "LIMIT_EXHAUSTED"
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "consumed": {
+            "properties": {
+              "captures": {
+                "minimum": 513
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "complete": {
+            "const": false
+          },
+          "status": {
+            "const": "CUSTODY_DENIED"
+          },
+          "accounted_paths": {
+            "const": 0
+          },
+          "accounted_bytes": {
+            "const": 0
+          },
+          "denial_reasons": {
+            "contains": {
+              "const": "LIMIT_EXHAUSTED"
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "consumed": {
+            "properties": {
+              "groups": {
+                "minimum": 129
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "complete": {
+            "const": false
+          },
+          "status": {
+            "const": "CUSTODY_DENIED"
+          },
+          "accounted_paths": {
+            "const": 0
+          },
+          "accounted_bytes": {
+            "const": 0
+          },
+          "denial_reasons": {
+            "contains": {
+              "const": "LIMIT_EXHAUSTED"
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "consumed": {
+            "properties": {
+              "git_operations": {
+                "minimum": 16385
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "complete": {
+            "const": false
+          },
+          "status": {
+            "const": "CUSTODY_DENIED"
+          },
+          "accounted_paths": {
+            "const": 0
+          },
+          "accounted_bytes": {
+            "const": 0
+          },
+          "denial_reasons": {
+            "contains": {
+              "const": "LIMIT_EXHAUSTED"
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "consumed": {
+            "properties": {
+              "git_output_bytes": {
+                "minimum": 67108865
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "complete": {
+            "const": false
+          },
+          "status": {
+            "const": "CUSTODY_DENIED"
+          },
+          "accounted_paths": {
+            "const": 0
+          },
+          "accounted_bytes": {
+            "const": 0
+          },
+          "denial_reasons": {
+            "contains": {
+              "const": "LIMIT_EXHAUSTED"
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "consumed": {
+            "properties": {
+              "decoded_bytes": {
+                "minimum": 268435457
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "complete": {
+            "const": false
+          },
+          "status": {
+            "const": "CUSTODY_DENIED"
+          },
+          "accounted_paths": {
+            "const": 0
+          },
+          "accounted_bytes": {
+            "const": 0
+          },
+          "denial_reasons": {
+            "contains": {
+              "const": "LIMIT_EXHAUSTED"
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "consumed": {
+            "properties": {
+              "comparison_bytes": {
+                "minimum": 268435457
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "complete": {
+            "const": false
+          },
+          "status": {
+            "const": "CUSTODY_DENIED"
+          },
+          "accounted_paths": {
+            "const": 0
+          },
+          "accounted_bytes": {
+            "const": 0
+          },
+          "denial_reasons": {
+            "contains": {
+              "const": "LIMIT_EXHAUSTED"
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "consumed": {
+            "properties": {
+              "json_depth": {
+                "minimum": 33
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "complete": {
+            "const": false
+          },
+          "status": {
+            "const": "CUSTODY_DENIED"
+          },
+          "accounted_paths": {
+            "const": 0
+          },
+          "accounted_bytes": {
+            "const": 0
+          },
+          "denial_reasons": {
+            "contains": {
+              "const": "LIMIT_EXHAUSTED"
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "consumed": {
+            "properties": {
+              "json_nodes": {
+                "minimum": 65537
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "complete": {
+            "const": false
+          },
+          "status": {
+            "const": "CUSTODY_DENIED"
+          },
+          "accounted_paths": {
+            "const": 0
+          },
+          "accounted_bytes": {
+            "const": 0
+          },
+          "denial_reasons": {
+            "contains": {
+              "const": "LIMIT_EXHAUSTED"
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "consumed": {
+            "properties": {
+              "command_chars": {
+                "minimum": 4097
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "complete": {
+            "const": false
+          },
+          "status": {
+            "const": "CUSTODY_DENIED"
+          },
+          "accounted_paths": {
+            "const": 0
+          },
+          "accounted_bytes": {
+            "const": 0
+          },
+          "denial_reasons": {
+            "contains": {
+              "const": "LIMIT_EXHAUSTED"
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "consumed": {
+            "properties": {
+              "path_chars": {
+                "minimum": 1025
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "complete": {
+            "const": false
+          },
+          "status": {
+            "const": "CUSTODY_DENIED"
+          },
+          "accounted_paths": {
+            "const": 0
+          },
+          "accounted_bytes": {
+            "const": 0
+          },
+          "denial_reasons": {
+            "contains": {
+              "const": "LIMIT_EXHAUSTED"
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "consumed": {
+            "properties": {
+              "owner_chars": {
+                "minimum": 81
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "complete": {
+            "const": false
+          },
+          "status": {
+            "const": "CUSTODY_DENIED"
+          },
+          "accounted_paths": {
+            "const": 0
+          },
+          "accounted_bytes": {
+            "const": 0
+          },
+          "denial_reasons": {
+            "contains": {
+              "const": "LIMIT_EXHAUSTED"
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "consumed": {
+            "properties": {
+              "timestamp_chars": {
+                "minimum": 81
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "complete": {
+            "const": false
+          },
+          "status": {
+            "const": "CUSTODY_DENIED"
+          },
+          "accounted_paths": {
+            "const": 0
+          },
+          "accounted_bytes": {
+            "const": 0
+          },
+          "denial_reasons": {
+            "contains": {
+              "const": "LIMIT_EXHAUSTED"
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "consumed": {
+            "properties": {
+              "list_entries": {
+                "minimum": 513
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "complete": {
+            "const": false
+          },
+          "status": {
+            "const": "CUSTODY_DENIED"
+          },
+          "accounted_paths": {
+            "const": 0
+          },
+          "accounted_bytes": {
+            "const": 0
+          },
+          "denial_reasons": {
+            "contains": {
+              "const": "LIMIT_EXHAUSTED"
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "consumed": {
+            "properties": {
+              "output_bytes": {
+                "minimum": 1048577
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "complete": {
+            "const": false
+          },
+          "status": {
+            "const": "CUSTODY_DENIED"
+          },
+          "accounted_paths": {
+            "const": 0
+          },
+          "accounted_bytes": {
+            "const": 0
+          },
+          "denial_reasons": {
+            "contains": {
+              "const": "LIMIT_EXHAUSTED"
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "consumed": {
+            "properties": {
+              "blob_cache_objects": {
+                "minimum": 1025
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "complete": {
+            "const": false
+          },
+          "status": {
+            "const": "CUSTODY_DENIED"
+          },
+          "accounted_paths": {
+            "const": 0
+          },
+          "accounted_bytes": {
+            "const": 0
+          },
+          "denial_reasons": {
+            "contains": {
+              "const": "LIMIT_EXHAUSTED"
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "consumed": {
+            "properties": {
+              "blob_cache_bytes": {
+                "minimum": 16777217
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "complete": {
+            "const": false
+          },
+          "status": {
+            "const": "CUSTODY_DENIED"
+          },
+          "accounted_paths": {
+            "const": 0
+          },
+          "accounted_bytes": {
+            "const": 0
+          },
+          "denial_reasons": {
+            "contains": {
+              "const": "LIMIT_EXHAUSTED"
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "consumed": {
+            "properties": {
+              "proof_cache_groups": {
+                "minimum": 129
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "complete": {
+            "const": false
+          },
+          "status": {
+            "const": "CUSTODY_DENIED"
+          },
+          "accounted_paths": {
+            "const": 0
+          },
+          "accounted_bytes": {
+            "const": 0
+          },
+          "denial_reasons": {
+            "contains": {
+              "const": "LIMIT_EXHAUSTED"
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "consumed": {
+            "properties": {
+              "proof_cache_bytes": {
+                "minimum": 1048577
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "complete": {
+            "const": false
+          },
+          "status": {
+            "const": "CUSTODY_DENIED"
+          },
+          "accounted_paths": {
+            "const": 0
+          },
+          "accounted_bytes": {
+            "const": 0
+          },
+          "denial_reasons": {
+            "contains": {
+              "const": "LIMIT_EXHAUSTED"
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "elapsed_ns": {
+            "minimum": 120000000001
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "complete": {
+            "const": false
+          },
+          "status": {
+            "const": "CUSTODY_DENIED"
+          },
+          "accounted_paths": {
+            "const": 0
+          },
+          "accounted_bytes": {
+            "const": 0
+          },
+          "denial_reasons": {
+            "contains": {
+              "const": "DEADLINE_EXCEEDED"
+            }
+          }
+        }
+      }
+    }
+  ],
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Private host diagnostic output \u2014 forbidden as admission or execution input"
+}

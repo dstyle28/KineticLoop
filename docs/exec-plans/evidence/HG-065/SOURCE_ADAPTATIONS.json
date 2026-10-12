@@ -1,0 +1,157 @@
+{
+  "purpose": "Portable paths, current native import, immutable Git retrieval and packaging-only oracle adaptation; predicate and hostile obligations unchanged",
+  "files": [
+    {
+      "path": "source_fixture.py",
+      "source": {
+        "path": "source_fixture.py",
+        "bytes": 2714,
+        "sha256": "4cd9c0e9ac6122f16882e3bb17f6f71cf88b750a75e2ab5ccd9f6bd81220a66e"
+      },
+      "replacements": [
+        {
+          "before": "import json\n",
+          "after": "import json\nfrom portable_support import git_source\n"
+        },
+        {
+          "before": "root/'inputs/prior-custody-r1/INPUT_MANIFEST.json'",
+          "after": "root/'ORIGINAL_SOURCE_BINDINGS.json'"
+        },
+        {
+          "before": "data=(root/entry['snapshot']).read_bytes()",
+          "after": "data=git_source(entry)"
+        }
+      ],
+      "delivered_sha256": "586dcec276e313a9242b2bc2db7a7f7b718e82859cccd1c57a276f8d595e2b5c"
+    },
+    {
+      "path": "test_custody_definition.py",
+      "source": {
+        "path": "test_custody_definition.py",
+        "bytes": 27607,
+        "sha256": "544284df95464e5ddcd1b4914d6b1028767172e61b5a8b87961a268c19764357"
+      },
+      "replacements": [
+        {
+          "before": "import tracemalloc\n",
+          "after": "import tracemalloc\nimport os\nfrom portable_support import verify_delivery_sources\n"
+        },
+        {
+          "before": "ROOT/'inputs/git/tools/harness/compact_evidence.py'",
+          "after": "ROOT.parents[3]/'tools/harness/compact_evidence.py'"
+        },
+        {
+          "before": "(ROOT/'INHERITED_COMPONENT_OBSERVATIONS.json').read_bytes()",
+          "after": "(Path(os.environ['HG065_OBSERVATIONS'])/'INHERITED_COMPONENT_OBSERVATIONS.json').read_bytes()"
+        },
+        {
+          "before": "(ROOT/'ACTUAL_PREPARATION_DISPOSITION.json').read_bytes()",
+          "after": "(Path(os.environ['HG065_OBSERVATIONS'])/'ACTUAL_PREPARATION_DISPOSITION.json').read_bytes()"
+        },
+        {
+          "before": "(ROOT/'IMMUTABLE_COMMAND_READS.json').read_bytes()",
+          "after": "(Path(os.environ['HG065_OBSERVATIONS'])/'IMMUTABLE_COMMAND_READS.json').read_bytes()"
+        },
+        {
+          "before": "json.loads((ROOT/'inputs/prior-r4/RULE_TABLE.json').read_bytes())",
+          "after": "json.loads((ROOT/'FIXTURE_INPUTS.json').read_bytes())['prior_rule']"
+        },
+        {
+          "before": "    d=json.loads((ROOT/'INPUT_MANIFEST.json').read_bytes())\n    for item in d['inputs']:\n        data=(ROOT/item['snapshot']).read_bytes()\n        assert len(data)==item['bytes'] and hashlib.sha256(data).hexdigest()==item['sha256']",
+          "after": "    # Packaging-only adaptation: immutable Git and exact delivered/projection bytes.\n    # External preparation history stays pinned, never required for acceptance.\n    verify_delivery_sources()"
+        },
+        {
+          "before": "@pytest.mark.parametrize('body',[b'{\"kineticloop_evidence\":',b'[{\"kineticloop_evidence\":\"gzip-v1\"}]',\n",
+          "after": "@pytest.mark.parametrize('body',[b'{\\x22kineticloop_evidence\\x22:',b'[{\\x22kineticloop_evidence\\x22:\\x22gzip-v1\\x22}]',\n"
+        },
+        {
+          "before": "                               b'{\"kineticloop_evidence\":1,\"kineticloop_evidence\":2}',\n",
+          "after": "                               b'{\\x22kineticloop_evidence\\x22:1,\\x22kineticloop_evidence\\x22:2}',\n"
+        },
+        {
+          "before": "                               b'{\"payload\":\"x\",\"stored_sha256\":\"x\",\"raw_sha256\":\"x\"'])\n",
+          "after": "                               b'{\\x22payload\\x22:\\x22x\\x22,\\x22stored_sha256\\x22:\\x22x\\x22,\\x22raw_sha256\\x22:\\x22x\\x22'])\n"
+        }
+      ],
+      "delivered_sha256": "bb4402d33e49c691ab3af2837290514bafdfd214cade2e870350f17863441731"
+    },
+    {
+      "path": "observe_immutable.py",
+      "source": {
+        "path": "observe_immutable.py",
+        "bytes": 18449,
+        "sha256": "9a3e057ef9b06cafe6153b447ef7903db875ec93f50c4074de08a788651e4b0f"
+      },
+      "replacements": [
+        {
+          "before": "import json\n",
+          "after": "import json\nimport os\n"
+        },
+        {
+          "before": "REPO = Path('/Users/davetian/.codex/worktrees/3f52/KineticLoop')",
+          "after": "REPO = ROOT.parents[3]\nOUT = Path(os.environ['HG065_OBSERVATIONS'])"
+        },
+        {
+          "before": "ROOT/'inputs/git/tools/harness/compact_evidence.py'",
+          "after": "REPO/'tools/harness/compact_evidence.py'"
+        },
+        {
+          "before": "(ROOT/name).write_text",
+          "after": "(OUT/name).write_text"
+        },
+        {
+          "before": "        target=ROOT/snap\n        target.parent.mkdir(parents=True,exist_ok=True)\n        if target.exists():\n            assert target.read_bytes()==data\n        else:\n            target.write_bytes(data)\n",
+          "after": "        # Original Git bytes remain in Git, never copied into task evidence.\n"
+        },
+        {
+          "before": "json.loads((ROOT/'inputs/prior-r4/BOUNDED_GROUP.json').read_bytes())",
+          "after": "json.loads((ROOT/'FIXTURE_INPUTS.json').read_bytes())['group']"
+        },
+        {
+          "before": "json.loads((ROOT/'inputs/prior-r4/BOUNDED_NATIVE_CLOSURE.json').read_bytes())",
+          "after": "json.loads((ROOT/'FIXTURE_INPUTS.json').read_bytes())['closure']"
+        },
+        {
+          "before": "    inventory=json.loads((ROOT/'inputs/prior-r4/PATH_INVENTORY.json').read_bytes())\n    inv_rows=inventory if isinstance(inventory,list) else inventory['inventory']",
+          "after": "    inv_rows=[{'path':p} for p in json.loads((ROOT/'FIXTURE_INPUTS.json').read_bytes())['inventory_paths']]"
+        }
+      ],
+      "delivered_sha256": "e3503942badfacc7412a22c3b474667111724047c8f5c825c24ed69bf223885e"
+    },
+    {
+      "path": "observe_inherited_components.py",
+      "source": {
+        "path": "observe_inherited_components.py",
+        "bytes": 5537,
+        "sha256": "3c823a9e83a4c996925716aead96bafe5a0569a1bbaf47285cb0a2ee24d8f2cc"
+      },
+      "replacements": [
+        {
+          "before": "import json\n",
+          "after": "import json\nimport os\n"
+        },
+        {
+          "before": "REPO=Path('/Users/davetian/.codex/worktrees/3f52/KineticLoop')",
+          "after": "REPO = R.parents[3]\nOUT = Path(os.environ['HG065_OBSERVATIONS'])"
+        },
+        {
+          "before": "R/'inputs/git/tools/harness/compact_evidence.py'",
+          "after": "REPO/'tools/harness/compact_evidence.py'"
+        },
+        {
+          "before": "        snapshot='inputs/custody-native/'+rev+'/'+path;t=R/snapshot;t.parent.mkdir(parents=True,exist_ok=True)\n        if t.exists():assert t.read_bytes()==data\n        else:t.write_bytes(data)",
+          "after": "        snapshot='inputs/custody-native/'+rev+'/'+path  # provenance only; no snapshot copy"
+        },
+        {
+          "before": "(R/'INHERITED_COMPONENT_OBSERVATIONS.json').write_text",
+          "after": "(OUT/'INHERITED_COMPONENT_OBSERVATIONS.json').write_text"
+        },
+        {
+          "before": "(R/'INHERITED_GIT_INPUTS.json').write_text",
+          "after": "(OUT/'INHERITED_GIT_INPUTS.json').write_text"
+        }
+      ],
+      "delivered_sha256": "bb2cf160b2fb8c007620aabb1f4833d509a246f310bdee1e8102099c5c12e52b"
+    }
+  ]
+}

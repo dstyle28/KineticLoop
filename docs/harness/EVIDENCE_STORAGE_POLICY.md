@@ -349,3 +349,63 @@ ancestral edge/blob audits apply; any native storage rejection remains a concret
 finding. No validator filename exemption, recasting metadata as reviews or
 REVIEW_RECORD_ONLY exception is authorized. Historical firstcommit FAIL remains
 FAIL; relocation supplies no execution, task, requirement or review PASS.
+
+
+## HG065 retained representation custody (prospective)
+
+Only RETAINED_REPRESENTATION_CUSTODY_V1 inside the private installed ORIGINAL
+operation may account for a precisely proved protected-import duplicate diagnostic.
+This distinct preservation purpose requires independently selected original native
+record/schema/member pointers, exact regular mode/blob/size/hash/path, unique
+declaration revision/path objects, envelope/payload/history crossbindings, shared
+ordered-parent consistency, normal two-parent foreign delivery and every relevant
+ancestral edge including incoming boundaries. Connected acyclic intervals must
+prove exact introduction and F/J/D/P/Q relationships. Endpoint equality is insufficient.
+
+The ten exact reviewed appendices are incorporated conjunctively:
+[DEFINITION.md](../exec-plans/evidence/HG-065/DEFINITION.md),
+[RULE_TABLE.json](../exec-plans/evidence/HG-065/RULE_TABLE.json),
+[PROOF_SCHEMA.json](../exec-plans/evidence/HG-065/PROOF_SCHEMA.json),
+[OUTPUT_SCHEMA.json](../exec-plans/evidence/HG-065/OUTPUT_SCHEMA.json),
+[LOCATOR_TABLE.md](../exec-plans/evidence/HG-065/LOCATOR_TABLE.md),
+[BUDGETS.json](../exec-plans/evidence/HG-065/BUDGETS.json),
+[CALLER_MATRIX.json](../exec-plans/evidence/HG-065/CALLER_MATRIX.json),
+[TRUSTED_HOST_PROJECTION.md](../exec-plans/evidence/HG-065/TRUSTED_HOST_PROJECTION.md),
+[SCOPE_PROPOSAL.md](../exec-plans/evidence/HG-065/SCOPE_PROPOSAL.md),
+[GUARD_DISPOSITION.md](../exec-plans/evidence/HG-065/GUARD_DISPOSITION.md).
+[Delivery provenance](../exec-plans/evidence/HG-065/DELIVERY_PROVENANCE.json)
+and [source adaptations](../exec-plans/evidence/HG-065/SOURCE_ADAPTATIONS.json)
+resolve original embedded scratch/input references to immutable source pins and
+task-local delivery. Preserved preparation/non-grant labels describe their original
+preparation state. Normal HG065 merge makes only these prospective definitions
+authoritative; it supplies no historical or runtime PASS. The executable definition
+fixtures are synthetic premises and immutable-data observations, never production
+trust constructors. No scratch file is an acceptance dependency.
+
+Complete group selection requires the selected owner plus exactly one foreign owner,
+one exact raw identity and one owner-local same-directory physical payload per
+owner. Every physical file and byte counts under unchanged storage limits; no dedup
+credit, aliases, extra owners, conflicting identities or incomplete inventory.
+All complete native map/source/codec/classifier/metadata/integrity/history duties
+remain conjunctive and fatal. Preserve every error except that exact proved duplicate
+diagnostic. This rule supplies no map, execution, source-lineage or full RRO exception.
+
+Historical execution remains UNVERIFIED, acceptance_eligible=false and
+execution_reuse=false. Custody alone may treat byte-verified historical execution
+bodies as opaque while still completing all mandatory native body duties. Ordinary
+execution attribution retains full collection/execution/phase/JUnit duties and its
+512-entry cap. The original Q declaration's 562 files_changed entries follow its
+original schema without maxItems, complete source byte/token/node/depth bounds and
+exact pointer resolution; projected proof lists still cap at512. Original Q's
+then-live declaration base D differs from independently pinned original audit O.
+Unknown6358 child remains null, distinct from driver143; c4b's mapping gap, the three
+741>512 attribution denials, HG004/HG047 gaps and initial5da0FAIL stay unchanged.
+
+Reserve work before allocation; all finite inclusive bounds, full immutable/purpose/
+installed/invocation/graph cache identities and final output checks apply. Recheck
+after predicate or denial and before publication against final observed time. Every
+complete denial also obeys all counters/deadline. Exhaustion discards all positive
+groups with zero accounting and complete=false, preserving actual exceeded values
+and simultaneous reasons. CUSTODY_UNPERFORMED pairs exactly with [UNPERFORMED],
+zero accounting, incomplete and native/live NOT_RUN. No new codec, storage budget,
+old evidence rewrite or historical acceptance is authorized.
