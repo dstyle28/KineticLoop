@@ -36,6 +36,27 @@
       "reason": "Self-review identified missing explicit portability mapping for exact reviewed inputs references. Validator interrupted by author SIGINT; remaining six checks NOT_RUN. No execution reuse at new T.",
       "commands_path": "/private/tmp/hg066-author-26c28bac0d69/COMMANDS.json",
       "commands_sha256": "b13f70a9ce1c8af55fbda2e5516edfbdcf38e31863898ef31dd54bca59588cce"
+    },
+    {
+      "id": "superseded-T-b80309acf4ff",
+      "tested": "b80309acf4ffca8108d80a1dbc17ba1fbc5c2f16",
+      "initial_driver_exit": 2,
+      "continuation_driver_exit": 1,
+      "actual_final_check_exits": {
+        "definitions": 0,
+        "validator": 0,
+        "unit": 0,
+        "harness": 0,
+        "lint": 0,
+        "typecheck": 0,
+        "authority": 0,
+        "diff": 0
+      },
+      "retained_lint_failure_exit": 2,
+      "reason": "Ruff cache permission error was retried at same T with external caches. All eight commands then exited0, but final task-owned postprocessor split delimiters within parameter IDs and failed its comparison. Canonical pytest projection independently matches all1791 actual JUnit identities. Fix helper before new T; no cross-T acceptance reuse.",
+      "commands_sha256": "f3e9bf8f593f517141787390b07344229e9b011b2300d1f5e16368a847d55ac7",
+      "observed_harness_cases": 1791,
+      "acceptance_reuse": false
     }
   ],
   "prior_failures": "HG064/HG065/R1-R4 originals remain preserved; no prior evidence imported or promoted."

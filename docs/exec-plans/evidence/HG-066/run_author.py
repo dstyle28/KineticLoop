@@ -9,6 +9,7 @@ import sys
 import time
 import xml.etree.ElementTree as ET
 from collections import Counter
+from _pytest.junitxml import mangle_test_address
 from pathlib import Path
 E = Path(__file__).resolve().parent
 R = E.parents[3]
@@ -38,8 +39,8 @@ def identity(observer, junit, collection=None):
     assert not any(list(tree.iter(tag)) for tag in ('failure', 'error', 'skipped'))
     pairs = []
     for node in ids:
-        path, *parts = node.split('::')
-        pairs.append((path.removesuffix('.py').replace('/', '.') + ('.' + '.'.join(parts[:-1]) if len(parts) > 1 else ''), parts[-1]))
+        parts = mangle_test_address(node)
+        pairs.append(('.'.join(parts[:-1]), parts[-1]))
     assert Counter((c.get('classname'), c.get('name')) for c in cases) == Counter(pairs)
     return {'identities': ids, 'cases': len(ids), 'phases': len(ids) * 3, 'positive_collection_start_execution_phase_junit_equal': True}
 
@@ -52,7 +53,7 @@ def main():
     assert not subprocess.check_output(['git', 'status', '--porcelain'], cwd=R)
     out = Path('/private/tmp/hg066-author-' + T[:12])
     out.mkdir(exist_ok=False)
-    env = dict(os.environ, PYTHONDONTWRITEBYTECODE='1', PYTHONPATH=':'.join([str(R), str(R/'src'), *CACHE]))
+    env = dict(os.environ, PYTHONDONTWRITEBYTECODE='1', PYTHONPATH=':'.join([str(R), str(R/'src'), *CACHE]), RUFF_CACHE_DIR=str(out/'ruff-cache'), MYPY_CACHE_DIR=str(out/'mypy-cache'))
     env.pop('PYTEST_DISABLE_PLUGIN_AUTOLOAD', None)
     env.pop('PYTEST_ADDOPTS', None)
     commands = []
@@ -62,7 +63,7 @@ def main():
         start = time.monotonic_ns()
         with (out / (name + '.log')).open('wb') as output:
             proc = subprocess.run(argv, cwd=R, env=actual, stdout=output, stderr=subprocess.STDOUT)
-        row = {'check_id': name, 'argv': argv, 'command': ' '.join(argv), 'cwd': str(R), 'environment': {k:v for k,v in actual.items() if k in ('PYTHONPATH','PYTHONDONTWRITEBYTECODE','PYTEST_ADDOPTS','KINETICLOOP_HARNESS_WORKERS','KINETICLOOP_HARNESS_ROOT','KINETICLOOP_HARNESS_OBSERVER')}, 'exit_code': proc.returncode, 'elapsed_ns': time.monotonic_ns()-start, 'stdout_stderr_sha256': digest((out/(name+'.log')).read_bytes())}
+        row = {'check_id': name, 'argv': argv, 'command': ' '.join(argv), 'cwd': str(R), 'environment': {k:v for k,v in actual.items() if k in ('PYTHONPATH','PYTHONDONTWRITEBYTECODE','PYTEST_ADDOPTS','KINETICLOOP_HARNESS_WORKERS','KINETICLOOP_HARNESS_ROOT','KINETICLOOP_HARNESS_OBSERVER','RUFF_CACHE_DIR','MYPY_CACHE_DIR')}, 'exit_code': proc.returncode, 'elapsed_ns': time.monotonic_ns()-start, 'stdout_stderr_sha256': digest((out/(name+'.log')).read_bytes())}
         commands.append(row)
         (out/'COMMANDS.json').write_text(json.dumps(commands, indent=2)+'\n')
         print(name, proc.returncode, flush=True)
