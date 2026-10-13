@@ -1,0 +1,83 @@
+{
+  "format": "execution-contract-budgets-v1",
+  "incorporated_original": {
+    "format": "custody-definition-budgets-v1",
+    "status": "PROPOSED_DEFINITION_ONLY",
+    "storage_limits": {
+      "plain_bytes": 262144,
+      "stored_payload_bytes": 8388608,
+      "raw_payload_bytes": 67108864,
+      "total_changed_bytes": 16777216,
+      "duplicate_raw_threshold": 16384
+    },
+    "incremental_work_limits": {
+      "commits": 4096,
+      "parent_edges": 8192,
+      "path_entries": 65536,
+      "paths": 4096,
+      "captures": 512,
+      "groups": 128,
+      "git_operations": 16384,
+      "git_output_bytes": 67108864,
+      "decoded_bytes": 268435456,
+      "comparison_bytes": 268435456,
+      "json_depth": 32,
+      "json_nodes": 65536,
+      "command_chars": 4096,
+      "path_chars": 1024,
+      "owner_chars": 80,
+      "timestamp_chars": 80,
+      "list_entries": 512,
+      "output_bytes": 1048576,
+      "blob_cache_objects": 1024,
+      "blob_cache_bytes": 16777216,
+      "proof_cache_groups": 128,
+      "proof_cache_bytes": 1048576
+    },
+    "deadlines_milliseconds": {
+      "per_read": 10000,
+      "context": 120000
+    },
+    "all_or_none": true,
+    "opaque_execution_body_parsed_for_custody": false,
+    "ordinary_execution_list_cap": 512,
+    "limit_comparison": "actual <= limit",
+    "worklist_preallocation": "processed + pending + proposed_children <= nodes",
+    "units": {
+      "commits": "actual traversal visits, including repeated visits",
+      "parent_edges": "actual inspected parent edges",
+      "path_entries": "actual returned tree/diff entries",
+      "paths": "distinct physical paths",
+      "captures": "ordinary envelope memberships",
+      "groups": "distinct complete raw groups",
+      "git_operations": "every started immutable read including failure",
+      "git_output_bytes": "stdout + stderr actual bytes",
+      "decoded_bytes": "actual native recovered bytes before cache insertion",
+      "comparison_bytes": "every compared byte pair charged by bytes on both sides",
+      "json_nodes": "keys + values + array children and containers",
+      "json_depth": "root at zero",
+      "list_entries": "each projected custody proof list; exact native original-authority schema source-list rules and ordinary execution cap unchanged",
+      "output_bytes": "actual UTF8 serialized result, before publication",
+      "blob_cache_objects": "actual retained immutable objects",
+      "blob_cache_bytes": "actual retained bytes",
+      "proof_cache_groups": "actual per-invocation groups",
+      "proof_cache_bytes": "actual serialized proof bytes",
+      "command_chars": "Unicode codepoints after strict decoding",
+      "path_chars": "normalized literal characters",
+      "owner_chars": "namespaced identity characters",
+      "timestamp_chars": "retained claim characters"
+    },
+    "post_work_deadline": "observed monotonic elapsed_ns, ceiling milliseconds; never clamp",
+    "parser": "Complete original native authority schema source reader bounded by bytes/tokens/nodes/depth; projected proof lists retain512. Unique keys; aliases/cycles/unsupported syntax deny. No native schema/list limit increase or source truncation.",
+    "cache": "key every authority/ref/edge/purpose/invocation; no capacity reset; exhaustion discards whole invocation"
+  },
+  "additional_narrowing": {
+    "events": 64,
+    "new_contract_json_bytes": 262144,
+    "new_contract_json_depth": 32,
+    "new_contract_json_nodes": 65536,
+    "new_contract_list_entries": 512
+  },
+  "raise_or_reset_allowed": false,
+  "all_status_final_checks": true
+}

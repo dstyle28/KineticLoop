@@ -264,3 +264,78 @@ remains required. Complete independently reviewed installed assets/controller_fi
 installation-wide lock, isolation, exact admission, unit/harness/fullDB/cleanup
 and normal merge remain unchanged. This definition installs nothing and grants
 no DB/App lease, signing permission or evidence-import path.
+
+## HG066 prospective complete-owner custody and staged execution
+
+HG066 normatively incorporates the exact reviewed sources in
+`docs/exec-plans/evidence/HG-066/DELIVERY_PROVENANCE.json`, including
+MULTI_OWNER_RULE.md, EXECUTION_CONTRACT.md, all seven closed schemas,
+CLAUSE_SUPERSESSION.json, SCOPE_CORRECTION.json, CHECK_OWNERSHIP.json,
+STAGING_CHECKS.json, PHASE_MATRIX.json, GRAMMAR_AND_INVOCATION.md,
+REASON_IMPLICATION_MATRIX.json and the incorporated budget, caller, locator,
+guard and original-source definitions. The source paths are relative to
+`docs/exec-plans/evidence/HG-066/`. Their preparation status statements describe
+historical preparation only; this clause promotes the reviewed definitions
+prospectively without promoting any preparation execution or receipt.
+
+MULTI_OWNER_RULE and the appended consolidated/R3/R4 clauses narrowly supersede
+the former two-owner/six-case narrative and only the clauses enumerated in
+CLAUSE_SUPERSESSION. All unlisted predicates remain conjunctive. The ten HG065
+normative source blobs remain byte-exact and are referenced, never rewritten.
+Every complete exact-raw collision group includes exactly one selected and every
+foreign owner, all original declarations, owner-local payloads, normal deliveries,
+introductions, parent/incoming edges and physical bytes. Unrelated native objects
+remain counted and digested with zero custody credit. Both roots, both codecs and
+actual plain bytes participate in native traversal. No fixed observation count,
+owner/hash allowlist, omitted group, plain-copy credit or deduplication credit is
+permitted. All native classifier/metadata/codec/source/admission/map/history guards
+remain fatal; all22 capacities/units, execution/projected512, context120s/read10s
+remain unchanged. Any exhausted group discards all positives. Either exhaustion
+reason always implies incomplete PREIMPORT_DENIED/zero, including a rejected
+reservation whose actual consumed value stays below cap; no fabricated charge.
+
+Historical execution remains UNVERIFIED, acceptance_eligible=false and
+execution_reuse=false. Preserve c4b, the independently bound6358 parent gap and
+unknown child distinct from driver143, three741>512 denials, HG004 archival/missing
+GENERAL, HG047 full RRO failure and original5da0 FAIL. This definition delivery
+performs no actual K/H audit, installation, admission, App or DB operation; those
+remain NOT_RUN and full native budget feasibility NOT_DETERMINED. Frozen Protocol,
+DB, Evidence Admission, T1–T8, lock order, authorization, production/shadow/provider
+trust and every product requirement state remain unchanged.
+
+The binding A1–A5 route is mandatory. A1 executes the strict public ORIGINAL child
+and retains its observed nonzero; only a separate exact expected-denial regression
+may exit0 after independently deriving the entire unfiltered inventory, physical
+counts/bytes/digest/traversal and exact diagnostics. Unknown exit, interruption,
+timeout, missing/extra errors or incomplete native work fails. A2 uses the separate
+nonfinal PREIMPORT grammar binding actual K/tree/controller, protected P and
+original Q; final/live/admission/App stay NOT_RUN and host/driver exits stay distinct.
+
+A3 starts only after actual separate normal HG066 merge, complete independently
+reviewed baseline installation and an explicit narrow root regrant to SAME HG058.
+The clean Q-retaining K uses exactly nine STAGING_SCOPE patterns (three production,
+five existing test paths and own preimport-stage helpers), eight fresh K preparatory
+checks, NEW complete independent GENERAL+SECURITY reviews of all11 ASSETS/controller/
+source provenance and root installation outside checkout. FULL authenticated native
+O-to-ACTUAL-K is required BEFORE ordered[K,P] import. Recheck K/P/controller/authority
+at the boundary and obtain explicit root continuation. No Q substitute or deferral.
+
+A4 prepares all helpers/manifest before fresh committed T, runs the twenty exact
+individual author CHECK_OWNERSHIP commands with complete positive collection/start/
+execution/phase/JUnit identities, and commits evidence by truthful R. Eight K checks
+never substitute T acceptance. Both NEW full task reviews bind R; only own linear
+REVIEW_RECORD_ONLY suffix produces H. The nineteen root hard prerequisites remain
+PENDING_EXTERNAL_OBSERVATION outside selected checks_run and outside Git; no post-R
+author evidence import. At H root requires complete final installation review/install,
+exact admission, private full O-to-H AND strict P-to-H before accounted publication,
+exact public denial, selected ci-pr/unchanged worker, actual App unit+harness/fullDB/
+cleanup, live hosted gates/current snapshots and normal merge. Changed pins invalidate
+stale evidence. A5 appends exactly literal tools/harness/local_gate.py to the protected
+HG058 allowance, preserving existing entries/order; selected twenty-check enforcement
+is prospective only. Original Q and historical global inventory retain native semantics.
+
+No HG058 implementation lease follows from HG066 task PASS alone. SAME HG058 remains
+frozen until actual normal merge and root-confirmed complete installed readiness and
+regrant. KL081 waits for actual HG058 merge/readiness. Old PR99/102 and dirty KL055 stay
+preserved. No gate_validate/config/schema/workflow/permission or runtime implementation
+is authorized here; DB/App executor remains free and unreserved.

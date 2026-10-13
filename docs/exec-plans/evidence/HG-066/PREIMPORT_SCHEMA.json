@@ -1,0 +1,1328 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "type",
+    "status",
+    "invocation_id",
+    "repository",
+    "selected_identity",
+    "original_base",
+    "protected_base",
+    "original_selected",
+    "predecessor",
+    "tree",
+    "installed_release",
+    "controller",
+    "authority_digest",
+    "phase",
+    "complete",
+    "ready_for_exact_import",
+    "inventory",
+    "preserved_duplicate_paths",
+    "preserved_duplicate_bytes",
+    "original_guard_status",
+    "live_guard_status",
+    "selected_final_status",
+    "admission_status",
+    "app_status",
+    "execution_attribution",
+    "acceptance_eligible",
+    "execution_reuse",
+    "host_exit_code",
+    "driver_exit_code",
+    "denial_reasons",
+    "elapsed_ns",
+    "consumed"
+  ],
+  "properties": {
+    "type": {
+      "const": "RETAINED_REPRESENTATION_PREIMPORT_V1"
+    },
+    "status": {
+      "enum": [
+        "PREIMPORT_PRESERVATION_OBSERVED",
+        "PREIMPORT_DENIED",
+        "PREIMPORT_UNPERFORMED"
+      ]
+    },
+    "invocation_id": {
+      "type": "string",
+      "pattern": "^[!-~]+$",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "repository": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$"
+    },
+    "selected_identity": {
+      "type": "string",
+      "pattern": "^harness-governance-v0\\.1/HG-[0-9]{3}$",
+      "maxLength": 80
+    },
+    "original_base": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "protected_base": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "original_selected": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "predecessor": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "tree": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "installed_release": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "controller": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "authority_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "phase": {
+      "const": "PREIMPORT_K"
+    },
+    "complete": {
+      "type": "boolean"
+    },
+    "ready_for_exact_import": {
+      "type": "boolean"
+    },
+    "inventory": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "digest",
+        "files",
+        "stored_bytes",
+        "maps",
+        "edges"
+      ],
+      "properties": {
+        "digest": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "files": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4096
+        },
+        "stored_bytes": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 16777216
+        },
+        "maps": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4096
+        },
+        "edges": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 8192
+        }
+      }
+    },
+    "preserved_duplicate_paths": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 4096
+    },
+    "preserved_duplicate_bytes": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 16777216
+    },
+    "original_guard_status": {
+      "enum": [
+        "ALL_NATIVE_OBSERVED",
+        "PARTIAL",
+        "NOT_RUN"
+      ]
+    },
+    "live_guard_status": {
+      "const": "NOT_RUN"
+    },
+    "selected_final_status": {
+      "const": "NOT_RUN"
+    },
+    "admission_status": {
+      "const": "NOT_RUN"
+    },
+    "app_status": {
+      "const": "NOT_RUN"
+    },
+    "execution_attribution": {
+      "const": "UNVERIFIED"
+    },
+    "acceptance_eligible": {
+      "const": false
+    },
+    "execution_reuse": {
+      "const": false
+    },
+    "host_exit_code": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "driver_exit_code": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "denial_reasons": {
+      "type": "array",
+      "uniqueItems": true,
+      "maxItems": 512,
+      "items": {
+        "enum": [
+          "UNPERFORMED",
+          "NATIVE_GUARD_DENIED",
+          "BINDING_CHANGED",
+          "INCOMPLETE_CONTEXT",
+          "LIMIT_EXHAUSTED",
+          "DEADLINE_EXCEEDED",
+          "INTERRUPTED",
+          "CALLER_DENIED"
+        ]
+      }
+    },
+    "elapsed_ns": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "consumed": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "commits",
+        "parent_edges",
+        "path_entries",
+        "paths",
+        "captures",
+        "groups",
+        "git_operations",
+        "git_output_bytes",
+        "decoded_bytes",
+        "comparison_bytes",
+        "json_depth",
+        "json_nodes",
+        "command_chars",
+        "path_chars",
+        "owner_chars",
+        "timestamp_chars",
+        "list_entries",
+        "output_bytes",
+        "blob_cache_objects",
+        "blob_cache_bytes",
+        "proof_cache_groups",
+        "proof_cache_bytes"
+      ],
+      "properties": {
+        "commits": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "parent_edges": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "path_entries": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "paths": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "captures": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "groups": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "git_operations": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "git_output_bytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "decoded_bytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "comparison_bytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "json_depth": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "json_nodes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "command_chars": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "path_chars": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "owner_chars": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "timestamp_chars": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "list_entries": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "output_bytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "blob_cache_objects": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "blob_cache_bytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "proof_cache_groups": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "proof_cache_bytes": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "PREIMPORT_PRESERVATION_OBSERVED"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "complete": {
+            "const": true
+          },
+          "ready_for_exact_import": {
+            "const": true
+          },
+          "preserved_duplicate_paths": {
+            "minimum": 1
+          },
+          "preserved_duplicate_bytes": {
+            "minimum": 1
+          },
+          "original_guard_status": {
+            "const": "ALL_NATIVE_OBSERVED"
+          },
+          "host_exit_code": {
+            "const": 0
+          },
+          "driver_exit_code": {
+            "type": "null"
+          },
+          "denial_reasons": {
+            "maxItems": 0
+          },
+          "inventory": {
+            "properties": {
+              "digest": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$"
+              },
+              "files": {
+                "minimum": 1
+              },
+              "maps": {
+                "minimum": 1
+              },
+              "edges": {
+                "minimum": 1
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "enum": [
+              "PREIMPORT_DENIED",
+              "PREIMPORT_UNPERFORMED"
+            ]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "ready_for_exact_import": {
+            "const": false
+          },
+          "preserved_duplicate_paths": {
+            "const": 0
+          },
+          "preserved_duplicate_bytes": {
+            "const": 0
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "PREIMPORT_DENIED"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "denial_reasons": {
+            "minItems": 1
+          },
+          "host_exit_code": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "not": {
+                  "const": 0
+                }
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "PREIMPORT_DENIED"
+          },
+          "host_exit_code": {
+            "type": "null"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "complete": {
+            "const": false
+          },
+          "denial_reasons": {
+            "contains": {
+              "enum": [
+                "INTERRUPTED",
+                "INCOMPLETE_CONTEXT"
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "PREIMPORT_UNPERFORMED"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "complete": {
+            "const": false
+          },
+          "original_guard_status": {
+            "const": "NOT_RUN"
+          },
+          "host_exit_code": {
+            "type": "null"
+          },
+          "driver_exit_code": {
+            "type": "null"
+          },
+          "denial_reasons": {
+            "const": [
+              "UNPERFORMED"
+            ]
+          },
+          "inventory": {
+            "properties": {
+              "digest": {
+                "type": "null"
+              },
+              "files": {
+                "const": 0
+              },
+              "stored_bytes": {
+                "const": 0
+              },
+              "maps": {
+                "const": 0
+              },
+              "edges": {
+                "const": 0
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "complete": {
+            "const": true
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "elapsed_ns": {
+            "maximum": 120000000000
+          },
+          "consumed": {
+            "properties": {
+              "commits": {
+                "maximum": 4096
+              },
+              "parent_edges": {
+                "maximum": 8192
+              },
+              "path_entries": {
+                "maximum": 65536
+              },
+              "paths": {
+                "maximum": 4096
+              },
+              "captures": {
+                "maximum": 512
+              },
+              "groups": {
+                "maximum": 128
+              },
+              "git_operations": {
+                "maximum": 16384
+              },
+              "git_output_bytes": {
+                "maximum": 67108864
+              },
+              "decoded_bytes": {
+                "maximum": 268435456
+              },
+              "comparison_bytes": {
+                "maximum": 268435456
+              },
+              "json_depth": {
+                "maximum": 32
+              },
+              "json_nodes": {
+                "maximum": 65536
+              },
+              "command_chars": {
+                "maximum": 4096
+              },
+              "path_chars": {
+                "maximum": 1024
+              },
+              "owner_chars": {
+                "maximum": 80
+              },
+              "timestamp_chars": {
+                "maximum": 80
+              },
+              "list_entries": {
+                "maximum": 512
+              },
+              "output_bytes": {
+                "maximum": 1048576
+              },
+              "blob_cache_objects": {
+                "maximum": 1024
+              },
+              "blob_cache_bytes": {
+                "maximum": 16777216
+              },
+              "proof_cache_groups": {
+                "maximum": 128
+              },
+              "proof_cache_bytes": {
+                "maximum": 1048576
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "consumed": {
+            "properties": {
+              "commits": {
+                "minimum": 4097
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "complete": {
+            "const": false
+          },
+          "status": {
+            "const": "PREIMPORT_DENIED"
+          },
+          "denial_reasons": {
+            "contains": {
+              "const": "LIMIT_EXHAUSTED"
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "consumed": {
+            "properties": {
+              "parent_edges": {
+                "minimum": 8193
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "complete": {
+            "const": false
+          },
+          "status": {
+            "const": "PREIMPORT_DENIED"
+          },
+          "denial_reasons": {
+            "contains": {
+              "const": "LIMIT_EXHAUSTED"
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "consumed": {
+            "properties": {
+              "path_entries": {
+                "minimum": 65537
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "complete": {
+            "const": false
+          },
+          "status": {
+            "const": "PREIMPORT_DENIED"
+          },
+          "denial_reasons": {
+            "contains": {
+              "const": "LIMIT_EXHAUSTED"
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "consumed": {
+            "properties": {
+              "paths": {
+                "minimum": 4097
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "complete": {
+            "const": false
+          },
+          "status": {
+            "const": "PREIMPORT_DENIED"
+          },
+          "denial_reasons": {
+            "contains": {
+              "const": "LIMIT_EXHAUSTED"
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "consumed": {
+            "properties": {
+              "captures": {
+                "minimum": 513
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "complete": {
+            "const": false
+          },
+          "status": {
+            "const": "PREIMPORT_DENIED"
+          },
+          "denial_reasons": {
+            "contains": {
+              "const": "LIMIT_EXHAUSTED"
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "consumed": {
+            "properties": {
+              "groups": {
+                "minimum": 129
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "complete": {
+            "const": false
+          },
+          "status": {
+            "const": "PREIMPORT_DENIED"
+          },
+          "denial_reasons": {
+            "contains": {
+              "const": "LIMIT_EXHAUSTED"
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "consumed": {
+            "properties": {
+              "git_operations": {
+                "minimum": 16385
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "complete": {
+            "const": false
+          },
+          "status": {
+            "const": "PREIMPORT_DENIED"
+          },
+          "denial_reasons": {
+            "contains": {
+              "const": "LIMIT_EXHAUSTED"
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "consumed": {
+            "properties": {
+              "git_output_bytes": {
+                "minimum": 67108865
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "complete": {
+            "const": false
+          },
+          "status": {
+            "const": "PREIMPORT_DENIED"
+          },
+          "denial_reasons": {
+            "contains": {
+              "const": "LIMIT_EXHAUSTED"
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "consumed": {
+            "properties": {
+              "decoded_bytes": {
+                "minimum": 268435457
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "complete": {
+            "const": false
+          },
+          "status": {
+            "const": "PREIMPORT_DENIED"
+          },
+          "denial_reasons": {
+            "contains": {
+              "const": "LIMIT_EXHAUSTED"
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "consumed": {
+            "properties": {
+              "comparison_bytes": {
+                "minimum": 268435457
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "complete": {
+            "const": false
+          },
+          "status": {
+            "const": "PREIMPORT_DENIED"
+          },
+          "denial_reasons": {
+            "contains": {
+              "const": "LIMIT_EXHAUSTED"
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "consumed": {
+            "properties": {
+              "json_depth": {
+                "minimum": 33
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "complete": {
+            "const": false
+          },
+          "status": {
+            "const": "PREIMPORT_DENIED"
+          },
+          "denial_reasons": {
+            "contains": {
+              "const": "LIMIT_EXHAUSTED"
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "consumed": {
+            "properties": {
+              "json_nodes": {
+                "minimum": 65537
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "complete": {
+            "const": false
+          },
+          "status": {
+            "const": "PREIMPORT_DENIED"
+          },
+          "denial_reasons": {
+            "contains": {
+              "const": "LIMIT_EXHAUSTED"
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "consumed": {
+            "properties": {
+              "command_chars": {
+                "minimum": 4097
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "complete": {
+            "const": false
+          },
+          "status": {
+            "const": "PREIMPORT_DENIED"
+          },
+          "denial_reasons": {
+            "contains": {
+              "const": "LIMIT_EXHAUSTED"
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "consumed": {
+            "properties": {
+              "path_chars": {
+                "minimum": 1025
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "complete": {
+            "const": false
+          },
+          "status": {
+            "const": "PREIMPORT_DENIED"
+          },
+          "denial_reasons": {
+            "contains": {
+              "const": "LIMIT_EXHAUSTED"
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "consumed": {
+            "properties": {
+              "owner_chars": {
+                "minimum": 81
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "complete": {
+            "const": false
+          },
+          "status": {
+            "const": "PREIMPORT_DENIED"
+          },
+          "denial_reasons": {
+            "contains": {
+              "const": "LIMIT_EXHAUSTED"
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "consumed": {
+            "properties": {
+              "timestamp_chars": {
+                "minimum": 81
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "complete": {
+            "const": false
+          },
+          "status": {
+            "const": "PREIMPORT_DENIED"
+          },
+          "denial_reasons": {
+            "contains": {
+              "const": "LIMIT_EXHAUSTED"
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "consumed": {
+            "properties": {
+              "list_entries": {
+                "minimum": 513
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "complete": {
+            "const": false
+          },
+          "status": {
+            "const": "PREIMPORT_DENIED"
+          },
+          "denial_reasons": {
+            "contains": {
+              "const": "LIMIT_EXHAUSTED"
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "consumed": {
+            "properties": {
+              "output_bytes": {
+                "minimum": 1048577
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "complete": {
+            "const": false
+          },
+          "status": {
+            "const": "PREIMPORT_DENIED"
+          },
+          "denial_reasons": {
+            "contains": {
+              "const": "LIMIT_EXHAUSTED"
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "consumed": {
+            "properties": {
+              "blob_cache_objects": {
+                "minimum": 1025
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "complete": {
+            "const": false
+          },
+          "status": {
+            "const": "PREIMPORT_DENIED"
+          },
+          "denial_reasons": {
+            "contains": {
+              "const": "LIMIT_EXHAUSTED"
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "consumed": {
+            "properties": {
+              "blob_cache_bytes": {
+                "minimum": 16777217
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "complete": {
+            "const": false
+          },
+          "status": {
+            "const": "PREIMPORT_DENIED"
+          },
+          "denial_reasons": {
+            "contains": {
+              "const": "LIMIT_EXHAUSTED"
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "consumed": {
+            "properties": {
+              "proof_cache_groups": {
+                "minimum": 129
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "complete": {
+            "const": false
+          },
+          "status": {
+            "const": "PREIMPORT_DENIED"
+          },
+          "denial_reasons": {
+            "contains": {
+              "const": "LIMIT_EXHAUSTED"
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "consumed": {
+            "properties": {
+              "proof_cache_bytes": {
+                "minimum": 1048577
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "complete": {
+            "const": false
+          },
+          "status": {
+            "const": "PREIMPORT_DENIED"
+          },
+          "denial_reasons": {
+            "contains": {
+              "const": "LIMIT_EXHAUSTED"
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "elapsed_ns": {
+            "minimum": 120000000001
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "complete": {
+            "const": false
+          },
+          "status": {
+            "const": "PREIMPORT_DENIED"
+          },
+          "denial_reasons": {
+            "contains": {
+              "const": "DEADLINE_EXCEEDED"
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "denial_reasons": {
+            "contains": {
+              "const": "UNPERFORMED"
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "status": {
+            "const": "PREIMPORT_UNPERFORMED"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "denial_reasons": {
+            "contains": {
+              "enum": [
+                "INTERRUPTED",
+                "INCOMPLETE_CONTEXT"
+              ]
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "complete": {
+            "const": false
+          },
+          "original_guard_status": {
+            "enum": [
+              "PARTIAL",
+              "NOT_RUN"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "denial_reasons": {
+            "contains": {
+              "enum": [
+                "LIMIT_EXHAUSTED",
+                "DEADLINE_EXCEEDED"
+              ]
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "complete": {
+            "const": false
+          },
+          "status": {
+            "const": "PREIMPORT_DENIED"
+          }
+        }
+      }
+    }
+  ]
+}

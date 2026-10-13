@@ -1,0 +1,106 @@
+{
+  "format": "execution-contract-staging-checks-v1",
+  "rows": [
+    {
+      "check_id": "classifier_regressions",
+      "command_template": "uv run pytest tests/harness/test_compact_evidence.py::TestHG058ClassifierRegressions -q",
+      "stage_binding": "K",
+      "authority_binding": "P",
+      "observed_exit": 0,
+      "classification": "PREPARATORY_NOT_FINAL_ACCEPTANCE",
+      "fresh_positive_collection_execution_phase_junit": true,
+      "external_real_project_audit": "NOT_RUN_IN_THIS_COMMAND",
+      "reuse_for_T": false,
+      "all_named_obligations_mandatory": true
+    },
+    {
+      "check_id": "native_inventory_maps_edges",
+      "command_template": "uv run pytest tests/harness/test_compact_evidence.py::TestHG058OriginalMapEdges -q",
+      "stage_binding": "K",
+      "authority_binding": "P",
+      "observed_exit": 0,
+      "classification": "PREPARATORY_NOT_FINAL_ACCEPTANCE",
+      "fresh_positive_collection_execution_phase_junit": true,
+      "external_real_project_audit": "NOT_RUN_IN_THIS_COMMAND",
+      "reuse_for_T": false,
+      "all_named_obligations_mandatory": true
+    },
+    {
+      "check_id": "custody_156_and_r1",
+      "command_template": "uv run pytest tests/harness/test_compact_evidence.py::TestRetainedCustodyGroup -q",
+      "stage_binding": "K",
+      "authority_binding": "P",
+      "observed_exit": 0,
+      "classification": "PREPARATORY_NOT_FINAL_ACCEPTANCE",
+      "fresh_positive_collection_execution_phase_junit": true,
+      "external_real_project_audit": "NOT_RUN_IN_THIS_COMMAND",
+      "reuse_for_T": false,
+      "all_named_obligations_mandatory": true
+    },
+    {
+      "check_id": "eight_sources_four_callers_nine_metadata",
+      "command_template": "uv run pytest tests/harness/test_review_evidence_provenance.py::TestHG058RoutingPreservation tests/harness/test_validator.py::TestHG058RoutingPreservation -q",
+      "stage_binding": "K",
+      "authority_binding": "P",
+      "observed_exit": 0,
+      "classification": "PREPARATORY_NOT_FINAL_ACCEPTANCE",
+      "fresh_positive_collection_execution_phase_junit": true,
+      "external_real_project_audit": "NOT_RUN_IN_THIS_COMMAND",
+      "reuse_for_T": false,
+      "all_named_obligations_mandatory": true
+    },
+    {
+      "check_id": "ordinary_opaque_separation",
+      "command_template": "uv run pytest tests/harness/test_compact_evidence.py::TestRetainedCustodyOpaque -q",
+      "stage_binding": "K",
+      "authority_binding": "P",
+      "observed_exit": 0,
+      "classification": "PREPARATORY_NOT_FINAL_ACCEPTANCE",
+      "fresh_positive_collection_execution_phase_junit": true,
+      "external_real_project_audit": "NOT_RUN_IN_THIS_COMMAND",
+      "reuse_for_T": false,
+      "all_named_obligations_mandatory": true
+    },
+    {
+      "check_id": "budget_cache_finalization",
+      "command_template": "uv run pytest tests/harness/test_compact_evidence.py::TestRetainedCustodyBudget -q",
+      "stage_binding": "K",
+      "authority_binding": "P",
+      "observed_exit": 0,
+      "classification": "PREPARATORY_NOT_FINAL_ACCEPTANCE",
+      "fresh_positive_collection_execution_phase_junit": true,
+      "external_real_project_audit": "NOT_RUN_IN_THIS_COMMAND",
+      "reuse_for_T": false,
+      "all_named_obligations_mandatory": true
+    },
+    {
+      "check_id": "private_host_integration",
+      "command_template": "uv run pytest tests/harness/test_local_gate.py::TestRetainedCustodyPrivateHost -q",
+      "stage_binding": "K",
+      "authority_binding": "P",
+      "observed_exit": 0,
+      "classification": "PREPARATORY_NOT_FINAL_ACCEPTANCE",
+      "fresh_positive_collection_execution_phase_junit": true,
+      "external_real_project_audit": "NOT_RUN_IN_THIS_COMMAND",
+      "reuse_for_T": false,
+      "all_named_obligations_mandatory": true
+    },
+    {
+      "check_id": "complete_bundle_authority",
+      "command_template": "uv run python docs/exec-plans/evidence/HG-058/preimport-stage/verify_stage_bundle.py --authority {P} --staged {K}",
+      "stage_binding": "K",
+      "authority_binding": "P",
+      "observed_exit": 0,
+      "classification": "PREPARATORY_NOT_FINAL_ACCEPTANCE",
+      "fresh_positive_collection_execution_phase_junit": false,
+      "external_real_project_audit": "NOT_RUN_IN_THIS_COMMAND",
+      "reuse_for_T": false,
+      "all_named_obligations_mandatory": true
+    }
+  ],
+  "check_scope": "ISOLATED_AFFECTED_NATIVE_INTEGRATION_FIXTURES",
+  "full_actual_O_to_K": "ROOT_AFTER_COMPLETE_INSTALL_ONLY",
+  "all156_distinct_matrix_obligations": "MANDATORY_COVERAGE_NOT_A_NUMERIC_RUNTIME_HASH_OR_OWNER_ALLOWLIST",
+  "fallback": "EXISTING_PACKET_PYTHON3_12_FALLBACK_EXACT_ARGV_ONLY",
+  "complete_multi_owner_v2_regressions": "Mandatory generic>=3/complete current root union, every-owner declaration/delivery/history/byte/reference hostile cases, shared budgets/cache/output/public oracle and all156 preserved R1/R2 obligations; no fixed owner/hash count oracle."
+}

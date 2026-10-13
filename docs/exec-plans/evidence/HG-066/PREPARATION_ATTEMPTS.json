@@ -1,0 +1,32 @@
+{
+  "attempts": [
+    {
+      "id": "source-compare-1",
+      "exit_code": 1,
+      "purpose": "Affected reversible source bookkeeping probe",
+      "error": "Repeated token replacement reversal; no semantic/model failure. Corrected to exact original line delta reconstruction."
+    },
+    {
+      "id": "native-probe-1",
+      "exit_code": 0,
+      "evidence": "/private/tmp/hg066-precommit-probe1.json",
+      "sha256": "fb4daaade451009505e58398999a43fa2f6df45d4a08ac9e216e9e8e2f0cb4f2"
+    },
+    {
+      "id": "affected-definitions-1",
+      "exit_code": 0,
+      "cases": 833,
+      "phases": 2499,
+      "log_sha256": "1793c6ec6f45906a3f64c0322fbc9ab6e7b5d197008d6e106980018fb7381064",
+      "not_stable_T_acceptance": true
+    },
+    {
+      "id": "affected-validator",
+      "exit_code": 0,
+      "passed": 7,
+      "deselected": 175,
+      "not_full_acceptance": true
+    }
+  ],
+  "prior_failures": "HG064/HG065/R1-R4 originals remain preserved; no prior evidence imported or promoted."
+}
