@@ -83,7 +83,7 @@ def main():
     # Harness driver independently proves every worker/phase/JUnit identity;
     # this parent also retains and verifies its exact observation objects.
     h = out/'harness-run'
-    identities['harness'] = identity(h/'execution.json',h/'junit.xml')
+    identities['harness'] = identity(h/'execution.json',h/'junit.xml',h/'collection.json')
     (out/'IDENTITIES.json').write_text(json.dumps(identities,indent=2)+'\n')
     author = [row for row in commands if not row['check_id'].endswith('-collection')]
     assert len(author) == 8 and all(row['exit_code'] == 0 for row in author)

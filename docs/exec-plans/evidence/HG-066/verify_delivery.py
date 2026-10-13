@@ -34,6 +34,24 @@ def verify():
         raw = subprocess.check_output(['git', 'show', B + ':' + item['path']], cwd=R)
         assert len(raw) == item['bytes'] and sha(raw) == item['sha256']
         assert (R / item['path']).read_bytes() == raw
+    for item in provenance['source_references']:
+        raw = (R / item['destination']).read_bytes()
+        assert len(raw) == item['bytes'] and sha(raw) == item['sha256']
+        if item['revision'] != 'TASK_DELIVERY':
+            assert subprocess.check_output(['git', 'show', item['revision'] + ':' + item['destination']], cwd=R) == raw
+    promotion = json.loads((E / 'NORMATIVE_PROMOTION.json').read_bytes())
+    for item in promotion['appendices']:
+        before = subprocess.check_output(['git', 'show', B + ':' + item['path']], cwd=R)
+        after = (R / item['path']).read_bytes()
+        assert sha(before) == item['base_sha256'] and len(before) == item['base_bytes']
+        assert after.startswith(before)
+        assert sha(after[len(before):]) == item['append_sha256']
+        assert len(after) - len(before) == item['append_bytes']
+        assert b'normatively incorporates the exact reviewed sources' in after[len(before):]
+    clauses = json.loads((E / 'CLAUSE_SUPERSESSION.json').read_bytes())
+    # Original clauses remain immutable input data. The exact candidate source hash
+    # plus verified base-prefix and promotion bindings preserve the narrow override.
+    assert clauses
     ids = json.loads((E / 'EXPECTED_IDENTITIES.json').read_bytes())
     assert sum(len(s['identities']) for s in ids['suites'][:-1]) == 677
     assert len(ids['suites'][-1]['identities']) == 156
