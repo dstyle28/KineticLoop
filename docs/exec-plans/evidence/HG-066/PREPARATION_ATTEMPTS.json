@@ -1,0 +1,63 @@
+{
+  "attempts": [
+    {
+      "id": "source-compare-1",
+      "exit_code": 1,
+      "purpose": "Affected reversible source bookkeeping probe",
+      "error": "Repeated token replacement reversal; no semantic/model failure. Corrected to exact original line delta reconstruction."
+    },
+    {
+      "id": "native-probe-1",
+      "exit_code": 0,
+      "evidence": "/private/tmp/hg066-precommit-probe1.json",
+      "sha256": "fb4daaade451009505e58398999a43fa2f6df45d4a08ac9e216e9e8e2f0cb4f2"
+    },
+    {
+      "id": "affected-definitions-1",
+      "exit_code": 0,
+      "cases": 833,
+      "phases": 2499,
+      "log_sha256": "1793c6ec6f45906a3f64c0322fbc9ab6e7b5d197008d6e106980018fb7381064",
+      "not_stable_T_acceptance": true
+    },
+    {
+      "id": "affected-validator",
+      "exit_code": 0,
+      "passed": 7,
+      "deselected": 175,
+      "not_full_acceptance": true
+    },
+    {
+      "id": "superseded-T-26c28bac0d69",
+      "tested": "26c28bac0d69589b0beed7a3a9ad4e06ccbfd11a",
+      "driver_exit": 2,
+      "validator_exit": 2,
+      "definition_exit": 0,
+      "reason": "Self-review identified missing explicit portability mapping for exact reviewed inputs references. Validator interrupted by author SIGINT; remaining six checks NOT_RUN. No execution reuse at new T.",
+      "commands_path": "/private/tmp/hg066-author-26c28bac0d69/COMMANDS.json",
+      "commands_sha256": "b13f70a9ce1c8af55fbda2e5516edfbdcf38e31863898ef31dd54bca59588cce"
+    },
+    {
+      "id": "superseded-T-b80309acf4ff",
+      "tested": "b80309acf4ffca8108d80a1dbc17ba1fbc5c2f16",
+      "initial_driver_exit": 2,
+      "continuation_driver_exit": 1,
+      "actual_final_check_exits": {
+        "definitions": 0,
+        "validator": 0,
+        "unit": 0,
+        "harness": 0,
+        "lint": 0,
+        "typecheck": 0,
+        "authority": 0,
+        "diff": 0
+      },
+      "retained_lint_failure_exit": 2,
+      "reason": "Ruff cache permission error was retried at same T with external caches. All eight commands then exited0, but final task-owned postprocessor split delimiters within parameter IDs and failed its comparison. Canonical pytest projection independently matches all1791 actual JUnit identities. Fix helper before new T; no cross-T acceptance reuse.",
+      "commands_sha256": "f3e9bf8f593f517141787390b07344229e9b011b2300d1f5e16368a847d55ac7",
+      "observed_harness_cases": 1791,
+      "acceptance_reuse": false
+    }
+  ],
+  "prior_failures": "HG064/HG065/R1-R4 originals remain preserved; no prior evidence imported or promoted."
+}

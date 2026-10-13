@@ -1,0 +1,98 @@
+{
+  "capture_refs_verified": 113,
+  "definition_command_stream_pairs": 23,
+  "bounded_observers": [
+    "observe_group.py",
+    "observe_provenance.py",
+    "observe_delivery_reviews.py",
+    "preserved-observe_immutable.py",
+    "preserved-observe_inherited_components.py"
+  ],
+  "prior_attempts": [
+    {
+      "T_prefix": "26c28bac0d69",
+      "commands_sha256": "b13f70a9ce1c8af55fbda2e5516edfbdcf38e31863898ef31dd54bca59588cce",
+      "observed_checks": [
+        {
+          "id": "definitions",
+          "exit": 0
+        },
+        {
+          "id": "validator-collection",
+          "exit": 0
+        },
+        {
+          "id": "validator",
+          "exit": 2
+        }
+      ]
+    },
+    {
+      "T_prefix": "b80309acf4ff",
+      "commands_sha256": "f3e9bf8f593f517141787390b07344229e9b011b2300d1f5e16368a847d55ac7",
+      "observed_checks": [
+        {
+          "id": "definitions",
+          "exit": 0
+        },
+        {
+          "id": "validator-collection",
+          "exit": 0
+        },
+        {
+          "id": "validator",
+          "exit": 0
+        },
+        {
+          "id": "unit-collection",
+          "exit": 0
+        },
+        {
+          "id": "unit",
+          "exit": 0
+        },
+        {
+          "id": "harness",
+          "exit": 0
+        },
+        {
+          "id": "lint",
+          "exit": 2
+        },
+        {
+          "id": "lint",
+          "exit": 0
+        },
+        {
+          "id": "typecheck",
+          "exit": 0
+        },
+        {
+          "id": "authority",
+          "exit": 0
+        },
+        {
+          "id": "diff",
+          "exit": 0
+        }
+      ]
+    }
+  ],
+  "b803_canonical_JUnit_pairs": 1791,
+  "b803_naive_pair_symmetric_count": 52,
+  "old_helper_corrected_before_T": true,
+  "original_Q_has_no_HG066_guard_trigger": true,
+  "selected_call_guard_chain": [
+    "change_id == 'HG-058' and git(root, 'ls-tree', governance_base, '--', 'docs/exec-plans/governance/HG-066.yaml').strip()",
+    "not selected",
+    "getattr(args, 'governance_change_id', None)",
+    "args.task_id",
+    "args.protected_base"
+  ],
+  "task_schema_valid": true,
+  "no_cross_T_acceptance": true,
+  "review_probe_attempt1": {
+    "exit": 1,
+    "reason": "Probe treated complete exact-diagnostic nonzero143 as necessarily interrupted; normative contract permits an observed complete nonzero with exact oracle. Revised independent probe marks interrupted=True and complete=False; rejected. No product/source edit."
+  }
+}

@@ -1,0 +1,87 @@
+{
+  "format": "execution-contract-phases-v1",
+  "max_events": 64,
+  "ordered_phases": [
+    "RULE_MERGED",
+    "STAGE_REGRANT",
+    "STAGE_FROZEN",
+    "STAGE_CHECKS",
+    "BOOTSTRAP_REVIEW",
+    "BOOTSTRAP_INSTALL",
+    "PREIMPORT",
+    "IMPORT_RECHECK",
+    "BASE_IMPORT",
+    "STABLE_T",
+    "AUTHOR_CHECKS",
+    "RESULT_R",
+    "TASK_REVIEWS",
+    "REVIEW_SUFFIX",
+    "FINAL_INSTALL",
+    "ADMISSION",
+    "FINAL_ORIGINAL_AND_LIVE",
+    "FINAL_PUBLIC_DENIAL",
+    "WORKER_AND_HOSTED",
+    "FINAL_SNAPSHOT",
+    "NORMAL_MERGE"
+  ],
+  "staging_paths": [
+    "tools/harness/compact_evidence.py",
+    "tools/harness/validate_harness.py",
+    "tools/harness/local_gate.py",
+    "tests/harness/test_compact_evidence.py",
+    "tests/harness/test_review_evidence_provenance.py",
+    "tests/harness/test_m3_milestone_closure.py",
+    "tests/harness/test_validator.py",
+    "tests/harness/test_local_gate.py",
+    "docs/exec-plans/evidence/HG-058/preimport-stage/**"
+  ],
+  "stage_check_ids": [
+    "classifier_regressions",
+    "native_inventory_maps_edges",
+    "custody_156_and_r1",
+    "eight_sources_four_callers_nine_metadata",
+    "ordinary_opaque_separation",
+    "budget_cache_finalization",
+    "private_host_integration",
+    "complete_bundle_authority"
+  ],
+  "assets": [
+    "local_gate.py",
+    "github_app.py",
+    "db_ci.py",
+    "db_policy.py",
+    "db_ci_pytest.py",
+    "validate_harness.py",
+    "compact_evidence.py",
+    "gate_validate.py",
+    "gate_pytest.py",
+    "local_db/Dockerfile",
+    "local_db/entrypoint.sh"
+  ],
+  "implementation_resources": [
+    "harness_core",
+    "harness_governance",
+    "harness_validator",
+    "evidence_storage",
+    "trusted_local_ci_controller"
+  ],
+  "resource_phases": {
+    "PREPARATION": "RELEASED",
+    "STAGING": "EXPLICIT_ROOT_NARROW_REGRANT_REQUIRED",
+    "IMPORT_AND_FINAL_AUTHOR": "NEW_ROOT_CONTINUATION_AFTER_PREIMPORT",
+    "DB_APP": "FREE_UNRESERVED_UNTIL_ACTUAL_FINAL_EXECUTOR_READY"
+  },
+  "original_declaration": "Q",
+  "actual_predecessor": "K",
+  "preimport_interval": [
+    "O",
+    "K"
+  ],
+  "ordered_import_parents": [
+    "K",
+    "P"
+  ],
+  "installed_bootstrap_source": "K",
+  "installed_final_source": "H",
+  "opaque_execution_semantics_unchanged": true
+}

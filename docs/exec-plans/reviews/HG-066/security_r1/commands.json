@@ -1,0 +1,137 @@
+{
+  "reviewed_head_sha": "fbf0b77fa37b51d95e3c2b432e75ecb35f02830a",
+  "focused_execution_exit": 0,
+  "focused_cases": 470,
+  "focused_junit_sha256": "9591c131dd1ee05656e472f80b16b998656d0baffbe2f81cacecfd7d7d8acaa5",
+  "source_probe_exit": 0,
+  "source_probe_cases": [
+    134,
+    73,
+    156
+  ],
+  "independent_probe_exit": 0,
+  "native_audit_exit": 0,
+  "verification_exit": 0,
+  "source_comparison_exit": 0,
+  "scope": "review evidence only; no author acceptance substitution",
+  "reviewer_attempts": [
+    {
+      "probe": "historical naive JUnit reconstruction",
+      "exit_code": 1,
+      "script_sha256": "006fcdc04f52f38da53beec33a4dc3d3d9213c888dd32d1389cc2cbc0ffc1821",
+      "log_sha256": "2cbf3a4681f067510060217025063bae6b153b4892ed0fd73681ab077c0df3fa",
+      "resolution": "Exact old helper expression restored in reviewer probe; corrected run passed. Original task evidence not modified."
+    }
+  ],
+  "historical_driver_sources": [
+    {
+      "path": "/private/tmp/hg066-author-driver-26c28bac0d69.log",
+      "bytes": 49,
+      "sha256": "34a48e15494fa7f98d38a648072af001ed656e4979a272f8c6fa64b9be61c595"
+    },
+    {
+      "path": "/private/tmp/hg066-author-driver-b80309acf4ff.log",
+      "bytes": 91,
+      "sha256": "82638d8fb4444cc297743c3a9f568e6e09c9e699c8c18792555d8d5266802835"
+    },
+    {
+      "path": "/private/tmp/hg066-author-resume-b80309acf4ff.log",
+      "bytes": 454,
+      "sha256": "170b47017af10e02fae4cbd688e760f53c7f66d239c019afecf1c46d92bb8f53"
+    }
+  ],
+  "reviewer_tools": [
+    {
+      "source": "/private/tmp/hg066-security-r1/verify.py",
+      "sha256": "b28b9e1d7766fd47e634f94eb3d9e85448af81fb54111040fb33a6320200207c",
+      "bytes": 9064
+    },
+    {
+      "source": "/private/tmp/hg066-security-r1/source_probes.py",
+      "sha256": "8bf1fd29e312680476f17bc02cc36068350049fd805d7920c0deb7e34f7444bf",
+      "bytes": 2422
+    },
+    {
+      "source": "/private/tmp/hg066-security-r1/independent_probes.py",
+      "sha256": "1fda112c18ce622ec5632489a8866a15fbe213ae43b80d8678de8df7dfb5464d",
+      "bytes": 5434
+    }
+  ],
+  "commands": [
+    {
+      "argv": [
+        "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python",
+        "/private/tmp/hg066-security-r1/verify.py"
+      ],
+      "exit_code": 0,
+      "environment": {
+        "PYTHONDONTWRITEBYTECODE": "1"
+      }
+    },
+    {
+      "argv": [
+        "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python",
+        "/private/tmp/hg066-security-r1/source_probes.py"
+      ],
+      "exit_code": 0,
+      "environment": {
+        "PYTHONDONTWRITEBYTECODE": "1"
+      }
+    },
+    {
+      "argv": [
+        "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python",
+        "/private/tmp/hg066-security-r1/independent_probes.py"
+      ],
+      "exit_code": 0,
+      "environment": {
+        "PYTHONDONTWRITEBYTECODE": "1"
+      }
+    },
+    {
+      "argv": [
+        "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python",
+        "tools/harness/compact_evidence.py",
+        "audit",
+        "--base",
+        "3768c1b4366677934cb952ef808343edcee4e438",
+        "--head",
+        "fbf0b77fa37b51d95e3c2b432e75ecb35f02830a",
+        "--identity",
+        "HG-066"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python",
+        "-m",
+        "pytest",
+        "test_sequence_definition.py",
+        "test_boundaries.py",
+        "test_inventory_mix.py",
+        "test_native_inventory.py",
+        "test_preimport_pairing.py",
+        "test_preimport_exhaustion.py",
+        "-q",
+        "--import-mode=importlib",
+        "--rootdir=.",
+        "--confcutdir=.",
+        "-c",
+        "/dev/null",
+        "-p",
+        "no:cacheprovider",
+        "--basetemp=/private/tmp/hg066-security-r1/pytest-tmp",
+        "--junitxml=/private/tmp/hg066-security-r1/focused.junit.xml"
+      ],
+      "cwd": "/Users/davetian/.codex/worktrees/hg066-multi-owner-contract/KineticLoop/docs/exec-plans/evidence/HG-066",
+      "exit_code": 0,
+      "environment": {
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
+        "PYTHONPATH": "/Users/davetian/.codex/worktrees/hg066-multi-owner-contract/KineticLoop/docs/exec-plans/evidence/HG-066",
+        "EXECUTION_CONTRACT_CAPTURE_DIR": "/private/tmp/hg066-security-r1"
+      }
+    }
+  ]
+}

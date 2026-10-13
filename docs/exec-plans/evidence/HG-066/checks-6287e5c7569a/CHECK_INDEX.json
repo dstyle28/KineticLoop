@@ -1,0 +1,745 @@
+{
+  "base_commit": "3768c1b4366677934cb952ef808343edcee4e438",
+  "tested_commit": "6287e5c7569a5e7553528b28afa5e7ac183b3650",
+  "checks": [
+    {
+      "check_id": "definitions",
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python /Users/davetian/.codex/worktrees/hg066-multi-owner-contract/KineticLoop/docs/exec-plans/evidence/HG-066/verify_definitions.py --base 3768c1b4366677934cb952ef808343edcee4e438 --tested 6287e5c7569a5e7553528b28afa5e7ac183b3650",
+      "result": "PASS",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/definitions.json"
+    },
+    {
+      "check_id": "validator",
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m pytest tests/harness/test_validator.py -q",
+      "result": "PASS",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/validator.json"
+    },
+    {
+      "check_id": "unit",
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli test-unit",
+      "result": "PASS",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/unit.json"
+    },
+    {
+      "check_id": "harness",
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli test-harness --workers 2 --evidence-dir /private/tmp/hg066-author-6287e5c7569a/harness-run",
+      "result": "PASS",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/harness.json"
+    },
+    {
+      "check_id": "lint",
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli lint",
+      "result": "PASS",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/lint.json"
+    },
+    {
+      "check_id": "typecheck",
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli typecheck",
+      "result": "PASS",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/typecheck.json"
+    },
+    {
+      "check_id": "authority",
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli check-harness",
+      "result": "PASS",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/authority.json"
+    },
+    {
+      "check_id": "diff",
+      "command": "git diff --check 3768c1b4366677934cb952ef808343edcee4e438 6287e5c7569a5e7553528b28afa5e7ac183b3650",
+      "result": "PASS",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/diff.json"
+    }
+  ],
+  "capture_manifest": [
+    {
+      "source": "/private/tmp/hg066-author-6287e5c7569a/definitions.log",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/definitions.json",
+      "bytes": 4353,
+      "sha256": "8558386f6275a18b0c4fbd579ad45ff190b52378464ae4720d815096ed6a759a"
+    },
+    {
+      "source": "/private/tmp/hg066-author-6287e5c7569a/validator.log",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/validator.json",
+      "bytes": 355,
+      "sha256": "1bb8eb8afaec68c15c99a4da6f384353decf8c5b62849889a1e0d2fe00bdf95c"
+    },
+    {
+      "source": "/private/tmp/hg066-author-6287e5c7569a/unit.log",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/unit.json",
+      "bytes": 3496,
+      "sha256": "522dd70bb2d1f8ff8388b91ba6b002e5e949ed5fc617760ec8c190085012a6b5"
+    },
+    {
+      "source": "/private/tmp/hg066-author-6287e5c7569a/harness.log",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/harness.json",
+      "bytes": 3211,
+      "sha256": "e5325e21bc77f1f17719a4b903e07b7acd2eaa11c44111d3a260e67461b883ea"
+    },
+    {
+      "source": "/private/tmp/hg066-author-6287e5c7569a/lint.log",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/lint.json",
+      "bytes": 19,
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+    },
+    {
+      "source": "/private/tmp/hg066-author-6287e5c7569a/typecheck.log",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/typecheck.json",
+      "bytes": 45,
+      "sha256": "bad84ae458ed0b1339e9ee07060b39569951bea401de790a17ecace58d345afb"
+    },
+    {
+      "source": "/private/tmp/hg066-author-6287e5c7569a/authority.log",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/authority.json",
+      "bytes": 38,
+      "sha256": "575c27614271c1c49c6a8e1968a2a6c79b664c9c880dde43ec8113846e575f94"
+    },
+    {
+      "source": "/private/tmp/hg066-author-6287e5c7569a/diff.log",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/diff.json",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/hg066-author-6287e5c7569a/COMMANDS.json",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/COMMANDS.json",
+      "bytes": 12654,
+      "sha256": "34e4a30aea40844968dccba4812e1f669ae1544c8dc13d26a722a7fdd29dea7f"
+    },
+    {
+      "source": "/private/tmp/hg066-author-6287e5c7569a/IDENTITIES.json",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/IDENTITIES.json",
+      "bytes": 3403744,
+      "sha256": "08ba603a77d1df29efe2b68348b965ab081fac17efcb268b232e5c4a860212f3"
+    },
+    {
+      "source": "/private/tmp/hg066-author-6287e5c7569a/AUTHOR_RESULT.json",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/AUTHOR_RESULT.json",
+      "bytes": 10636,
+      "sha256": "ddff6cac47087c6a59683e2b48e9b462048b0e6344647ea1c07af18931a208c0"
+    },
+    {
+      "source": "/private/tmp/hg066-author-6287e5c7569a/validator-collection.json",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/validator-collection-json.json",
+      "bytes": 20855,
+      "sha256": "c0b51179ae7b54f5d908b045bd1513a65d12d3f9c79db2334dbaca9e7e7ed724"
+    },
+    {
+      "source": "/private/tmp/hg066-author-6287e5c7569a/validator-execution.json",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/validator-execution-json.json",
+      "bytes": 179791,
+      "sha256": "a6d34136a2c1635fe9005f24bcfdfcd81ff097da509c280fe1030a7e8a6e4d87"
+    },
+    {
+      "source": "/private/tmp/hg066-author-6287e5c7569a/validator.junit.xml",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/validator-junit-xml.json",
+      "bytes": 26484,
+      "sha256": "f1addebfc36a92ecda27d69e32785c4c329d487b8e205ed68a421e2d7efad61d"
+    },
+    {
+      "source": "/private/tmp/hg066-author-6287e5c7569a/validator-collection.log",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/validator-collection-log.json",
+      "bytes": 19131,
+      "sha256": "82875e7123f60b3bb60ab040cbd1a05269c1ff1cd5d0111376fe758e17161a07"
+    },
+    {
+      "source": "/private/tmp/hg066-author-6287e5c7569a/unit-collection.json",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/unit-collection-json.json",
+      "bytes": 26433,
+      "sha256": "aa44ef95cbd9dfea6a741f359cb2c8884c51e7d9c1909eed35d63d526de16280"
+    },
+    {
+      "source": "/private/tmp/hg066-author-6287e5c7569a/unit-execution.json",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/unit-execution-json.json",
+      "bytes": 235702,
+      "sha256": "279a4c000a39c6f8da8c8bf74d9fcee1d26f7dcc3ead8f77039480b3d16e6b18"
+    },
+    {
+      "source": "/private/tmp/hg066-author-6287e5c7569a/unit.junit.xml",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/unit-junit-xml.json",
+      "bytes": 34564,
+      "sha256": "e38137e7b1e14d72277ba73d59968678d78b506bf41c8ccc7cb92841a27090c5"
+    },
+    {
+      "source": "/private/tmp/hg066-author-6287e5c7569a/unit-collection.log",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/unit-collection-log.json",
+      "bytes": 24068,
+      "sha256": "e720ad9b755f529aa6be2eced6aaa756709ca8eefd42f9de116d9ad06e3a78d0"
+    },
+    {
+      "source": "/private/tmp/hg066-author-6287e5c7569a/harness-run/collection.json",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/harness-collection-json.json",
+      "bytes": 3356353,
+      "sha256": "e229040f13101eb5de502a9a5eab63d7ab9416f8aa66a48ed5d52e789ac005b9"
+    },
+    {
+      "source": "/private/tmp/hg066-author-6287e5c7569a/harness-run/collection.log",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/harness-collection-log.json",
+      "bytes": 3210277,
+      "sha256": "490b2e70e26c4303824d4e92a4e7fcfaa5626a787341fc7d7294cf74dd8b89e8"
+    },
+    {
+      "source": "/private/tmp/hg066-author-6287e5c7569a/harness-run/execution.json",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/harness-execution-json.json",
+      "bytes": 20870658,
+      "sha256": "c7615a285c40dcc04784a7e1d3539244cd1be3ce2a033e43d336d2ca70421267"
+    },
+    {
+      "source": "/private/tmp/hg066-author-6287e5c7569a/harness-run/junit.xml",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/harness-junit-xml.json",
+      "bytes": 3588287,
+      "sha256": "25a7ddd49750ec07836c186c07487be5138110c27ea96aaf9d549d78aa4ac595"
+    },
+    {
+      "source": "/private/tmp/hg066-author-6287e5c7569a/harness-run/manifest.json",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/harness-manifest-json.json",
+      "bytes": 2099,
+      "sha256": "e81cd3a657e2ba6d8f0ad47a9aa6c1207058706c09d93f4a364120c75d2d6a77"
+    },
+    {
+      "source": "/private/tmp/hg066-author-6287e5c7569a/harness-run/pytest.log",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/harness-pytest-log.json",
+      "bytes": 3211,
+      "sha256": "e5325e21bc77f1f17719a4b903e07b7acd2eaa11c44111d3a260e67461b883ea"
+    },
+    {
+      "source": "/private/tmp/hg066-definitions-7awzpwuu/COMMANDS.json",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/definitions-COMMANDS-json.json",
+      "bytes": 35537,
+      "sha256": "396eda7372db1c1947c91493311ab01f77b7322a51069ec5d075d2c8348f089b"
+    },
+    {
+      "source": "/private/tmp/hg066-definitions-7awzpwuu/CURRENT_ROOT_UNION_PROOF.json",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/definitions-CURRENT_ROOT_UNION_PROOF-json.json",
+      "bytes": 487052,
+      "sha256": "161682d4b23a3742ea0906dbdd96f050e9b4aa1f9d87f569138c2581f97cf035"
+    },
+    {
+      "source": "/private/tmp/hg066-definitions-7awzpwuu/DELIVERY_REVIEW_OBSERVATIONS.json",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/definitions-DELIVERY_REVIEW_OBSERVATIONS-json.json",
+      "bytes": 36007,
+      "sha256": "9db2ede4c0699e74f61d3a0f33496d607402e3e56503f504cee8f7b3003c00ca"
+    },
+    {
+      "source": "/private/tmp/hg066-definitions-7awzpwuu/FULL_RECEIPT.json",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/definitions-FULL_RECEIPT-json.json",
+      "bytes": 138235,
+      "sha256": "dac4913855e8ef4560230dbe934b86757ae7236737a83ad645e770ffb03fdb5f"
+    },
+    {
+      "source": "/private/tmp/hg066-definitions-7awzpwuu/ORIGINAL_SOURCE_BINDINGS.json",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/definitions-ORIGINAL_SOURCE_BINDINGS-json.json",
+      "bytes": 16198,
+      "sha256": "748a94ea6cc952f9ffba55eaee85d24613f187db9fb020901e740897a3369c40"
+    },
+    {
+      "source": "/private/tmp/hg066-definitions-7awzpwuu/observe_delivery_reviews.py.stderr",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/definitions-observe_delivery_reviews-py-stderr.json",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/hg066-definitions-7awzpwuu/observe_delivery_reviews.py.stdout",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/definitions-observe_delivery_reviews-py-stdout.json",
+      "bytes": 67,
+      "sha256": "cc727ba311d9662cba4d9a9e7d867d0c31cf35ef352b3942dcbd818d96be9d1b"
+    },
+    {
+      "source": "/private/tmp/hg066-definitions-7awzpwuu/observe_group.py.stderr",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/definitions-observe_group-py-stderr.json",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/hg066-definitions-7awzpwuu/observe_group.py.stdout",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/definitions-observe_group-py-stdout.json",
+      "bytes": 368,
+      "sha256": "ee421f1a5cce3736f2ed8e303b62b082e562c444e5e8f0253b20b0e574f1dd29"
+    },
+    {
+      "source": "/private/tmp/hg066-definitions-7awzpwuu/observe_provenance.py.stderr",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/definitions-observe_provenance-py-stderr.json",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/hg066-definitions-7awzpwuu/observe_provenance.py.stdout",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/definitions-observe_provenance-py-stdout.json",
+      "bytes": 123,
+      "sha256": "7e0a363dccf97324786b7e2f3ac25945caa4ebd6a7c0bcceda3f16250790b996"
+    },
+    {
+      "source": "/private/tmp/hg066-definitions-7awzpwuu/preserved-hg065/ACTUAL_CUSTODY_PROOF.json",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/definitions-preserved-hg065-ACTUAL_CUSTODY_PROOF-json.json",
+      "bytes": 254352,
+      "sha256": "f2dba1b021af647cd0dd8525b7d458ffdcd9d3e1136366d807b903ef5b60c024"
+    },
+    {
+      "source": "/private/tmp/hg066-definitions-7awzpwuu/preserved-hg065/ACTUAL_PREPARATION_DISPOSITION.json",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/definitions-preserved-hg065-ACTUAL_PREPARATION_DISPOSITION-json.json",
+      "bytes": 41725,
+      "sha256": "201f52004acd148cfcf289cd63bf12ccb98c5ccec8c2cb9e537dc447d01b7aa9"
+    },
+    {
+      "source": "/private/tmp/hg066-definitions-7awzpwuu/preserved-hg065/IMMUTABLE_COMMAND_READS.json",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/definitions-preserved-hg065-IMMUTABLE_COMMAND_READS-json.json",
+      "bytes": 264727,
+      "sha256": "34565bfa08a6bb545210b5c426771132fcaaf26ca504fe33db9c463d2a903563"
+    },
+    {
+      "source": "/private/tmp/hg066-definitions-7awzpwuu/preserved-hg065/INHERITED_COMPONENT_OBSERVATIONS.json",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/definitions-preserved-hg065-INHERITED_COMPONENT_OBSERVATIONS-json.json",
+      "bytes": 15665,
+      "sha256": "992909dc8d9aa060e0a0768a4151aea7487679e9e6ff2d00554810fc5ee14808"
+    },
+    {
+      "source": "/private/tmp/hg066-definitions-7awzpwuu/preserved-hg065/INHERITED_GIT_INPUTS.json",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/definitions-preserved-hg065-INHERITED_GIT_INPUTS-json.json",
+      "bytes": 7826,
+      "sha256": "56ff55fd942040d1dd0f137f9570031be8e5e5dad917169081c0a3e085ebabcc"
+    },
+    {
+      "source": "/private/tmp/hg066-definitions-7awzpwuu/preserved-hg065/NEW_GIT_INPUTS.json",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/definitions-preserved-hg065-NEW_GIT_INPUTS-json.json",
+      "bytes": 26767,
+      "sha256": "0be21f18d13e0c310e874cfc64dc5c85ae3838fe1148b4c47cdba65d67dbbd88"
+    },
+    {
+      "source": "/private/tmp/hg066-definitions-7awzpwuu/preserved-hg065/test_custody_definition.collection.json",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/definitions-preserved-hg065-test_custody_definition-collection-json.json",
+      "bytes": 16181,
+      "sha256": "bb9d6049d9eb5ca98cf4e082c30e4d2f3b7a8b204691d32ed8f3bed8563fdc41"
+    },
+    {
+      "source": "/private/tmp/hg066-definitions-7awzpwuu/preserved-hg065/test_custody_definition.execution.json",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/definitions-preserved-hg065-test_custody_definition-execution-json.json",
+      "bytes": 109483,
+      "sha256": "3b8284986bbdbca98d2cc4b2880553f835c96ba0befbd347f27082e45d30ecc1"
+    },
+    {
+      "source": "/private/tmp/hg066-definitions-7awzpwuu/preserved-hg065/test_custody_definition.junit.xml",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/definitions-preserved-hg065-test_custody_definition-junit-xml.json",
+      "bytes": 22392,
+      "sha256": "1f5474a5bf74ede981a02595eab1571b2922d727e9e694a1effe678eba7efd03"
+    },
+    {
+      "source": "/private/tmp/hg066-definitions-7awzpwuu/preserved-observe_immutable.py.stderr",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/definitions-preserved-observe_immutable-py-stderr.json",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/hg066-definitions-7awzpwuu/preserved-observe_immutable.py.stdout",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/definitions-preserved-observe_immutable-py-stdout.json",
+      "bytes": 187,
+      "sha256": "45f455b48d70a37db9717b2f6bf62b7a58969543a26605c5f443b1ff5f60e98b"
+    },
+    {
+      "source": "/private/tmp/hg066-definitions-7awzpwuu/preserved-observe_inherited_components.py.stderr",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/definitions-preserved-observe_inherited_components-py-stderr.json",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/hg066-definitions-7awzpwuu/preserved-observe_inherited_components.py.stdout",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/definitions-preserved-observe_inherited_components-py-stdout.json",
+      "bytes": 124,
+      "sha256": "6c77c87d4d2ea1eb91cf07d173831221c27c76e1e877ac3745696a0e470accd3"
+    },
+    {
+      "source": "/private/tmp/hg066-definitions-7awzpwuu/synthetic-child-incomplete/observation.json",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/definitions-synthetic-child-incomplete-observation-json.json",
+      "bytes": 797,
+      "sha256": "400df0a94a0a4d32b39dd68d9946327ec730e69178d92c48a2550cd96a8daee9"
+    },
+    {
+      "source": "/private/tmp/hg066-definitions-7awzpwuu/synthetic-child-timeout/observation.json",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/definitions-synthetic-child-timeout-observation-json.json",
+      "bytes": 794,
+      "sha256": "634809f5684106dc26f4e59d4309b57ae32e87f514e8cea62f5171a3ec7b3a3a"
+    },
+    {
+      "source": "/private/tmp/hg066-definitions-7awzpwuu/synthetic-child-unexpected/observation.json",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/definitions-synthetic-child-unexpected-observation-json.json",
+      "bytes": 797,
+      "sha256": "fac7f9430724a7ed4d12131f458e097330e865ecd8c78b93bce2ccce403694aa"
+    },
+    {
+      "source": "/private/tmp/hg066-definitions-7awzpwuu/synthetic-child-valid/observation.json",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/definitions-synthetic-child-valid-observation-json.json",
+      "bytes": 792,
+      "sha256": "d7e42549407b54665b196ea109eff1f903f8f9fdc34e21bff84c3467613f1027"
+    },
+    {
+      "source": "/private/tmp/hg066-definitions-7awzpwuu/test_boundaries-collection.stderr",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/definitions-test_boundaries-collection-stderr.json",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/hg066-definitions-7awzpwuu/test_boundaries-collection.stdout",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/definitions-test_boundaries-collection-stdout.json",
+      "bytes": 24,
+      "sha256": "b0a62d85bf4e16868792c940cf36accd8522964fb1a2f6b3c55c9748c24d96e5"
+    },
+    {
+      "source": "/private/tmp/hg066-definitions-7awzpwuu/test_boundaries-execution.stderr",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/definitions-test_boundaries-execution-stderr.json",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/hg066-definitions-7awzpwuu/test_boundaries-execution.stdout",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/definitions-test_boundaries-execution-stdout.json",
+      "bytes": 189,
+      "sha256": "0ea02f1b5ce11d8b796761008375f71df181565418e4e0917ea9de694aa346a8"
+    },
+    {
+      "source": "/private/tmp/hg066-definitions-7awzpwuu/test_boundaries.collection.json",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/definitions-test_boundaries-collection-json.json",
+      "bytes": 7476,
+      "sha256": "892db635e51e8b3b41ef3a1215d0d06be620fe0f1f43b53bc5dbf50a87ff2717"
+    },
+    {
+      "source": "/private/tmp/hg066-definitions-7awzpwuu/test_boundaries.execution.json",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/definitions-test_boundaries-execution-json.json",
+      "bytes": 49863,
+      "sha256": "118dea7db3b6b405d32673a75c84f7a336d8eeb091d90379b4cc2cd3e842eb5d"
+    },
+    {
+      "source": "/private/tmp/hg066-definitions-7awzpwuu/test_boundaries.junit.xml",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/definitions-test_boundaries-junit-xml.json",
+      "bytes": 10293,
+      "sha256": "5bb31506a414f8e019ec0359d513cfa96416fec1dc7d6131f9aa9c8ec71d44fb"
+    },
+    {
+      "source": "/private/tmp/hg066-definitions-7awzpwuu/test_custody_definition-collection.stderr",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/definitions-test_custody_definition-collection-stderr.json",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/hg066-definitions-7awzpwuu/test_custody_definition-collection.stdout",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/definitions-test_custody_definition-collection-stdout.json",
+      "bytes": 33,
+      "sha256": "7375e7f4f8f3929753c817d54e94ea88a64da419f62232d96161d3074a939c36"
+    },
+    {
+      "source": "/private/tmp/hg066-definitions-7awzpwuu/test_custody_definition-execution.stderr",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/definitions-test_custody_definition-execution-stderr.json",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/hg066-definitions-7awzpwuu/test_custody_definition-execution.stdout",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/definitions-test_custody_definition-execution-stdout.json",
+      "bytes": 375,
+      "sha256": "e644f96001dad1c85795e7fa45f635fe98ef5b7a0858309e2d3147b1132508a6"
+    },
+    {
+      "source": "/private/tmp/hg066-definitions-7awzpwuu/test_inventory_mix-collection.stderr",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/definitions-test_inventory_mix-collection-stderr.json",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/hg066-definitions-7awzpwuu/test_inventory_mix-collection.stdout",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/definitions-test_inventory_mix-collection-stdout.json",
+      "bytes": 27,
+      "sha256": "0ed79f493fdaa584a30279cefeed7120dea6f6a4586a809c5d74189b6007077c"
+    },
+    {
+      "source": "/private/tmp/hg066-definitions-7awzpwuu/test_inventory_mix-execution.stderr",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/definitions-test_inventory_mix-execution-stderr.json",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/hg066-definitions-7awzpwuu/test_inventory_mix-execution.stdout",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/definitions-test_inventory_mix-execution-stdout.json",
+      "bytes": 192,
+      "sha256": "764cd31583d987a63ffc0e869870de8103951a73c5e48dea1f93d33eb9dc20e0"
+    },
+    {
+      "source": "/private/tmp/hg066-definitions-7awzpwuu/test_inventory_mix.collection.json",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/definitions-test_inventory_mix-collection-json.json",
+      "bytes": 4543,
+      "sha256": "b319cb802b61ab5829569d729f80d8786d4935fafb25ea16ce77f2264a833d5b"
+    },
+    {
+      "source": "/private/tmp/hg066-definitions-7awzpwuu/test_inventory_mix.execution.json",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/definitions-test_inventory_mix-execution-json.json",
+      "bytes": 29833,
+      "sha256": "c5296a2412c5a45cef29f7a1dcebdd27e771c2fb2ccadf7c0569bba77f74cc9c"
+    },
+    {
+      "source": "/private/tmp/hg066-definitions-7awzpwuu/test_inventory_mix.junit.xml",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/definitions-test_inventory_mix-junit-xml.json",
+      "bytes": 6258,
+      "sha256": "46aca50038444b729b97cbc8e8715cfbe325bebd5ed9a5e4faf505aadc396abd"
+    },
+    {
+      "source": "/private/tmp/hg066-definitions-7awzpwuu/test_multi_limits-collection.stderr",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/definitions-test_multi_limits-collection-stderr.json",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/hg066-definitions-7awzpwuu/test_multi_limits-collection.stdout",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/definitions-test_multi_limits-collection-stdout.json",
+      "bytes": 26,
+      "sha256": "9fde16f38e580d596a2a90b7e6c77a57457321561b737d364a6dd46aa3898d78"
+    },
+    {
+      "source": "/private/tmp/hg066-definitions-7awzpwuu/test_multi_limits-execution.stderr",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/definitions-test_multi_limits-execution-stderr.json",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/hg066-definitions-7awzpwuu/test_multi_limits-execution.stdout",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/definitions-test_multi_limits-execution-stdout.json",
+      "bytes": 271,
+      "sha256": "85245f0b54ab950822496d97b0471f3458ab017415973f6f4afb445a288180e0"
+    },
+    {
+      "source": "/private/tmp/hg066-definitions-7awzpwuu/test_multi_limits.collection.json",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/definitions-test_multi_limits-collection-json.json",
+      "bytes": 7401,
+      "sha256": "243e69c0c50a764533a43de47e218a67eeaa19344b1343b157e74ce95d36e247"
+    },
+    {
+      "source": "/private/tmp/hg066-definitions-7awzpwuu/test_multi_limits.execution.json",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/definitions-test_multi_limits-execution-json.json",
+      "bytes": 50228,
+      "sha256": "d12449c22c41c1ec0586b004a278671f490ee961bfcb7abfb0394c54113a0257"
+    },
+    {
+      "source": "/private/tmp/hg066-definitions-7awzpwuu/test_multi_limits.junit.xml",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/definitions-test_multi_limits-junit-xml.json",
+      "bytes": 10370,
+      "sha256": "05e91c668cd0e797be96b7ec358e1bac1266e21de562ba5bfd148568b24ec7ec"
+    },
+    {
+      "source": "/private/tmp/hg066-definitions-7awzpwuu/test_multi_owner-collection.stderr",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/definitions-test_multi_owner-collection-stderr.json",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/hg066-definitions-7awzpwuu/test_multi_owner-collection.stdout",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/definitions-test_multi_owner-collection-stdout.json",
+      "bytes": 26,
+      "sha256": "706f81618f81a7e64df84a473f37bd1ad896490ec52b0b5c3ec31f4554756c59"
+    },
+    {
+      "source": "/private/tmp/hg066-definitions-7awzpwuu/test_multi_owner-execution.stderr",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/definitions-test_multi_owner-execution-stderr.json",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/hg066-definitions-7awzpwuu/test_multi_owner-execution.stdout",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/definitions-test_multi_owner-execution-stdout.json",
+      "bytes": 272,
+      "sha256": "6a7bdfcec3b175e244b942268ebb584774e739fc7a0e6b2d136f95eac4c9d370"
+    },
+    {
+      "source": "/private/tmp/hg066-definitions-7awzpwuu/test_multi_owner.collection.json",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/definitions-test_multi_owner-collection-json.json",
+      "bytes": 12141,
+      "sha256": "0815f299da87e24cb0db90b03a2ed15e0a31caf31fe00eeaa5a69c10f55482f6"
+    },
+    {
+      "source": "/private/tmp/hg066-definitions-7awzpwuu/test_multi_owner.execution.json",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/definitions-test_multi_owner-execution-json.json",
+      "bytes": 85213,
+      "sha256": "532803584f2351ee89d6dddc6c8aaf787efccca04942515a1f76d211bae520a9"
+    },
+    {
+      "source": "/private/tmp/hg066-definitions-7awzpwuu/test_multi_owner.junit.xml",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/definitions-test_multi_owner-junit-xml.json",
+      "bytes": 17430,
+      "sha256": "5bf35a71e2ebff557c2883d4ab158e78721035381a2826038777bf9206b47140"
+    },
+    {
+      "source": "/private/tmp/hg066-definitions-7awzpwuu/test_native_inventory-collection.stderr",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/definitions-test_native_inventory-collection-stderr.json",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/hg066-definitions-7awzpwuu/test_native_inventory-collection.stdout",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/definitions-test_native_inventory-collection-stdout.json",
+      "bytes": 30,
+      "sha256": "53fd38353cc94e124db40bde014a6cdf32fda9f3cb162a9747f63f7ee6b12832"
+    },
+    {
+      "source": "/private/tmp/hg066-definitions-7awzpwuu/test_native_inventory-execution.stderr",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/definitions-test_native_inventory-execution-stderr.json",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/hg066-definitions-7awzpwuu/test_native_inventory-execution.stdout",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/definitions-test_native_inventory-execution-stdout.json",
+      "bytes": 195,
+      "sha256": "d17398e0e8c9e425bccdae8bfe9075e4754f8fead79435068b82f69aaffe6e5f"
+    },
+    {
+      "source": "/private/tmp/hg066-definitions-7awzpwuu/test_native_inventory.collection.json",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/definitions-test_native_inventory-collection-json.json",
+      "bytes": 7122,
+      "sha256": "4a676dacbfed7a9248dfa99ed8a4b45ad99e49760a43e8360fd0b062856df21a"
+    },
+    {
+      "source": "/private/tmp/hg066-definitions-7awzpwuu/test_native_inventory.execution.json",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/definitions-test_native_inventory-execution-json.json",
+      "bytes": 47168,
+      "sha256": "e7c13c5eceabe41fd7be5fb2287a219ae7ece7da5f14f7308b33dfaf1b1c9561"
+    },
+    {
+      "source": "/private/tmp/hg066-definitions-7awzpwuu/test_native_inventory.junit.xml",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/definitions-test_native_inventory-junit-xml.json",
+      "bytes": 9749,
+      "sha256": "e3c292eb97bc5572d0aa5ca82049ea0602dd49f24151ad3af6e1748dfd0df522"
+    },
+    {
+      "source": "/private/tmp/hg066-definitions-7awzpwuu/test_preimport_exhaustion-collection.stderr",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/definitions-test_preimport_exhaustion-collection-stderr.json",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/hg066-definitions-7awzpwuu/test_preimport_exhaustion-collection.stdout",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/definitions-test_preimport_exhaustion-collection-stdout.json",
+      "bytes": 35,
+      "sha256": "0219b351e8557c49ec564778dde44bfbe4f3e695b75d8f1a1f300590290be506"
+    },
+    {
+      "source": "/private/tmp/hg066-definitions-7awzpwuu/test_preimport_exhaustion-execution.stderr",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/definitions-test_preimport_exhaustion-execution-stderr.json",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/hg066-definitions-7awzpwuu/test_preimport_exhaustion-execution.stdout",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/definitions-test_preimport_exhaustion-execution-stdout.json",
+      "bytes": 280,
+      "sha256": "87b76b0b892cd3077e0c93a90f6e422179a12b486747d09b806253bfc99e2a56"
+    },
+    {
+      "source": "/private/tmp/hg066-definitions-7awzpwuu/test_preimport_exhaustion.collection.json",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/definitions-test_preimport_exhaustion-collection-json.json",
+      "bytes": 15610,
+      "sha256": "dbc08229812053269a5818e677549f04541ac696b750fdb703f903f736df1523"
+    },
+    {
+      "source": "/private/tmp/hg066-definitions-7awzpwuu/test_preimport_exhaustion.execution.json",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/definitions-test_preimport_exhaustion-execution-json.json",
+      "bytes": 98488,
+      "sha256": "ce65a0896332b9e7ac666d5f907bd2c241d3767b5fb0840d2af5a0ff1fc53f1d"
+    },
+    {
+      "source": "/private/tmp/hg066-definitions-7awzpwuu/test_preimport_exhaustion.junit.xml",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/definitions-test_preimport_exhaustion-junit-xml.json",
+      "bytes": 20062,
+      "sha256": "8c754728e5759e19f5f869e77766fdd08de15c5fa125b6da724a34653004fa9b"
+    },
+    {
+      "source": "/private/tmp/hg066-definitions-7awzpwuu/test_preimport_pairing-collection.stderr",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/definitions-test_preimport_pairing-collection-stderr.json",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/hg066-definitions-7awzpwuu/test_preimport_pairing-collection.stdout",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/definitions-test_preimport_pairing-collection-stdout.json",
+      "bytes": 31,
+      "sha256": "ac9d6d0990ac422288a987a906564f3c6a605d8fa484bd41c1be8ff931b71167"
+    },
+    {
+      "source": "/private/tmp/hg066-definitions-7awzpwuu/test_preimport_pairing-execution.stderr",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/definitions-test_preimport_pairing-execution-stderr.json",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/hg066-definitions-7awzpwuu/test_preimport_pairing-execution.stdout",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/definitions-test_preimport_pairing-execution-stdout.json",
+      "bytes": 196,
+      "sha256": "f188518e9104966646a900c210ff0baff06af40ff49feee7fbb50029eb861346"
+    },
+    {
+      "source": "/private/tmp/hg066-definitions-7awzpwuu/test_preimport_pairing.collection.json",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/definitions-test_preimport_pairing-collection-json.json",
+      "bytes": 5316,
+      "sha256": "998821b1ed162a799b5af9404961a0df38617023110c9ccfb3fc7195722738a0"
+    },
+    {
+      "source": "/private/tmp/hg066-definitions-7awzpwuu/test_preimport_pairing.execution.json",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/definitions-test_preimport_pairing-execution-json.json",
+      "bytes": 34808,
+      "sha256": "cb854dea7ef5d9cb5acf2a39a3b5fa6c73ae606eb30986753e0ff15d5ff34bbb"
+    },
+    {
+      "source": "/private/tmp/hg066-definitions-7awzpwuu/test_preimport_pairing.junit.xml",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/definitions-test_preimport_pairing-junit-xml.json",
+      "bytes": 7259,
+      "sha256": "9cf03820bf9ad07cf714daedadd62974dea16991f5c2fcb916af62c973dce49a"
+    },
+    {
+      "source": "/private/tmp/hg066-definitions-7awzpwuu/test_sequence_definition-collection.stderr",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/definitions-test_sequence_definition-collection-stderr.json",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/hg066-definitions-7awzpwuu/test_sequence_definition-collection.stdout",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/definitions-test_sequence_definition-collection-stdout.json",
+      "bytes": 34,
+      "sha256": "4a9d46300f5649b6c19ed771513f05d051f09164f10158ac7d1876f51cf3c637"
+    },
+    {
+      "source": "/private/tmp/hg066-definitions-7awzpwuu/test_sequence_definition-execution.stderr",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/definitions-test_sequence_definition-execution-stderr.json",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/hg066-definitions-7awzpwuu/test_sequence_definition-execution.stdout",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/definitions-test_sequence_definition-execution-stdout.json",
+      "bytes": 279,
+      "sha256": "c930a82cbd5d57ff748dcb540174d33afe4678ad9aab67380e1f41e2560c94d0"
+    },
+    {
+      "source": "/private/tmp/hg066-definitions-7awzpwuu/test_sequence_definition.collection.json",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/definitions-test_sequence_definition-collection-json.json",
+      "bytes": 15593,
+      "sha256": "5b14150efef18c2aeaa15d77193abc45f77d7a3952152388f124a494c3bd73bb"
+    },
+    {
+      "source": "/private/tmp/hg066-definitions-7awzpwuu/test_sequence_definition.execution.json",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/definitions-test_sequence_definition-execution-json.json",
+      "bytes": 103398,
+      "sha256": "9885168944460de3ec352e5a94a2b0c59413e2ae412334fc72b66357503cc054"
+    },
+    {
+      "source": "/private/tmp/hg066-definitions-7awzpwuu/test_sequence_definition.junit.xml",
+      "evidence_ref": "docs/exec-plans/evidence/HG-066/checks-6287e5c7569a/definitions-test_sequence_definition-junit-xml.json",
+      "bytes": 21071,
+      "sha256": "48bf2c397943527db3a532d9027b4d55a060219dc3fd53c78afcc1390fc7e81f"
+    }
+  ],
+  "definition_identities": {
+    "prospective": 677,
+    "preserved_v1": 156,
+    "phases": 2499
+  },
+  "limitations": [
+    "Actual K/H native inventory NOT_RUN; all22 budget feasibility NOT_DETERMINED.",
+    "Historical execution UNVERIFIED; acceptance_eligible=false; execution_reuse=false.",
+    "Installed/private/admission/App/DB/cleanup/hosted/merge NOT_RUN."
+  ],
+  "failed_attempts": "External preparation attempts preserved; no failed storage bytes committed."
+}

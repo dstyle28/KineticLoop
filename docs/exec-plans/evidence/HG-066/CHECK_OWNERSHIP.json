@@ -1,0 +1,478 @@
+{
+  "format": "execution-contract-check-ownership-v1",
+  "author_required": [
+    {
+      "check_id": "compact",
+      "command_template": "uv run pytest tests/harness/test_compact_evidence.py -q",
+      "owner": "AUTHOR",
+      "phase": "T",
+      "tested_binding": "T",
+      "evidence_revision": "R",
+      "observed_exit": 0,
+      "bootstrap_reuse": false,
+      "positive_identity_obligation": "COLLECTION_EXECUTION_PHASE_JUNIT_EQUAL_NONEMPTY"
+    },
+    {
+      "check_id": "provenance_m3_validator",
+      "command_template": "uv run pytest tests/harness/test_review_evidence_provenance.py tests/harness/test_m3_milestone_closure.py tests/harness/test_validator.py -q",
+      "owner": "AUTHOR",
+      "phase": "T",
+      "tested_binding": "T",
+      "evidence_revision": "R",
+      "observed_exit": 0,
+      "bootstrap_reuse": false,
+      "positive_identity_obligation": "COLLECTION_EXECUTION_PHASE_JUNIT_EQUAL_NONEMPTY"
+    },
+    {
+      "check_id": "local_gate",
+      "command_template": "uv run pytest tests/harness/test_local_gate.py -q",
+      "owner": "AUTHOR",
+      "phase": "T",
+      "tested_binding": "T",
+      "evidence_revision": "R",
+      "observed_exit": 0,
+      "bootstrap_reuse": false,
+      "positive_identity_obligation": "COLLECTION_EXECUTION_PHASE_JUNIT_EQUAL_NONEMPTY"
+    },
+    {
+      "check_id": "compatibility",
+      "command_template": "uv run python docs/exec-plans/evidence/HG-058/verify_compatibility.py --base {P} --tested {T}",
+      "owner": "AUTHOR",
+      "phase": "T",
+      "tested_binding": "T",
+      "evidence_revision": "R",
+      "observed_exit": 0,
+      "bootstrap_reuse": false,
+      "positive_identity_obligation": "COMPLETE_COMMAND_SPECIFIC_ORACLE"
+    },
+    {
+      "check_id": "scope",
+      "command_template": "uv run python docs/exec-plans/evidence/HG-058/verify_scope.py --base {P} --tested {T}",
+      "owner": "AUTHOR",
+      "phase": "T",
+      "tested_binding": "T",
+      "evidence_revision": "R",
+      "observed_exit": 0,
+      "bootstrap_reuse": false,
+      "positive_identity_obligation": "COMPLETE_COMMAND_SPECIFIC_ORACLE"
+    },
+    {
+      "check_id": "unit",
+      "command_template": "uv run kl test-unit",
+      "owner": "AUTHOR",
+      "phase": "T",
+      "tested_binding": "T",
+      "evidence_revision": "R",
+      "observed_exit": 0,
+      "bootstrap_reuse": false,
+      "positive_identity_obligation": "COLLECTION_EXECUTION_PHASE_JUNIT_EQUAL_NONEMPTY"
+    },
+    {
+      "check_id": "harness",
+      "command_template": "uv run kl test-harness --workers 2 --evidence-dir {unique_scratch}",
+      "owner": "AUTHOR",
+      "phase": "T",
+      "tested_binding": "T",
+      "evidence_revision": "R",
+      "observed_exit": 0,
+      "bootstrap_reuse": false,
+      "positive_identity_obligation": "COLLECTION_EXECUTION_PHASE_JUNIT_EQUAL_NONEMPTY"
+    },
+    {
+      "check_id": "lint",
+      "command_template": "uv run kl lint",
+      "owner": "AUTHOR",
+      "phase": "T",
+      "tested_binding": "T",
+      "evidence_revision": "R",
+      "observed_exit": 0,
+      "bootstrap_reuse": false,
+      "positive_identity_obligation": "COMPLETE_COMMAND_SPECIFIC_ORACLE"
+    },
+    {
+      "check_id": "typecheck",
+      "command_template": "uv run kl typecheck",
+      "owner": "AUTHOR",
+      "phase": "T",
+      "tested_binding": "T",
+      "evidence_revision": "R",
+      "observed_exit": 0,
+      "bootstrap_reuse": false,
+      "positive_identity_obligation": "COMPLETE_COMMAND_SPECIFIC_ORACLE"
+    },
+    {
+      "check_id": "global_inventory",
+      "command_template": "uv run kl check-harness",
+      "owner": "AUTHOR",
+      "phase": "T",
+      "tested_binding": "T",
+      "evidence_revision": "R",
+      "observed_exit": 0,
+      "bootstrap_reuse": false,
+      "positive_identity_obligation": "COMPLETE_COMMAND_SPECIFIC_ORACLE"
+    },
+    {
+      "check_id": "diff",
+      "command_template": "git diff --check {P} {T}",
+      "owner": "AUTHOR",
+      "phase": "T",
+      "tested_binding": "T",
+      "evidence_revision": "R",
+      "observed_exit": 0,
+      "bootstrap_reuse": false,
+      "positive_identity_obligation": "COMPLETE_COMMAND_SPECIFIC_ORACLE"
+    },
+    {
+      "check_id": "public_original_denial",
+      "command_template": "uv run python docs/exec-plans/evidence/HG-058/verify_public_original_denial.py --base {O} --tested {T}",
+      "owner": "AUTHOR",
+      "phase": "T",
+      "tested_binding": "T",
+      "evidence_revision": "R",
+      "observed_exit": 0,
+      "bootstrap_reuse": false,
+      "positive_identity_obligation": "COMPLETE_COMMAND_SPECIFIC_ORACLE"
+    },
+    {
+      "check_id": "strict_live_audit",
+      "command_template": "python tools/harness/compact_evidence.py audit --base {P} --head {T} --identity HG-058",
+      "owner": "AUTHOR",
+      "phase": "T",
+      "tested_binding": "T",
+      "evidence_revision": "R",
+      "observed_exit": 0,
+      "bootstrap_reuse": false,
+      "positive_identity_obligation": "COMPLETE_COMMAND_SPECIFIC_ORACLE"
+    },
+    {
+      "check_id": "custody_group",
+      "command_template": "uv run pytest tests/harness/test_compact_evidence.py::TestRetainedCustodyGroup -q",
+      "owner": "AUTHOR",
+      "phase": "T",
+      "tested_binding": "T",
+      "evidence_revision": "R",
+      "observed_exit": 0,
+      "bootstrap_reuse": false,
+      "positive_identity_obligation": "COLLECTION_EXECUTION_PHASE_JUNIT_EQUAL_NONEMPTY"
+    },
+    {
+      "check_id": "custody_opaque",
+      "command_template": "uv run pytest tests/harness/test_compact_evidence.py::TestRetainedCustodyOpaque -q",
+      "owner": "AUTHOR",
+      "phase": "T",
+      "tested_binding": "T",
+      "evidence_revision": "R",
+      "observed_exit": 0,
+      "bootstrap_reuse": false,
+      "positive_identity_obligation": "COLLECTION_EXECUTION_PHASE_JUNIT_EQUAL_NONEMPTY"
+    },
+    {
+      "check_id": "custody_native",
+      "command_template": "uv run pytest tests/harness/test_compact_evidence.py::TestRetainedCustodyNative -q",
+      "owner": "AUTHOR",
+      "phase": "T",
+      "tested_binding": "T",
+      "evidence_revision": "R",
+      "observed_exit": 0,
+      "bootstrap_reuse": false,
+      "positive_identity_obligation": "COLLECTION_EXECUTION_PHASE_JUNIT_EQUAL_NONEMPTY"
+    },
+    {
+      "check_id": "custody_budget",
+      "command_template": "uv run pytest tests/harness/test_compact_evidence.py::TestRetainedCustodyBudget -q",
+      "owner": "AUTHOR",
+      "phase": "T",
+      "tested_binding": "T",
+      "evidence_revision": "R",
+      "observed_exit": 0,
+      "bootstrap_reuse": false,
+      "positive_identity_obligation": "COLLECTION_EXECUTION_PHASE_JUNIT_EQUAL_NONEMPTY"
+    },
+    {
+      "check_id": "private_host",
+      "command_template": "uv run pytest tests/harness/test_local_gate.py::TestRetainedCustodyPrivateHost -q",
+      "owner": "AUTHOR",
+      "phase": "T",
+      "tested_binding": "T",
+      "evidence_revision": "R",
+      "observed_exit": 0,
+      "bootstrap_reuse": false,
+      "positive_identity_obligation": "COLLECTION_EXECUTION_PHASE_JUNIT_EQUAL_NONEMPTY"
+    },
+    {
+      "check_id": "routing_preservation",
+      "command_template": "uv run pytest tests/harness/test_review_evidence_provenance.py::TestHG058RoutingPreservation tests/harness/test_validator.py::TestHG058RoutingPreservation -q",
+      "owner": "AUTHOR",
+      "phase": "T",
+      "tested_binding": "T",
+      "evidence_revision": "R",
+      "observed_exit": 0,
+      "bootstrap_reuse": false,
+      "positive_identity_obligation": "COLLECTION_EXECUTION_PHASE_JUNIT_EQUAL_NONEMPTY"
+    },
+    {
+      "check_id": "original_map_edges",
+      "command_template": "uv run pytest tests/harness/test_compact_evidence.py::TestHG058OriginalMapEdges -q",
+      "owner": "AUTHOR",
+      "phase": "T",
+      "tested_binding": "T",
+      "evidence_revision": "R",
+      "observed_exit": 0,
+      "bootstrap_reuse": false,
+      "positive_identity_obligation": "COLLECTION_EXECUTION_PHASE_JUNIT_EQUAL_NONEMPTY"
+    }
+  ],
+  "root_required": [
+    {
+      "gate_id": "complete_baseline_installation",
+      "owner": "ROOT",
+      "phase": "PREIMPORT_K",
+      "selected_checks_run": false,
+      "author_index_state": "PENDING_EXTERNAL_OBSERVATION",
+      "evidence_store": "ROOT_PRIVATE_OUTSIDE_GIT",
+      "hard_prerequisite": true
+    },
+    {
+      "gate_id": "bootstrap_complete_installation_reviews",
+      "owner": "ROOT",
+      "phase": "PREIMPORT_K",
+      "selected_checks_run": false,
+      "author_index_state": "PENDING_EXTERNAL_OBSERVATION",
+      "evidence_store": "ROOT_PRIVATE_OUTSIDE_GIT",
+      "hard_prerequisite": true
+    },
+    {
+      "gate_id": "bootstrap_installation",
+      "owner": "ROOT",
+      "phase": "PREIMPORT_K",
+      "selected_checks_run": false,
+      "author_index_state": "PENDING_EXTERNAL_OBSERVATION",
+      "evidence_store": "ROOT_PRIVATE_OUTSIDE_GIT",
+      "hard_prerequisite": true
+    },
+    {
+      "gate_id": "preimport_full_original_K",
+      "owner": "ROOT",
+      "phase": "PREIMPORT_K",
+      "selected_checks_run": false,
+      "author_index_state": "PENDING_EXTERNAL_OBSERVATION",
+      "evidence_store": "ROOT_PRIVATE_OUTSIDE_GIT",
+      "hard_prerequisite": true
+    },
+    {
+      "gate_id": "import_boundary_recheck_and_grant",
+      "owner": "ROOT",
+      "phase": "PREIMPORT_K",
+      "selected_checks_run": false,
+      "author_index_state": "PENDING_EXTERNAL_OBSERVATION",
+      "evidence_store": "ROOT_PRIVATE_OUTSIDE_GIT",
+      "hard_prerequisite": true
+    },
+    {
+      "gate_id": "final_complete_installation_reviews",
+      "owner": "ROOT",
+      "phase": "FINAL_H",
+      "selected_checks_run": false,
+      "author_index_state": "PENDING_EXTERNAL_OBSERVATION",
+      "evidence_store": "ROOT_PRIVATE_OUTSIDE_GIT",
+      "hard_prerequisite": true
+    },
+    {
+      "gate_id": "final_installation",
+      "owner": "ROOT",
+      "phase": "FINAL_H",
+      "selected_checks_run": false,
+      "author_index_state": "PENDING_EXTERNAL_OBSERVATION",
+      "evidence_store": "ROOT_PRIVATE_OUTSIDE_GIT",
+      "hard_prerequisite": true
+    },
+    {
+      "gate_id": "exact_admission",
+      "owner": "ROOT",
+      "phase": "FINAL_H",
+      "selected_checks_run": false,
+      "author_index_state": "PENDING_EXTERNAL_OBSERVATION",
+      "evidence_store": "ROOT_PRIVATE_OUTSIDE_GIT",
+      "hard_prerequisite": true
+    },
+    {
+      "gate_id": "final_private_original_H",
+      "owner": "ROOT",
+      "phase": "FINAL_H",
+      "selected_checks_run": false,
+      "author_index_state": "PENDING_EXTERNAL_OBSERVATION",
+      "evidence_store": "ROOT_PRIVATE_OUTSIDE_GIT",
+      "hard_prerequisite": true
+    },
+    {
+      "gate_id": "final_strict_live_H",
+      "owner": "ROOT",
+      "phase": "FINAL_H",
+      "selected_checks_run": false,
+      "author_index_state": "PENDING_EXTERNAL_OBSERVATION",
+      "evidence_store": "ROOT_PRIVATE_OUTSIDE_GIT",
+      "hard_prerequisite": true
+    },
+    {
+      "gate_id": "final_public_original_denial_H",
+      "owner": "ROOT",
+      "phase": "FINAL_H",
+      "selected_checks_run": false,
+      "author_index_state": "PENDING_EXTERNAL_OBSERVATION",
+      "evidence_store": "ROOT_PRIVATE_OUTSIDE_GIT",
+      "hard_prerequisite": true
+    },
+    {
+      "gate_id": "final_selected_ci_pr_H",
+      "owner": "ROOT",
+      "phase": "FINAL_H",
+      "selected_checks_run": false,
+      "author_index_state": "PENDING_EXTERNAL_OBSERVATION",
+      "evidence_store": "ROOT_PRIVATE_OUTSIDE_GIT",
+      "hard_prerequisite": true
+    },
+    {
+      "gate_id": "app_unit",
+      "owner": "ROOT",
+      "phase": "FINAL_H",
+      "selected_checks_run": false,
+      "author_index_state": "PENDING_EXTERNAL_OBSERVATION",
+      "evidence_store": "ROOT_PRIVATE_OUTSIDE_GIT",
+      "hard_prerequisite": true
+    },
+    {
+      "gate_id": "app_harness",
+      "owner": "ROOT",
+      "phase": "FINAL_H",
+      "selected_checks_run": false,
+      "author_index_state": "PENDING_EXTERNAL_OBSERVATION",
+      "evidence_store": "ROOT_PRIVATE_OUTSIDE_GIT",
+      "hard_prerequisite": true
+    },
+    {
+      "gate_id": "app_full_database",
+      "owner": "ROOT",
+      "phase": "FINAL_H",
+      "selected_checks_run": false,
+      "author_index_state": "PENDING_EXTERNAL_OBSERVATION",
+      "evidence_store": "ROOT_PRIVATE_OUTSIDE_GIT",
+      "hard_prerequisite": true
+    },
+    {
+      "gate_id": "cleanup",
+      "owner": "ROOT",
+      "phase": "FINAL_H",
+      "selected_checks_run": false,
+      "author_index_state": "PENDING_EXTERNAL_OBSERVATION",
+      "evidence_store": "ROOT_PRIVATE_OUTSIDE_GIT",
+      "hard_prerequisite": true
+    },
+    {
+      "gate_id": "live_hosted_required",
+      "owner": "ROOT",
+      "phase": "FINAL_H",
+      "selected_checks_run": false,
+      "author_index_state": "PENDING_EXTERNAL_OBSERVATION",
+      "evidence_store": "ROOT_PRIVATE_OUTSIDE_GIT",
+      "hard_prerequisite": true
+    },
+    {
+      "gate_id": "final_snapshot",
+      "owner": "ROOT",
+      "phase": "FINAL_H",
+      "selected_checks_run": false,
+      "author_index_state": "PENDING_EXTERNAL_OBSERVATION",
+      "evidence_store": "ROOT_PRIVATE_OUTSIDE_GIT",
+      "hard_prerequisite": true
+    },
+    {
+      "gate_id": "normal_merge",
+      "owner": "ROOT",
+      "phase": "FINAL_H",
+      "selected_checks_run": false,
+      "author_index_state": "PENDING_EXTERNAL_OBSERVATION",
+      "evidence_store": "ROOT_PRIVATE_OUTSIDE_GIT",
+      "hard_prerequisite": true
+    }
+  ],
+  "public_original_child": {
+    "command_template": "python tools/harness/compact_evidence.py audit --base {O} --head {T_or_H} --identity HG-058",
+    "observed_exit": "INTEGER_NONZERO",
+    "meaning": "EXPECTED_NATIVE_DENIAL_NOT_PASS",
+    "containing_check": "public_original_denial",
+    "private_receipt_input": false
+  },
+  "final_ci_pr": {
+    "command_template": "uv run kl check-harness --ci-pr-base {P} --ci-pr-head {H}",
+    "owner": "ROOT",
+    "phase": "FINAL_H",
+    "enforced_again_by": "UNCHANGED_INSTALLED_WORKER"
+  },
+  "stage_required": [
+    {
+      "check_id": "classifier_regressions",
+      "owner": "AUTHOR",
+      "phase": "K_PREPARATORY",
+      "observed_exit": 0,
+      "selected_checks_run": false,
+      "reuse_for_T": false
+    },
+    {
+      "check_id": "native_inventory_maps_edges",
+      "owner": "AUTHOR",
+      "phase": "K_PREPARATORY",
+      "observed_exit": 0,
+      "selected_checks_run": false,
+      "reuse_for_T": false
+    },
+    {
+      "check_id": "custody_156_and_r1",
+      "owner": "AUTHOR",
+      "phase": "K_PREPARATORY",
+      "observed_exit": 0,
+      "selected_checks_run": false,
+      "reuse_for_T": false
+    },
+    {
+      "check_id": "eight_sources_four_callers_nine_metadata",
+      "owner": "AUTHOR",
+      "phase": "K_PREPARATORY",
+      "observed_exit": 0,
+      "selected_checks_run": false,
+      "reuse_for_T": false
+    },
+    {
+      "check_id": "ordinary_opaque_separation",
+      "owner": "AUTHOR",
+      "phase": "K_PREPARATORY",
+      "observed_exit": 0,
+      "selected_checks_run": false,
+      "reuse_for_T": false
+    },
+    {
+      "check_id": "budget_cache_finalization",
+      "owner": "AUTHOR",
+      "phase": "K_PREPARATORY",
+      "observed_exit": 0,
+      "selected_checks_run": false,
+      "reuse_for_T": false
+    },
+    {
+      "check_id": "private_host_integration",
+      "owner": "AUTHOR",
+      "phase": "K_PREPARATORY",
+      "observed_exit": 0,
+      "selected_checks_run": false,
+      "reuse_for_T": false
+    },
+    {
+      "check_id": "complete_bundle_authority",
+      "owner": "AUTHOR",
+      "phase": "K_PREPARATORY",
+      "observed_exit": 0,
+      "selected_checks_run": false,
+      "reuse_for_T": false
+    }
+  ],
+  "complete_multi_owner_v2_regressions": "Mandatory generic>=3/complete current root union, every-owner declaration/delivery/history/byte/reference hostile cases, shared budgets/cache/output/public oracle and all156 preserved R1/R2 obligations; no fixed owner/hash count oracle."
+}

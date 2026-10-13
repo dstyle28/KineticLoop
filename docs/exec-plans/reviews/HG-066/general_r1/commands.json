@@ -1,0 +1,88 @@
+{
+  "cwd": "/Users/davetian/.codex/worktrees/hg066-multi-owner-contract/KineticLoop",
+  "reviewed_head_sha": "fbf0b77fa37b51d95e3c2b432e75ecb35f02830a",
+  "commands": [
+    {
+      "argv": [
+        "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python",
+        "-m",
+        "pytest",
+        "-p",
+        "no:cacheprovider",
+        "tests/harness/test_validator.py",
+        "-q",
+        "-k",
+        "hg066 or HG058ProspectiveChecks or hg058_scope_is_literal",
+        "--junitxml=/private/tmp/hg066-general-r1/focused.xml"
+      ],
+      "environment": {
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "PYTHONPATH": ".:src",
+        "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1"
+      },
+      "observed_exit": 0,
+      "result": "7 passed; 175 deselected (intentional affected-only review selection)"
+    },
+    {
+      "argv": [
+        "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python",
+        "/private/tmp/hg066-general-r1/verify.py"
+      ],
+      "environment": {
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "observed_exit": 0
+    },
+    {
+      "argv": [
+        "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python",
+        "/private/tmp/hg066-general-r1/probes-attempt1.py"
+      ],
+      "environment": {
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "observed_exit": 1
+    },
+    {
+      "argv": [
+        "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python",
+        "/private/tmp/hg066-general-r1/probes.py"
+      ],
+      "environment": {
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "observed_exit": 0
+    },
+    {
+      "argv": [
+        "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python",
+        "/private/tmp/hg066-general-r1/supplement.py"
+      ],
+      "environment": {
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "observed_exit": 0
+    },
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--check",
+        "3768c1b4366677934cb952ef808343edcee4e438",
+        "fbf0b77fa37b51d95e3c2b432e75ecb35f02830a"
+      ],
+      "observed_exit": 0
+    },
+    {
+      "argv": [
+        "git",
+        "status",
+        "--short"
+      ],
+      "observed_exit": 0,
+      "stdout": ""
+    }
+  ],
+  "attempt1_retained": true,
+  "attempt1_note": "Original invocation used probes.py; preserved bytes are now probes-attempt1.py. Corrected only reviewer expectation; implementation unchanged."
+}

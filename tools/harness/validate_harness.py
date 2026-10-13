@@ -1498,7 +1498,7 @@ def governance_record_paths(change_id):
 
 # Literal prospective scopes; HG057 never implements the HG058 reader purpose.
 HG057_ALLOWED_PATTERNS = ['KineticLoop_Harness_Backlog_v0.2.json', 'KineticLoop_Harness_Traceability_v0.3.json', '06_KineticLoop_Project_Plan_v0.6_HARNESS_HARDENED.md', 'docs/exec-plans/active/KL-036.md', 'docs/exec-plans/active/KL-038.md', 'docs/exec-plans/active/KL-039.md', 'docs/exec-plans/active/KL-064.md', 'docs/exec-plans/active/KL-081.md', 'docs/exec-plans/active/HG-058.md', 'docs/harness/HARNESS_GOVERNANCE_CONTRACT.md', 'tools/harness/validate_harness.py', 'tests/harness/test_validator.py', 'CURRENT_DOCUMENT_INDEX.json', 'HARNESS_DOCUMENT_MANIFEST.json', 'docs/exec-plans/governance/HG-057.yaml', 'docs/exec-plans/evidence/HG-057/**', 'docs/exec-plans/reviews/HG-057/**']
-HG058_ALLOWED_PATTERNS = ['tools/harness/compact_evidence.py', 'tools/harness/validate_harness.py', 'tests/harness/test_compact_evidence.py', 'tests/harness/test_review_evidence_provenance.py', 'tests/harness/test_m3_milestone_closure.py', 'tests/harness/test_validator.py', 'tests/harness/test_local_gate.py', 'docs/harness/EVIDENCE_STORAGE_POLICY.md', 'docs/harness/THREAD_REVIEW_CONTRACT.md', 'docs/harness/HARNESS_GOVERNANCE_CONTRACT.md', 'CURRENT_DOCUMENT_INDEX.json', 'HARNESS_DOCUMENT_MANIFEST.json', 'docs/exec-plans/governance/HG-058.yaml', 'docs/exec-plans/evidence/HG-058/**', 'docs/exec-plans/reviews/HG-058/**']
+HG058_ALLOWED_PATTERNS = ['tools/harness/compact_evidence.py', 'tools/harness/validate_harness.py', 'tests/harness/test_compact_evidence.py', 'tests/harness/test_review_evidence_provenance.py', 'tests/harness/test_m3_milestone_closure.py', 'tests/harness/test_validator.py', 'tests/harness/test_local_gate.py', 'docs/harness/EVIDENCE_STORAGE_POLICY.md', 'docs/harness/THREAD_REVIEW_CONTRACT.md', 'docs/harness/HARNESS_GOVERNANCE_CONTRACT.md', 'CURRENT_DOCUMENT_INDEX.json', 'HARNESS_DOCUMENT_MANIFEST.json', 'docs/exec-plans/governance/HG-058.yaml', 'docs/exec-plans/evidence/HG-058/**', 'docs/exec-plans/reviews/HG-058/**', 'tools/harness/local_gate.py']
 HG059_ALLOWED_PATTERNS = [
     'REVIEW_SOURCE_DECLARATIONS.schema.json', 'docs/harness/REVIEW_SOURCE_DECLARATIONS.json',
     'docs/harness/THREAD_REVIEW_CONTRACT.md', 'docs/harness/HARNESS_GOVERNANCE_CONTRACT.md',
@@ -1513,6 +1513,14 @@ HG060_ALLOWED_PATTERNS = [
     'tools/harness/validate_harness.py', 'tests/harness/test_validator.py',
     INDEX, MANIFEST, 'docs/exec-plans/governance/HG-060.yaml',
     'docs/exec-plans/evidence/HG-060/**', 'docs/exec-plans/reviews/HG-060/**']
+HG066_ALLOWED_PATTERNS = [
+    'docs/harness/EVIDENCE_STORAGE_POLICY.md', 'docs/harness/LOCAL_DB_CI.md',
+    'docs/harness/HARNESS_GOVERNANCE_CONTRACT.md', 'docs/exec-plans/active/HG-058.md',
+    'tools/harness/validate_harness.py', 'tests/harness/test_validator.py',
+    INDEX, MANIFEST, 'docs/exec-plans/governance/HG-066.yaml',
+    'docs/exec-plans/evidence/HG-066/**', 'docs/exec-plans/reviews/HG-066/**']
+HG066_REQUIRED_CHECKS = {'definitions', 'validator', 'unit', 'harness', 'lint',
+                         'typecheck', 'authority', 'diff'}
 HG065_ALLOWED_PATTERNS = [
     'docs/harness/EVIDENCE_STORAGE_POLICY.md', 'docs/harness/LOCAL_DB_CI.md',
     'docs/harness/HARNESS_GOVERNANCE_CONTRACT.md', 'docs/exec-plans/active/HG-058.md',
@@ -1676,7 +1684,50 @@ def retained_custody_projection_errors(record, changed_task_ids):
     return errors
 
 
+def multi_owner_projection_errors(record, changed_task_ids):
+    """HG066 definitions only; retained custody implementation belongs to HG058."""
+    errors = []
+    check_ids = [check['check_id'] for check in record['checks_run']]
+    if (set(check_ids) != HG066_REQUIRED_CHECKS
+            or len(check_ids) != len(HG066_REQUIRED_CHECKS)):
+        errors.append('multi-owner-required-checks')
+    if record.get('authority_entries_added', []):
+        errors.append('multi-owner-authority-projection')
+    if changed_task_ids or record['packets_refined']:
+        errors.append('multi-owner-task-projection')
+    return errors
+
+
+HG058_AUTHOR_COMMANDS = {'compact': 'uv run pytest tests/harness/test_compact_evidence.py -q', 'provenance_m3_validator': 'uv run pytest tests/harness/test_review_evidence_provenance.py tests/harness/test_m3_milestone_closure.py tests/harness/test_validator.py -q', 'local_gate': 'uv run pytest tests/harness/test_local_gate.py -q', 'compatibility': 'uv run python docs/exec-plans/evidence/HG-058/verify_compatibility.py --base {P} --tested {T}', 'scope': 'uv run python docs/exec-plans/evidence/HG-058/verify_scope.py --base {P} --tested {T}', 'unit': 'uv run kl test-unit', 'harness': 'uv run kl test-harness --workers 2 --evidence-dir {unique_scratch}', 'lint': 'uv run kl lint', 'typecheck': 'uv run kl typecheck', 'global_inventory': 'uv run kl check-harness', 'diff': 'git diff --check {P} {T}', 'public_original_denial': 'uv run python docs/exec-plans/evidence/HG-058/verify_public_original_denial.py --base {O} --tested {T}', 'strict_live_audit': 'python tools/harness/compact_evidence.py audit --base {P} --head {T} --identity HG-058', 'custody_group': 'uv run pytest tests/harness/test_compact_evidence.py::TestRetainedCustodyGroup -q', 'custody_opaque': 'uv run pytest tests/harness/test_compact_evidence.py::TestRetainedCustodyOpaque -q', 'custody_native': 'uv run pytest tests/harness/test_compact_evidence.py::TestRetainedCustodyNative -q', 'custody_budget': 'uv run pytest tests/harness/test_compact_evidence.py::TestRetainedCustodyBudget -q', 'private_host': 'uv run pytest tests/harness/test_local_gate.py::TestRetainedCustodyPrivateHost -q', 'routing_preservation': 'uv run pytest tests/harness/test_review_evidence_provenance.py::TestHG058RoutingPreservation tests/harness/test_validator.py::TestHG058RoutingPreservation -q', 'original_map_edges': 'uv run pytest tests/harness/test_compact_evidence.py::TestHG058OriginalMapEdges -q'}
+
+def hg058_selected_check_errors(record):
+    """Only prospective selected acceptance; root external gates are not task rows."""
+    errors = []
+    rows = record['checks_run']
+    ids = [row['check_id'] for row in rows]
+    if set(ids) != set(HG058_AUTHOR_COMMANDS) or len(ids) != len(HG058_AUTHOR_COMMANDS):
+        errors.append('hg058-author-required-checks')
+    for row in rows:
+        template = HG058_AUTHOR_COMMANDS.get(row['check_id'])
+        if template is None:
+            continue
+        command = template.replace('{P}', record['base_commit']).replace(
+            '{T}', record['tested_commit']).replace(
+            '{O}', '9700a1b95d05c856897f74f125cfdf6fb3f6e646')
+        # The sole variable operand is a fresh absolute scratch directory, not flags.
+        pattern = re.escape(command).replace(re.escape('{unique_scratch}'),
+                                             r'/private/tmp/[A-Za-z0-9_.-]+(?:/[A-Za-z0-9_.-]+)*')
+        if re.fullmatch(pattern, row['command']) is None:
+            errors.append('hg058-author-command:' + row['check_id'])
+        if row['result'] != 'PASS':
+            errors.append('hg058-author-not-pass:' + row['check_id'])
+    return errors
+
+
+
 def governance_allowed_patterns(change_id):
+    if change_id == 'HG-066':
+        return HG066_ALLOWED_PATTERNS
     if change_id == 'HG-065':
         return HG065_ALLOWED_PATTERNS
     if change_id == 'HG-063':
@@ -4041,6 +4092,12 @@ def validate(root, args):
                     errors.extend(historical_documentary_projection_errors(record, changed_task_ids))
                 if change_id == 'HG-063':
                     errors.extend(plain_archival_projection_errors(record, changed_task_ids))
+                if change_id == 'HG-066':
+                    errors.extend(multi_owner_projection_errors(record, changed_task_ids))
+                if (change_id == 'HG-058' and git(
+                        root, 'ls-tree', governance_base, '--',
+                        'docs/exec-plans/governance/HG-066.yaml').strip()):
+                    errors.extend(hg058_selected_check_errors(record))
                 if change_id == 'HG-065':
                     errors.extend(retained_custody_projection_errors(record, changed_task_ids))
                 args.governance_changed_task_ids = changed_task_ids
@@ -4253,7 +4310,7 @@ def validate(root, args):
             required = {'GENERAL'}
             if change_id in ('HG-051', 'HG-054', 'HG-057'):
                 required.update({'PROTOCOL', 'DB_CONCURRENCY', 'SECURITY_DATA_BOUNDARY'})
-            if change_id in ('HG-050', 'HG-058', 'HG-059', 'HG-060', 'HG-061', 'HG-062', 'HG-063', 'HG-065'):
+            if change_id in ('HG-050', 'HG-058', 'HG-059', 'HG-060', 'HG-061', 'HG-062', 'HG-063', 'HG-065', 'HG-066'):
                 required.add('SECURITY_DATA_BOUNDARY')
             old_tasks = getattr(args, 'governance_base_tasks', {})
             reviewed_tasks = getattr(args, 'governance_reviewed_tasks', tasks)

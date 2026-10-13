@@ -2104,6 +2104,13 @@ class ValidatorTests(unittest.TestCase):
         self.check(1, 'governance-required-reviews-not-pass:HG-065',
                    '--ci-pr-base', self.base, '--ci-pr-head', 'HEAD')
 
+    def test_hg066_security_review_is_mandatory(self):
+        self.put('docs/exec-plans/evidence/HG-066/scope.md', 'fixture scope')
+        tested = self.commit('HG066 governance definitions')
+        self.persist_governance_change('HG-066', tested, [], ['GENERAL'])
+        self.check(1, 'governance-required-reviews-not-pass:HG-066',
+                   '--ci-pr-base', self.base, '--ci-pr-head', 'HEAD')
+
     def test_hg060_security_review_is_mandatory(self):
         self.put('docs/exec-plans/evidence/HG-060/scope.md', 'fixture scope')
         tested = self.commit('HG060 governance definitions')
@@ -2654,12 +2661,14 @@ class CleanRecoveryTests(unittest.TestCase):
 
     def test_hg058_scope_is_literal_and_rejects_schema_or_installer_expansion(self):
         patterns = v.governance_allowed_patterns('HG-058')
-        for path in ('THREAD_REVIEW.schema.json', 'tools/harness/local_gate.py',
+        for path in ('THREAD_REVIEW.schema.json', 'tools/harness/gate_validate.py',
                      'docs/exec-plans/active/KL-081.md', 'tests/db/test_worker_reaper.py',
                      'docs/exec-plans/evidence/HG-056/check.log'):
             with self.subTest(path=path):
                 self.assertFalse(v.matches(path, patterns))
         self.assertTrue(v.matches('docs/harness/THREAD_REVIEW_CONTRACT.md', patterns))
+        self.assertTrue(v.matches('tools/harness/local_gate.py', patterns))
+        self.assertFalse(v.matches('tools/harness/local_gate.py/extra', patterns))
 
     def test_kl081_packet_projects_entry_conditions_oracles_and_frozen_boundaries(self):
         task = self.after['KL-081']
@@ -2968,3 +2977,98 @@ class RetainedCustodyDefinitionTests(unittest.TestCase):
         self.assertIn('retained-custody-task-projection',
                       v.retained_custody_projection_errors(
                           dict(record, packets_refined=['KL-081']), set()))
+
+
+class MultiOwnerDefinitionTests(unittest.TestCase):
+    def test_hg066_exact_literal_scope(self):
+        allowed = {
+            'docs/harness/EVIDENCE_STORAGE_POLICY.md', 'docs/harness/LOCAL_DB_CI.md',
+            'docs/harness/HARNESS_GOVERNANCE_CONTRACT.md', 'docs/exec-plans/active/HG-058.md',
+            'tools/harness/validate_harness.py', 'tests/harness/test_validator.py',
+            'CURRENT_DOCUMENT_INDEX.json', 'HARNESS_DOCUMENT_MANIFEST.json',
+            'docs/exec-plans/governance/HG-066.yaml',
+            'docs/exec-plans/evidence/HG-066/**', 'docs/exec-plans/reviews/HG-066/**'}
+        self.assertEqual(set(v.governance_allowed_patterns('HG-066')), allowed)
+        for path in ('REVIEW_SOURCE_DECLARATIONS.schema.json', 'HARNESS_CHANGE.schema.json',
+                     'docs/harness/REVIEW_SOURCE_DECLARATIONS.json',
+                     'docs/harness/THREAD_REVIEW_CONTRACT.md',
+                     'tools/harness/compact_evidence.py', 'tools/harness/local_gate.py',
+                     'tools/harness/local_ci_controller.py', '.github/workflows/ci.yml',
+                     'tests/harness/test_review_evidence_provenance.py',
+                     'CURRENT_REQUIREMENT_SET.json', 'FROZEN_BASELINE.json',
+                     'docs/exec-plans/governance/HG-058.yaml',
+                     'docs/exec-plans/evidence/HG-058/probe.json',
+                     'docs/exec-plans/evidence/HG-066A/probe.json',
+                     'docs/exec-plans/active/KL-081.md'):
+            with self.subTest(path=path):
+                self.assertFalse(v.matches(path, list(allowed)))
+
+    def test_hg066_exact_checks_and_unchanged_authority_product_projection(self):
+        record: dict[str, list] = {
+            'checks_run': [{'check_id': name} for name in v.HG066_REQUIRED_CHECKS],
+            'authority_entries_added': [], 'packets_refined': []}
+        self.assertEqual(v.multi_owner_projection_errors(record, set()), [])
+        for variant in ('missing', 'duplicate', 'foreign'):
+            bad = copy.deepcopy(record)
+            if variant == 'missing':
+                bad['checks_run'].pop()
+            elif variant == 'duplicate':
+                bad['checks_run'].append(bad['checks_run'][0])
+            else:
+                bad['checks_run'][0] = {'check_id': 'invented'}
+            self.assertIn('multi-owner-required-checks',
+                          v.multi_owner_projection_errors(bad, set()))
+        self.assertIn('multi-owner-authority-projection',
+                      v.multi_owner_projection_errors(
+                          dict(record, authority_entries_added=['HARNESS_CHANGE.schema.json']), set()))
+        self.assertIn('multi-owner-task-projection',
+                      v.multi_owner_projection_errors(record, {'KL-081'}))
+        self.assertIn('multi-owner-task-projection',
+                      v.multi_owner_projection_errors(
+                          dict(record, packets_refined=['KL-081']), set()))
+
+
+class HG058ProspectiveChecksTests(unittest.TestCase):
+    def record(self):
+        base, tested = 'a' * 40, 'b' * 40
+        return {'base_commit': base, 'tested_commit': tested, 'checks_run': [
+            {'check_id': key, 'result': 'PASS', 'command': command.format(
+                P=base, T=tested, O='9700a1b95d05c856897f74f125cfdf6fb3f6e646',
+                unique_scratch='/private/tmp/hg058-fresh/harness')}
+            for key, command in v.HG058_AUTHOR_COMMANDS.items()]}
+
+    def test_twenty_individual_author_commands(self):
+        record = self.record()
+        self.assertEqual(len(record['checks_run']), 20)
+        self.assertEqual(v.hg058_selected_check_errors(record), [])
+        for index in range(20):
+            for variant in ('missing', 'duplicate', 'command', 'binding', 'not_run', 'root'):
+                bad = copy.deepcopy(record)
+                if variant == 'missing':
+                    bad['checks_run'].pop(index)
+                elif variant == 'duplicate':
+                    bad['checks_run'].append(bad['checks_run'][index])
+                elif variant == 'command':
+                    bad['checks_run'][index]['command'] += ' --collect-only'
+                elif variant == 'binding':
+                    bad['checks_run'][index]['command'] = 'bootstrap receipt'
+                elif variant == 'not_run':
+                    bad['checks_run'][index]['result'] = 'NOT_RUN'
+                else:
+                    bad['checks_run'][index]['check_id'] = 'final_private_original_H'
+                with self.subTest(index=index, variant=variant):
+                    self.assertTrue(v.hg058_selected_check_errors(bad))
+
+    def test_scope_preserves_exact_original_order(self):
+        correction = json.loads((ROOT / 'docs/exec-plans/evidence/HG-066/SCOPE_CORRECTION.json').read_text())
+        self.assertEqual(v.HG058_ALLOWED_PATTERNS, correction['original'] + ['tools/harness/local_gate.py'])
+
+    def test_root_gates_are_external_hard_prerequisites(self):
+        matrix = json.loads((ROOT / 'docs/exec-plans/evidence/HG-066/CHECK_OWNERSHIP.json').read_text())
+        self.assertEqual({r['check_id']: r['command_template'] for r in matrix['author_required']}, v.HG058_AUTHOR_COMMANDS)
+        self.assertEqual(len(matrix['root_required']), 19)
+        for row in matrix['root_required']:
+            self.assertTrue(row['hard_prerequisite'])
+            self.assertFalse(row['selected_checks_run'])
+            self.assertEqual(row['author_index_state'], 'PENDING_EXTERNAL_OBSERVATION')
+            self.assertNotIn(row['gate_id'], v.HG058_AUTHOR_COMMANDS)
