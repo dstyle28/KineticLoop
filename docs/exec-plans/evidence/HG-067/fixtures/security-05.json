@@ -1,0 +1,191 @@
+{
+      "accepted": false,
+      "basis": "RULE/CLOCK policy retain actual denied/interrupted source snapshots; no success authority",
+      "error": {
+        "message": "FINAL_ACQUIRED_STORE_IDENTITY",
+        "type": "InvalidDefinition"
+      },
+      "expected_acceptance": true,
+      "id": "final_truthful_changed_BARE_CLONE_SOURCE_AFTER_store_inode_False",
+      "input": {
+        "acceptance_eligible": false,
+        "acquisition": "BARE_CLONE",
+        "child_exit": 0,
+        "child_state": "EXITED",
+        "complete": false,
+        "continuation_authorized": false,
+        "counter_state": "EXACT",
+        "counters": {
+          "allocation_live_bytes": 0,
+          "cache_insert_bytes": 0,
+          "cache_insertions": 0,
+          "cache_live_bytes": 0,
+          "cache_live_objects": 0,
+          "command_chars": 0,
+          "comparison_bytes": 0,
+          "diagnostic_bytes": 0,
+          "entry_visits": 0,
+          "file_read_bytes": 0,
+          "file_write_bytes": 0,
+          "git_input_bytes": 0,
+          "git_operations": 0,
+          "git_output_bytes": 0,
+          "metadata_read_bytes": 0,
+          "network_input_bytes": 0,
+          "network_output_bytes": 0,
+          "network_requests": 0,
+          "object_copy_bytes": 0,
+          "path_chars": 0,
+          "physical_paths": 0,
+          "process_group_rss_bytes": 0,
+          "process_operations": 2,
+          "ref_chars": 0,
+          "result_bytes": 3905,
+          "signing_operations": 0,
+          "single_blob_bytes": 0,
+          "single_metadata_bytes": 0,
+          "tracked_entries_per_snapshot": 0,
+          "worklist_entries": 0
+        },
+        "driver_exit": 0,
+        "driver_state": "EXITED",
+        "elapsed_ns": 20000000,
+        "elapsed_observation": "LAST_SAMPLE_BEFORE_FINAL_ENCODING",
+        "execution_reuse": false,
+        "format": "host-preparation-result-draft-v3",
+        "initial": {
+          "authority_sha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+          "controller": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+          "metadata_snapshot_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+          "objects_device": 1,
+          "objects_inode": 21,
+          "protected": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "release": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "repository_id": 1,
+          "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "source_kind": "BARE_OWNED",
+          "store_device": 1,
+          "store_inode": 20,
+          "task": "harness-governance-v0.1/HG-058",
+          "tree": "cccccccccccccccccccccccccccccccccccccccc"
+        },
+        "invocation": "00000000000000000000000000000000",
+        "limits_sha256": "f5f62224b282400c7cc5557854bd5c9c589e48e890ab5ef3bd4f556eaf9f943c",
+        "native_contexts": [
+          {
+            "complete": true,
+            "kind": "ORIGINAL_FINAL",
+            "result_sha256": "1111111111111111111111111111111111111111111111111111111111111111",
+            "status": "COMPLETE"
+          },
+          {
+            "complete": true,
+            "kind": "STRICT_LIVE_FINAL",
+            "result_sha256": "1111111111111111111111111111111111111111111111111111111111111111",
+            "status": "COMPLETE"
+          }
+        ],
+        "native_limits_unchanged": true,
+        "observer_exit": null,
+        "observer_state": "LIVE",
+        "owned_store": {
+          "objects_device": 1,
+          "objects_inode": 21,
+          "store_device": 1,
+          "store_inode": 20
+        },
+        "phases": [
+          {
+            "elapsed_ns": 1000000,
+            "phase": "BOOTSTRAP",
+            "status": "COMPLETE"
+          },
+          {
+            "elapsed_ns": 1000000,
+            "phase": "AUTHENTICATE_BEFORE",
+            "status": "COMPLETE"
+          },
+          {
+            "elapsed_ns": 1000000,
+            "phase": "OWNED_IMPORT",
+            "status": "COMPLETE"
+          },
+          {
+            "elapsed_ns": 1000000,
+            "phase": "SOURCE_BEFORE",
+            "status": "COMPLETE"
+          },
+          {
+            "elapsed_ns": 1000000,
+            "phase": "ASSET_BINDING",
+            "status": "COMPLETE"
+          },
+          {
+            "elapsed_ns": 1000000,
+            "phase": "NATIVE",
+            "status": "COMPLETE"
+          },
+          {
+            "elapsed_ns": 10000000,
+            "phase": "SOURCE_AFTER",
+            "status": "DENIED"
+          },
+          {
+            "elapsed_ns": 0,
+            "phase": "AUTHENTICATE_AFTER",
+            "status": "NOT_STARTED"
+          },
+          {
+            "elapsed_ns": 0,
+            "phase": "FINAL_BOUNDARY",
+            "status": "NOT_STARTED"
+          }
+        ],
+        "post_worker_rechecks": [
+          {
+            "elapsed_ns": 0,
+            "phase": "SOURCE_AFTER",
+            "status": "NOT_STARTED"
+          },
+          {
+            "elapsed_ns": 0,
+            "phase": "AUTHENTICATE_AFTER",
+            "status": "NOT_STARTED"
+          }
+        ],
+        "publishable_positives": 0,
+        "reasons": [
+          "HOST_IO_ERROR",
+          "SOURCE_CHANGED"
+        ],
+        "rejected": null,
+        "reservation_failed": false,
+        "route": "FINAL",
+        "status": "DENIED",
+        "terminal": {
+          "authority_sha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+          "controller": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+          "metadata_snapshot_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+          "objects_device": 1,
+          "objects_inode": 21,
+          "protected": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "release": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "repository_id": 1,
+          "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "source_kind": "BARE_OWNED",
+          "store_device": 1,
+          "store_inode": 120,
+          "task": "harness-governance-v0.1/HG-058",
+          "tree": "cccccccccccccccccccccccccccccccccccccccc"
+        },
+        "worker": {
+          "elapsed_ns": 0,
+          "ended_ns": null,
+          "started_ns": null,
+          "state": "NOT_STARTED"
+        }
+      },
+      "kind": "record",
+      "matches_expected": false,
+      "result": null
+    }

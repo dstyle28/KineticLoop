@@ -1,0 +1,45 @@
+{
+  "actual_enforcement": "NOT_RUN",
+  "all_native_and_original_live_gates": "unchanged and conjunctive",
+  "broker_roles": "installed credential-free D parent of C; both HOST allocations/process starts; native/worker subexecutors enrolled by S exact context/command/OS identity, no public selector",
+  "clocks": "CLOCK_RESOURCE_POLICY.md and CLOCK_RESOURCE_DELTA.json; one absolute route deadline, no phase600s contraction, all waits included",
+  "dispatch_exclusions": [
+    "public",
+    "receipt",
+    "candidate import",
+    "trust flag",
+    "test-only"
+  ],
+  "live_owner": "S owns one HOST ledger/lock/auth/publication until terminal handling",
+  "post_worker_rechecks": [
+    "SOURCE_AFTER",
+    "AUTHENTICATE_AFTER"
+  ],
+  "r4_source_observation_correction": "SOURCE_OBSERVATION_CONTRACT.md; originally bound owned_store and actual initial/terminal observations; strict successful equality, lossless mismatches only on corresponding failed source/import/recheck paths; no other predicates superseded.",
+  "resource_membership": "HOST S/D/C and HOST helpers; independent unchanged NATIVE/WORKER payload domains; no relabel/refund/receipt authority",
+  "route_phases": {
+    "FINAL": [
+      "BOOTSTRAP",
+      "AUTHENTICATE_BEFORE",
+      "OWNED_IMPORT",
+      "SOURCE_BEFORE",
+      "ASSET_BINDING",
+      "NATIVE",
+      "SOURCE_AFTER",
+      "AUTHENTICATE_AFTER",
+      "FINAL_BOUNDARY"
+    ],
+    "PREIMPORT": [
+      "BOOTSTRAP",
+      "AUTHENTICATE_BEFORE",
+      "SOURCE_BEFORE",
+      "OWNED_IMPORT",
+      "ASSET_BINDING",
+      "NATIVE",
+      "SOURCE_AFTER",
+      "AUTHENTICATE_AFTER",
+      "FINAL_BOUNDARY"
+    ]
+  },
+  "status": "PREPARATION_ONLY_NOT_AUTHORITY"
+}

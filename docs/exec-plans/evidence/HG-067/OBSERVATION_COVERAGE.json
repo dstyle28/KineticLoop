@@ -1,0 +1,58 @@
+{
+  "actual_scale_qualification": "Exactly observed 7769 per-file sizes/modes and 503495343 bytes with synthetic contents; input paths are short generated names. Compression/history/source identity/auth differ. The fixture is not a runtime feasibility proof.",
+  "applies_to": [
+    "/private/tmp/hg058-host-resource-rule/affected-scale/ACTUAL_SCALE_POSITIVE.json",
+    "/private/tmp/hg058-host-resource-rule/affected-scale/ACTUAL_SCALE_HOSTILE.json",
+    "/private/tmp/hg058-host-resource-rule/stable/ACTUAL_SCALE_POSITIVE.json",
+    "/private/tmp/hg058-host-resource-rule/stable/ACTUAL_SCALE_HOSTILE.json",
+    "/private/tmp/hg058-host-resource-rule/stable/SMALL_POSITIVE.json"
+  ],
+  "classification": "ISOLATED_LITERAL_SUBSET_COUNTERS_ONLY",
+  "exact_within_literal_subset": [
+    "actual Git process starts/stdin/stdout/stderr of probe only",
+    "every synthetic tracked regular-file literal comparison",
+    "actual tracked-file and copied HEAD/index input bytes",
+    "every synthetic ls-tree row visit",
+    "distinct tracked-file plus source HEAD/index paths",
+    "largest regular file and copied metadata sizes",
+    "tracked rows/worklist size",
+    "copied HEAD/index bytes only"
+  ],
+  "full_installed_enforcement_checks": "FUTURE_CHECKS.json, all NOT_RUN",
+  "partial_lower_bounds": [
+    "allocation_live_bytes measures one Git receive buffer only, not complete owned allocations",
+    "file_write_bytes excludes view directory/config/alternate construction",
+    "entry_visits excludes filesystem/ref/index record enumeration",
+    "physical_paths excludes owned view files and metadata directories",
+    "comparison_bytes excludes host bindings/metadata/ref comparisons",
+    "path_chars uses visited absolute synthetic paths, which are shorter than actual project names"
+  ],
+  "r2_definition_oracle": "New schema/record/clock/sequence conformance only, on hypothetical records; never authenticates native outputs or privileged observations.",
+  "r3_definition_oracle": "Clock/schedule/record/sequence conformance on hypothetical values and read-only retained historical timing references only. No worker/native/DB/App runtime, aggregate HOST RSS or privileged enforcement proof.",
+  "unit_tests": "Inclusive boundary and rejected-reservation cases exercise ledger arithmetic with explicit hypothetical observations; they do not claim actual I/O at every numerical cap.",
+  "unobserved_fields_with_model_zero": [
+    "process_group_rss_bytes",
+    "cache_insertions",
+    "cache_insert_bytes",
+    "cache_live_objects",
+    "cache_live_bytes",
+    "network_requests",
+    "network_input_bytes",
+    "network_output_bytes",
+    "signing_operations",
+    "object_copy_bytes",
+    "diagnostic_bytes",
+    "result_bytes",
+    "command_chars",
+    "ref_chars"
+  ],
+  "unobserved_operations": [
+    "Git internal object/pack filesystem I/O",
+    "privileged authentication and complete metadata/ref/import/asset lifecycle",
+    "full index format semantics or path-component race defense",
+    "real final H/worker/publication route",
+    "host allocation/RSS enforcement",
+    "all native audits"
+  ],
+  "warning": "Counters in fixture_model are NOT a complete host ledger. Zero for an unimplemented field is NOT an observed zero, limit PASS, or enforcement proof. No fixture record is a valid HOST_RESULT success."
+}

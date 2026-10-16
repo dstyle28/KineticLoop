@@ -1,0 +1,49 @@
+{
+  "all30_capacity_values_unchanged": true,
+  "existing_worker_limits": "1200s build/sync,6600s default14captured gates,120s checked/control; all unchanged",
+  "native22_read10s_context120s": "byte-exact unchanged",
+  "new_deadlines_ms": {
+    "api_request_existing_max": 60000,
+    "final_overall": 129600000,
+    "local_git_stream": 120000,
+    "metadata_read": 10000,
+    "preimport_overall": 1800000,
+    "signing_existing_max": 15000,
+    "termination_observation_grace": 20000,
+    "worker_operation": 108000000,
+    "worker_terminal_reservation": 3600000
+  },
+  "new_phase_deadline": "same absolute invocation route deadline; first-to-last intervals include every wait and reentry, never reset",
+  "no_old_evidence_reexecuted": true,
+  "old_deadlines_ms": {
+    "api_request_existing_max": 60000,
+    "final_overall": 14400000,
+    "local_git_stream": 60000,
+    "local_phase": 600000,
+    "metadata_read": 10000,
+    "preimport_overall": 1800000,
+    "signing_existing_max": 15000
+  },
+  "old_phase_deadline": "600000ms from first entry, including full worker/reentry waits",
+  "previous_manifest_sha256": "c394bea3995c1bb89e54ffe172f5325050a60ce9ca77b621e3fa1b5066fc8293",
+  "status": "PROPOSED_NOT_APPROVED",
+  "unit_changes": [
+    {
+      "field": "process_group_rss_bytes",
+      "new": "aggregate resident memory of installed HOST S/D/C brokers and HOST helpers including their baselines; enrolled NATIVE and unchanged WORKER payload domains remain independent under existing guards; no unclassified escape",
+      "old": "entire process-group resident memory including baseline/native/Git/helpers; enforced safety ceiling"
+    },
+    {
+      "field": "process_operations",
+      "new": "all started HOST children including D/C brokers, Git/signing/helpers; excludes enrolled native/unchanged worker payload starts; one cumulative invocation",
+      "old": "all host child process starts including Git and signing; excludes unchanged worker/native starts"
+    }
+  ],
+  "unmeasured": [
+    "host/native/worker runtime memory",
+    "native/project feasibility",
+    "source history/import copies",
+    "inprocess artifact walk/parsing and timing headroom",
+    "actual process groups/RSS/cancellation enforcement"
+  ]
+}

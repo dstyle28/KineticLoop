@@ -1,0 +1,208 @@
+"""R3 clock-only and independent-repro conformance. No host/worker/native runs."""
+import copy
+from decimal import Decimal
+import json
+import pytest
+from test_definition import example,denial,conform,trace,emergency,ERRORS
+from definition_oracle import (ROOT,LIMITS,OVERALL_NS,WORKER_NS,TAIL_NS,GRACE_NS,InvalidDefinition,
+ seal_record,validate_record,validate_trace,validate_worker_schedule,validate_emergency,canonical)
+
+def ns(seconds):return int(Decimal(str(seconds))*1000000000)
+def trace_with_worker(duration_ns,start_ns=1000000000,overall_ns=None):
+ events=trace('FINAL');i=next(i for i,e in enumerate(events) if e['event']=='WORKER_START');j=next(i for i,e in enumerate(events) if e['event']=='WORKER_DONE')
+ shift=start_ns-events[i]['at_ns']
+ for e in events[i:]:e['at_ns']+=shift
+ shift=duration_ns-(events[j]['at_ns']-events[i]['at_ns'])
+ for e in events[j:]:e['at_ns']+=shift
+ if overall_ns is not None:
+  k=next(i for i,e in enumerate(events) if e['event']=='COMMIT_ELIGIBLE')
+  assert overall_ns>=events[k-1]['at_ns']
+  for e in events[k:]:e['at_ns']=overall_ns
+ return events
+
+def schedule_at_source_caps():
+ d=json.loads((ROOT/'CLOCK_DERIVATION.json').read_text())
+ return {'captures':[{'name':p['name'],'elapsed_ns':ns(p['limit_seconds'])} for p in d['capture_limits_seconds']],
+  'controls_ns':[ns(120)]*64,'daemon':[{'probe_ns':ns(10),'sleep_ns':ns(1)} for _ in range(60)],
+  'terminations':[{'term_ns':ns(15),'kill_observe_ns':ns(5)} for _ in range(16)],'other_ns':0}
+
+def test_complete_clock_route_uses_retained_historical_durations_only():
+ d=json.loads((ROOT/'CLOCK_DERIVATION.json').read_text())
+ retained=d['retained_observations'];worker=ns(retained['serial_seconds']);whole=ns(retained['controller_seconds'])
+ result=validate_trace(trace_with_worker(worker,overall_ns=whole),'FINAL')
+ assert not result['actual_processes_observed'] and not result['publication_authorized']
+ checks={p['check_id']:p for p in retained['checks']}
+ assert ns(checks['full_database']['duration_seconds'])>ns(600)
+ assert validate_trace(trace_with_worker(ns(checks['full_database']['duration_seconds'])),'FINAL')['sequence_conforms']
+ assert checks['full_database']['exit_code']==0 and checks['harness']['duration_seconds']==406.811
+ assert whole==2210946078500
+
+def test_all_existing_worker_capture_limits_fit_complete_finite_route():
+ model=schedule_at_source_caps();result=validate_worker_schedule(model)
+ assert len(model['captures'])==16 and sum(p['elapsed_ns'] for p in model['captures'])==ns(94800)
+ assert result['whole_worker_elapsed_ns']==ns(103460)<WORKER_NS
+ assert validate_trace(trace_with_worker(result['whole_worker_elapsed_ns']),'FINAL')['sequence_conforms']
+ assert result['actual_execution_observed'] is False and result['runtime_fit_established'] is False
+
+@pytest.mark.parametrize('boundary',['whole_worker','whole_invocation','last_permitted_worker_start'])
+def test_exact_complete_route_clock_boundaries(boundary):
+ if boundary=='whole_worker':events=trace_with_worker(WORKER_NS)
+ elif boundary=='whole_invocation':events=trace_with_worker(WORKER_NS,overall_ns=OVERALL_NS['FINAL'])
+ else:events=trace_with_worker(WORKER_NS,start_ns=OVERALL_NS['FINAL']-WORKER_NS-TAIL_NS,overall_ns=OVERALL_NS['FINAL'])
+ assert validate_trace(events,'FINAL')['sequence_conforms']
+
+@pytest.mark.parametrize('overrun',['worker_one_ns','overall_one_ns','late_start_one_ns','missing_worker_done','clock_reset_after_worker'])
+def test_whole_route_overrun_and_reset_negatives(overrun):
+ if overrun=='worker_one_ns':events=trace_with_worker(WORKER_NS+1)
+ elif overrun=='overall_one_ns':events=trace_with_worker(WORKER_NS,overall_ns=OVERALL_NS['FINAL']+1)
+ elif overrun=='late_start_one_ns':events=trace_with_worker(ns(1),start_ns=OVERALL_NS['FINAL']-WORKER_NS-TAIL_NS+1)
+ else:
+  events=trace_with_worker(ns(1694.281))
+  if overrun=='missing_worker_done':events=[e for e in events if e['event']!='WORKER_DONE']
+  else:
+   index=next(i for i,e in enumerate(events) if e['event']=='RECHECK_SOURCE')
+   for e in events[index:]:e['at_ns']-=ns(1694.281)
+ with pytest.raises(ERRORS):validate_trace(events,'FINAL')
+
+@pytest.mark.parametrize('case',['capture_over','control_over','extra_control','extra_daemon','probe_over','sleep_over','term_over','kill_over','whole_over','missing_db','wrong_order'])
+def test_worker_schedule_keeps_existing_limits_and_cleanup_grace(case):
+ model=schedule_at_source_caps()
+ if case=='capture_over':model['captures'][0]['elapsed_ns']+=1
+ elif case=='control_over':model['controls_ns'][0]+=1
+ elif case=='extra_control':model['controls_ns'].append(0)
+ elif case=='extra_daemon':model['daemon'].append({'probe_ns':0,'sleep_ns':0})
+ elif case=='probe_over':model['daemon'][0]['probe_ns']+=1
+ elif case=='sleep_over':model['daemon'][0]['sleep_ns']+=1
+ elif case=='term_over':model['terminations'][0]['term_ns']+=1
+ elif case=='kill_over':model['terminations'][0]['kill_observe_ns']+=1
+ elif case=='whole_over':model['other_ns']=WORKER_NS-ns(103460)+1
+ elif case=='missing_db':model['captures']=[p for p in model['captures'] if p['name']!='full_database']
+ elif case=='wrong_order':model['captures'].reverse()
+ with pytest.raises(ERRORS):validate_worker_schedule(model)
+
+def test_worker_schedule_exact_bound_includes_all_unmeasured_headroom():
+ model=schedule_at_source_caps();model['other_ns']=ns(4540)
+ assert validate_worker_schedule(model)['whole_worker_elapsed_ns']==WORKER_NS
+ assert GRACE_NS==ns(20)
+
+@pytest.mark.parametrize('relation',['metadata','object_copy','git','sign','git_plus_sign','broker_minimum'])
+@pytest.mark.parametrize('status',['success','denied'])
+def test_independent_R2_exact_counter_repros_reject(relation,status):
+ v=example() if status=='success' else denial('PREIMPORT','FINAL_BOUNDARY')
+ c=v['counters']
+ if relation=='metadata':c.update(metadata_read_bytes=1,file_read_bytes=0)
+ elif relation=='object_copy':c.update(object_copy_bytes=1,file_write_bytes=0)
+ elif relation=='git':c.update(git_operations=1,process_operations=0)
+ elif relation=='sign':c.update(signing_operations=1,process_operations=0)
+ elif relation=='git_plus_sign':c.update(git_operations=2,signing_operations=2,process_operations=5)
+ else:c['process_operations']=1
+ with pytest.raises(ERRORS):conform(v)
+
+def test_subset_and_disjoint_start_exact_boundaries():
+ v=example();v['counters'].update(metadata_read_bytes=123,file_read_bytes=123,object_copy_bytes=45,file_write_bytes=45,
+  git_operations=3,signing_operations=2,process_operations=7)
+ assert conform(v)['definition_conforms']
+
+@pytest.mark.parametrize('relation',['metadata','object_copy','starts'])
+def test_truthful_lower_bound_does_not_invent_exact_totals(relation):
+ v=denial('PREIMPORT','FINAL_BOUNDARY');v.update(counter_state='LOWER_BOUND',reasons=['ACCOUNTING_INCOMPLETE'])
+ c=v['counters']
+ if relation=='metadata':c.update(metadata_read_bytes=123,file_read_bytes=0)
+ elif relation=='object_copy':c.update(object_copy_bytes=45,file_write_bytes=0)
+ else:c.update(git_operations=3,signing_operations=2,process_operations=0)
+ sealed=seal_record(v);assert validate_record(sealed)['definition_conforms']
+ assert sealed['counters']==seal_record(v)['counters']
+
+@pytest.mark.parametrize('child_state',['EXITED','UNKNOWN'])
+def test_no_native_output_cannot_allow_child_without_parent_full(child_state):
+ v=denial('PREIMPORT','NATIVE',child_state=='UNKNOWN');v.update(child_state=child_state,child_exit=0 if child_state=='EXITED' else None)
+ if child_state=='UNKNOWN':v['reasons']=['INTERRUPTION','UNKNOWN_CHILD_EXIT']
+ with pytest.raises(InvalidDefinition,match='CHILD_REQUIRES_STARTED_DRIVER'):conform(v)
+
+@pytest.mark.parametrize('child_state',['EXITED','UNKNOWN'])
+def test_child_without_parent_emergency_projection(child_state):
+ v=emergency();v.update(driver_state='NOT_STARTED',driver_exit=None,child_state=child_state,child_exit=0 if child_state=='EXITED' else None)
+ with pytest.raises(ERRORS):validate_emergency(v)
+
+@pytest.mark.parametrize('route',['PREIMPORT','FINAL'])
+def test_success_release_is_actual_revision(route):
+ v=example(route)
+ for field in ['initial','terminal']:v[field]['release']='9'*40
+ with pytest.raises(InvalidDefinition,match='SUCCESS_RELEASE_REVISION'):conform(v)
+
+@pytest.mark.parametrize('which',['root','objects','both'])
+def test_success_requires_independent_acquired_root_and_object_store(which):
+ v=example()
+ if which in ['root','both']:
+  for key in ['store_device','store_inode']:v['owned_store'][key]=v['initial'][key]
+ if which in ['objects','both']:
+  for key in ['objects_device','objects_inode']:v['owned_store'][key]=v['initial'][key]
+ with pytest.raises(ERRORS):conform(v)
+
+@pytest.mark.parametrize('status',['DENIED','INTERRUPTED'])
+@pytest.mark.parametrize('mismatch',['release','root','objects','snapshot'])
+def test_truthful_failed_bindings_remain_diagnostic(status,mismatch):
+ v=denial('PREIMPORT','FINAL_BOUNDARY',status=='INTERRUPTED')
+ if mismatch=='release':
+  for name in ['initial','terminal']:v[name]['release']='9'*40
+  v['reasons'].append('ASSET_MISMATCH')
+ elif mismatch in ['root','objects']:
+  for key in (['store_device','store_inode'] if mismatch=='root' else ['objects_device','objects_inode']):v['owned_store'][key]=v['initial'][key]
+  v['reasons'].append('IMPORT_DENIED')
+ else:v['terminal']['revision']='9'*40;v['reasons'].append('SOURCE_CHANGED')
+ assert conform(v)['definition_conforms'] and not v['acceptance_eligible']
+
+@pytest.mark.parametrize('which',['SOURCE_AFTER','AUTHENTICATE_AFTER'])
+def test_failed_post_worker_recheck_preserves_first_pass_history(which):
+ v=denial('FINAL','FINAL_BOUNDARY');v['reasons']=['SOURCE_CHANGED']
+ for p in v['post_worker_rechecks']:
+  if p['phase']==which:p['status']='DENIED';break
+ # A SOURCE failure prevents the following auth recheck; first pass remains COMPLETE.
+ if which=='SOURCE_AFTER':v['post_worker_rechecks'][1].update(status='NOT_STARTED',elapsed_ns=0)
+ assert conform(v)['definition_conforms']
+ assert all(p['status']=='COMPLETE' for p in v['phases'][:-1])
+
+def test_clock_reservation_denial_retains_actual_elapsed_below_overall():
+ v=denial('FINAL','FINAL_BOUNDARY');v['worker']={'state':'NOT_STARTED','started_ns':None,'ended_ns':None,'elapsed_ns':0}
+ for p in v['post_worker_rechecks']:p.update(status='NOT_STARTED',elapsed_ns=0)
+ v['elapsed_ns']=OVERALL_NS['FINAL']-WORKER_NS-TAIL_NS+1;v['reasons']=['HOST_CLOCK_RESERVATION_DENIED']
+ assert conform(v)['definition_conforms'] and v['elapsed_ns']<OVERALL_NS['FINAL'] and not v['reservation_failed']
+
+@pytest.mark.parametrize('case',['elapsed_mismatch','missing_worker','missing_recheck','phase_clock_reset','unknown_end_success','preimport_worker'])
+def test_whole_route_record_clock_counterexamples(case):
+ v=example('FINAL')
+ if case=='elapsed_mismatch':v['worker']['elapsed_ns']+=1
+ elif case=='missing_worker':v['worker']={'state':'NOT_STARTED','started_ns':None,'ended_ns':None,'elapsed_ns':0}
+ elif case=='missing_recheck':v['post_worker_rechecks'][0].update(status='NOT_STARTED',elapsed_ns=0)
+ elif case=='phase_clock_reset':v['post_worker_rechecks'][0]['elapsed_ns']=1
+ elif case=='unknown_end_success':v['worker']['ended_ns']=None
+ elif case=='preimport_worker':
+  v=example();v['worker']={'state':'COMPLETE','started_ns':1,'ended_ns':2,'elapsed_ns':1}
+ with pytest.raises(ERRORS):conform(v)
+
+def test_r3_clock_delta_and_resource_membership_are_explicit():
+ r2=json.loads((ROOT/'fixtures'/'r2'/'HOST_LIMITS.json').open().read())
+ r3=json.loads((ROOT/'HOST_LIMITS.json').read_text())
+ assert {k:v['limit'] for k,v in r3['limits'].items()}=={k:v['limit'] for k,v in r2['limits'].items()}
+ assert r3['deadlines_ms']['preimport_overall']==r2['deadlines_ms']['preimport_overall']
+ assert r3['deadlines_ms']['final_overall']==129600000 and r2['deadlines_ms']['final_overall']==14400000
+ assert 'local_phase' not in r3['deadlines_ms']
+ assert 'NATIVE' in r3['limits']['process_group_rss_bytes']['unit']
+ assert json.loads((ROOT/'NATIVE_LIMITS.json').read_text())==json.loads((ROOT/'fixtures'/'r2'/'NATIVE_LIMITS.json').open().read())
+
+def test_full_record_retained_worker_and_rechecks_share_continuous_clock():
+ v=example('FINAL');d=json.loads((ROOT/'CLOCK_DERIVATION.json').read_text())['retained_observations']
+ duration=ns(d['serial_seconds']);v['elapsed_ns']=ns(d['controller_seconds'])
+ v['worker']={'state':'COMPLETE','started_ns':ns(1),'ended_ns':ns(1)+duration,'elapsed_ns':duration}
+ for p in v['phases']:
+  if p['phase'] in ['SOURCE_AFTER','AUTHENTICATE_AFTER','FINAL_BOUNDARY']:p['elapsed_ns']=duration+ns(1)
+ for p in v['post_worker_rechecks']:p['elapsed_ns']=duration+ns(1)
+ out=conform(v);assert out['definition_conforms'] and not out['observations_authenticated']
+
+def test_unknown_worker_end_remains_interrupted_lower_bound():
+ v=denial('FINAL','FINAL_BOUNDARY',True);v['elapsed_ns']=ns(2000)
+ v.update(driver_state='UNKNOWN',driver_exit=None,child_state='UNKNOWN',child_exit=None,reasons=['INTERRUPTION','UNKNOWN_CHILD_EXIT'])
+ v['worker']={'state':'INTERRUPTED','started_ns':ns(1),'ended_ns':None,'elapsed_ns':ns(1694.281)}
+ for p in v['post_worker_rechecks']:p.update(status='NOT_STARTED',elapsed_ns=0)
+ v['phases'][-1]['elapsed_ns']=ns(1999)
+ assert conform(v)['definition_conforms'] and v['counter_state']=='LOWER_BOUND' and v['child_exit'] is None
