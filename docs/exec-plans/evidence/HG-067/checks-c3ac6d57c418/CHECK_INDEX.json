@@ -1,0 +1,264 @@
+{
+  "base_commit": "276bcaebbf3b64b4ea128b175a0463b2f650ac7c",
+  "tested_commit": "c3ac6d57c4183ce0c9eb0a7806ebc30673ca58a2",
+  "checks": [
+    {
+      "check_id": "definitions",
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python /Users/davetian/.codex/worktrees/hg067-host-resource-contract/KineticLoop/docs/exec-plans/evidence/HG-067/verify_definitions.py --base 276bcaebbf3b64b4ea128b175a0463b2f650ac7c --tested c3ac6d57c4183ce0c9eb0a7806ebc30673ca58a2",
+      "result": "PASS",
+      "evidence_ref": "docs/exec-plans/evidence/HG-067/checks-c3ac6d57c418/definitions.json"
+    },
+    {
+      "check_id": "validator",
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m pytest tests/harness/test_validator.py -q",
+      "result": "PASS",
+      "evidence_ref": "docs/exec-plans/evidence/HG-067/checks-c3ac6d57c418/validator.json"
+    },
+    {
+      "check_id": "unit",
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli test-unit",
+      "result": "PASS",
+      "evidence_ref": "docs/exec-plans/evidence/HG-067/checks-c3ac6d57c418/unit.json"
+    },
+    {
+      "check_id": "harness",
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli test-harness --workers 2 --evidence-dir /private/tmp/hg067-author-c3ac6d57c418/harness-run",
+      "result": "PASS",
+      "evidence_ref": "docs/exec-plans/evidence/HG-067/checks-c3ac6d57c418/harness.json"
+    },
+    {
+      "check_id": "lint",
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli lint",
+      "result": "PASS",
+      "evidence_ref": "docs/exec-plans/evidence/HG-067/checks-c3ac6d57c418/lint.json"
+    },
+    {
+      "check_id": "typecheck",
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli typecheck",
+      "result": "PASS",
+      "evidence_ref": "docs/exec-plans/evidence/HG-067/checks-c3ac6d57c418/typecheck.json"
+    },
+    {
+      "check_id": "authority",
+      "command": "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python -m kineticloop.cli check-harness",
+      "result": "PASS",
+      "evidence_ref": "docs/exec-plans/evidence/HG-067/checks-c3ac6d57c418/authority.json"
+    },
+    {
+      "check_id": "diff",
+      "command": "git diff --check 276bcaebbf3b64b4ea128b175a0463b2f650ac7c c3ac6d57c4183ce0c9eb0a7806ebc30673ca58a2",
+      "result": "PASS",
+      "evidence_ref": "docs/exec-plans/evidence/HG-067/checks-c3ac6d57c418/diff.json"
+    }
+  ],
+  "capture_manifest": [
+    {
+      "source": "/private/tmp/hg067-author-c3ac6d57c418/definitions.log",
+      "evidence_ref": "docs/exec-plans/evidence/HG-067/checks-c3ac6d57c418/definitions.json",
+      "bytes": 299,
+      "sha256": "5ed514d0fb9f01207dc908c814fcdf25b82041c9e8db0c53b16a9f3c858b8672"
+    },
+    {
+      "source": "/private/tmp/hg067-author-c3ac6d57c418/validator.log",
+      "evidence_ref": "docs/exec-plans/evidence/HG-067/checks-c3ac6d57c418/validator.json",
+      "bytes": 355,
+      "sha256": "a38a32d7f067d175201c90b9cb5098804eb7e2e6b2a75f717fe2f1ff7ed222e6"
+    },
+    {
+      "source": "/private/tmp/hg067-author-c3ac6d57c418/unit.log",
+      "evidence_ref": "docs/exec-plans/evidence/HG-067/checks-c3ac6d57c418/unit.json",
+      "bytes": 3498,
+      "sha256": "91d54a8abd07c0ed6031adb2e320e6c49f5008e0ff696956a8d41805877788e2"
+    },
+    {
+      "source": "/private/tmp/hg067-author-c3ac6d57c418/harness.log",
+      "evidence_ref": "docs/exec-plans/evidence/HG-067/checks-c3ac6d57c418/harness.json",
+      "bytes": 2485,
+      "sha256": "35703a8a1293e89b7166013a9c1d67db55bdd682c9539614a0b66a25bfe2539e"
+    },
+    {
+      "source": "/private/tmp/hg067-author-c3ac6d57c418/lint.log",
+      "evidence_ref": "docs/exec-plans/evidence/HG-067/checks-c3ac6d57c418/lint.json",
+      "bytes": 19,
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+    },
+    {
+      "source": "/private/tmp/hg067-author-c3ac6d57c418/typecheck.log",
+      "evidence_ref": "docs/exec-plans/evidence/HG-067/checks-c3ac6d57c418/typecheck.json",
+      "bytes": 45,
+      "sha256": "bad84ae458ed0b1339e9ee07060b39569951bea401de790a17ecace58d345afb"
+    },
+    {
+      "source": "/private/tmp/hg067-author-c3ac6d57c418/authority.log",
+      "evidence_ref": "docs/exec-plans/evidence/HG-067/checks-c3ac6d57c418/authority.json",
+      "bytes": 38,
+      "sha256": "575c27614271c1c49c6a8e1968a2a6c79b664c9c880dde43ec8113846e575f94"
+    },
+    {
+      "source": "/private/tmp/hg067-author-c3ac6d57c418/diff.log",
+      "evidence_ref": "docs/exec-plans/evidence/HG-067/checks-c3ac6d57c418/diff.json",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/private/tmp/hg067-author-c3ac6d57c418/COMMANDS.json",
+      "evidence_ref": "docs/exec-plans/evidence/HG-067/checks-c3ac6d57c418/COMMANDS.json",
+      "bytes": 12725,
+      "sha256": "29b73a5e1717513d81f2ccb3ef1791ec1bb38704e4b017b5bfa4808bbd7c2905"
+    },
+    {
+      "source": "/private/tmp/hg067-author-c3ac6d57c418/IDENTITIES.json",
+      "evidence_ref": "docs/exec-plans/evidence/HG-067/checks-c3ac6d57c418/IDENTITIES.json",
+      "bytes": 3404420,
+      "sha256": "8dd057f37f10af37bbc6d2ce65b04db7c65c7d8b7033f758981cf57ba17f95ed"
+    },
+    {
+      "source": "/private/tmp/hg067-author-c3ac6d57c418/AUTHOR_RESULT.json",
+      "evidence_ref": "docs/exec-plans/evidence/HG-067/checks-c3ac6d57c418/AUTHOR_RESULT.json",
+      "bytes": 10690,
+      "sha256": "c417ef7a6dad11b71e401097a5fafa26d49fe9a079406b1441d1abe751b1fd2e"
+    },
+    {
+      "source": "/private/tmp/hg067-author-c3ac6d57c418/AUTHOR_WRAPPER.json",
+      "evidence_ref": "docs/exec-plans/evidence/HG-067/checks-c3ac6d57c418/AUTHOR_WRAPPER.json",
+      "bytes": 621,
+      "sha256": "71925ae923bd7d5fff1456ab71546f0409af4f0f32cafe38941d8202e0123f02"
+    },
+    {
+      "source": "/private/tmp/hg067-author-c3ac6d57c418/validator-collection.json",
+      "evidence_ref": "docs/exec-plans/evidence/HG-067/checks-c3ac6d57c418/validator-collection-json.json",
+      "bytes": 21193,
+      "sha256": "247c1a7bf25e6623f986358bbbf74652ae2ed7500eb6fe0947529c8441d0ab42"
+    },
+    {
+      "source": "/private/tmp/hg067-author-c3ac6d57c418/validator-execution.json",
+      "evidence_ref": "docs/exec-plans/evidence/HG-067/checks-c3ac6d57c418/validator-execution-json.json",
+      "bytes": 182683,
+      "sha256": "6c2b7e99f4ad332f1ada2446fc43824ea51646c00dcdde2e357f6ea79b4a3452"
+    },
+    {
+      "source": "/private/tmp/hg067-author-c3ac6d57c418/validator.junit.xml",
+      "evidence_ref": "docs/exec-plans/evidence/HG-067/checks-c3ac6d57c418/validator-junit-xml.json",
+      "bytes": 26910,
+      "sha256": "160a46f169f899ba146e28fcaf63444b77b064bb09f35ac79ee78e8eb1de5cbd"
+    },
+    {
+      "source": "/private/tmp/hg067-author-c3ac6d57c418/validator-collection.log",
+      "evidence_ref": "docs/exec-plans/evidence/HG-067/checks-c3ac6d57c418/validator-collection-log.json",
+      "bytes": 19442,
+      "sha256": "d00e7d2e0007cffe7c0ad64b2a4bcfb453634871f8b177302bb2b528ffad4858"
+    },
+    {
+      "source": "/private/tmp/hg067-author-c3ac6d57c418/unit-collection.json",
+      "evidence_ref": "docs/exec-plans/evidence/HG-067/checks-c3ac6d57c418/unit-collection-json.json",
+      "bytes": 26433,
+      "sha256": "aa44ef95cbd9dfea6a741f359cb2c8884c51e7d9c1909eed35d63d526de16280"
+    },
+    {
+      "source": "/private/tmp/hg067-author-c3ac6d57c418/unit-execution.json",
+      "evidence_ref": "docs/exec-plans/evidence/HG-067/checks-c3ac6d57c418/unit-execution-json.json",
+      "bytes": 235658,
+      "sha256": "dc2547a56b4e6e18e5ee0196aac8a4101c2fea560c182318381cc57f58b32c42"
+    },
+    {
+      "source": "/private/tmp/hg067-author-c3ac6d57c418/unit.junit.xml",
+      "evidence_ref": "docs/exec-plans/evidence/HG-067/checks-c3ac6d57c418/unit-junit-xml.json",
+      "bytes": 34550,
+      "sha256": "3a194bec62da1ac9671d135ebd58cddda8220b02cd52d469213c0a359ea2d33b"
+    },
+    {
+      "source": "/private/tmp/hg067-author-c3ac6d57c418/unit-collection.log",
+      "evidence_ref": "docs/exec-plans/evidence/HG-067/checks-c3ac6d57c418/unit-collection-log.json",
+      "bytes": 24068,
+      "sha256": "c5ad3d285a1988a1d1ff939682592ca92c6f8a5ea8c93a98db4572f9783175c2"
+    },
+    {
+      "source": "/private/tmp/hg067-author-c3ac6d57c418/harness-run/collection.json",
+      "evidence_ref": "docs/exec-plans/evidence/HG-067/checks-c3ac6d57c418/harness-collection-json.json",
+      "bytes": 3356691,
+      "sha256": "6100dade0b52c4701895462efd5f92c103efb7dc152a74e50dff5d743079ad18"
+    },
+    {
+      "source": "/private/tmp/hg067-author-c3ac6d57c418/harness-run/collection.log",
+      "evidence_ref": "docs/exec-plans/evidence/HG-067/checks-c3ac6d57c418/harness-collection-log.json",
+      "bytes": 3210588,
+      "sha256": "d34ee20c8101f0edf6736dd88faa4a9a6e2696b23630e200f7fa2053c494f3c0"
+    },
+    {
+      "source": "/private/tmp/hg067-author-c3ac6d57c418/harness-run/execution.json",
+      "evidence_ref": "docs/exec-plans/evidence/HG-067/checks-c3ac6d57c418/harness-execution-json.json",
+      "bytes": 20873589,
+      "sha256": "5546f4031f328a8bf39de3f76fcf564cd69bd58f91e1fc944723253accef3af1"
+    },
+    {
+      "source": "/private/tmp/hg067-author-c3ac6d57c418/harness-run/junit.xml",
+      "evidence_ref": "docs/exec-plans/evidence/HG-067/checks-c3ac6d57c418/harness-junit-xml.json",
+      "bytes": 3588735,
+      "sha256": "c8a8efd5f3bfd1fdec7c521bb5483229d1dea4c28d0967492ca1ee1011a45122"
+    },
+    {
+      "source": "/private/tmp/hg067-author-c3ac6d57c418/harness-run/manifest.json",
+      "evidence_ref": "docs/exec-plans/evidence/HG-067/checks-c3ac6d57c418/harness-manifest-json.json",
+      "bytes": 2097,
+      "sha256": "554a40a1d670cf377b6d388d87faf56dc4caf0500cfadf9b3ac18aed34e79014"
+    },
+    {
+      "source": "/private/tmp/hg067-author-c3ac6d57c418/harness-run/pytest.log",
+      "evidence_ref": "docs/exec-plans/evidence/HG-067/checks-c3ac6d57c418/harness-pytest-log.json",
+      "bytes": 2485,
+      "sha256": "35703a8a1293e89b7166013a9c1d67db55bdd682c9539614a0b66a25bfe2539e"
+    },
+    {
+      "source": "/var/folders/xx/snwknfqj2yx8v1409fq3dhzw0000gn/T/hg067-definitions-61mvdbrb/COMMAND_RECEIPTS.json",
+      "evidence_ref": "docs/exec-plans/evidence/HG-067/checks-c3ac6d57c418/definitions-COMMAND_RECEIPTS-json.json",
+      "bytes": 3404,
+      "sha256": "84361907ef9d86ea9a88278eaa21cfd910c4077a0327add070e75f37b41fe712"
+    },
+    {
+      "source": "/var/folders/xx/snwknfqj2yx8v1409fq3dhzw0000gn/T/hg067-definitions-61mvdbrb/IDENTITIES.json",
+      "evidence_ref": "docs/exec-plans/evidence/HG-067/checks-c3ac6d57c418/definitions-IDENTITIES-json.json",
+      "bytes": 49195,
+      "sha256": "6a5c8d852e9e4460e970139d4ecb952c7e0a9d61c04e38c258a4f9d2e4abc948"
+    },
+    {
+      "source": "/var/folders/xx/snwknfqj2yx8v1409fq3dhzw0000gn/T/hg067-definitions-61mvdbrb/collection.json",
+      "evidence_ref": "docs/exec-plans/evidence/HG-067/checks-c3ac6d57c418/definitions-collection-json.json",
+      "bytes": 50065,
+      "sha256": "4bb6d264f52f19ac6351ec7432e80394a5e0798a842de6390918a0c8a8fe7772"
+    },
+    {
+      "source": "/var/folders/xx/snwknfqj2yx8v1409fq3dhzw0000gn/T/hg067-definitions-61mvdbrb/collection.log",
+      "evidence_ref": "docs/exec-plans/evidence/HG-067/checks-c3ac6d57c418/definitions-collection-log.json",
+      "bytes": 46004,
+      "sha256": "663aedbe75ee40ac42f65ac96ec181a38117ccb1ce80e2c63a6f4568deae3484"
+    },
+    {
+      "source": "/var/folders/xx/snwknfqj2yx8v1409fq3dhzw0000gn/T/hg067-definitions-61mvdbrb/execution.json",
+      "evidence_ref": "docs/exec-plans/evidence/HG-067/checks-c3ac6d57c418/definitions-execution-json.json",
+      "bytes": 434601,
+      "sha256": "cd097c15973c50664ef68188820632c95a4b7e939c5b06363d41b9fdfec45479"
+    },
+    {
+      "source": "/var/folders/xx/snwknfqj2yx8v1409fq3dhzw0000gn/T/hg067-definitions-61mvdbrb/execution.log",
+      "evidence_ref": "docs/exec-plans/evidence/HG-067/checks-c3ac6d57c418/definitions-execution-log.json",
+      "bytes": 690,
+      "sha256": "63bc97d09e4b0f0fc8e3ab6c4a4b11638c2bc5e90cf3097a527ff5782776abf0"
+    },
+    {
+      "source": "/var/folders/xx/snwknfqj2yx8v1409fq3dhzw0000gn/T/hg067-definitions-61mvdbrb/junit.xml",
+      "evidence_ref": "docs/exec-plans/evidence/HG-067/checks-c3ac6d57c418/definitions-junit-xml.json",
+      "bytes": 63786,
+      "sha256": "e5ab52fbdd0481cab685076824b17d03da8aafe446e7d641c9e14d741f7ec2eb"
+    }
+  ],
+  "definition_identities": {
+    "portable_r4": 439,
+    "phases": 1317
+  },
+  "limitations": [
+    "Actual K/H native inventory NOT_RUN; all22 budget feasibility NOT_DETERMINED.",
+    "Historical execution UNVERIFIED; acceptance_eligible=false; execution_reuse=false.",
+    "Installed/private/admission/App/DB/cleanup/hosted/merge NOT_RUN."
+  ],
+  "failed_attempts": "External preparation attempts preserved; no failed storage bytes committed."
+}
