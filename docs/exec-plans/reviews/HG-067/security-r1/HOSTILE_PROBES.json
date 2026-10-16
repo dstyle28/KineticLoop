@@ -1,0 +1,2953 @@
+{
+  "reviewed_head_sha": "ddffdbf75d6ff7b774fa84b00c20e57fc3a24fa5",
+  "purpose": "Reviewer synthetic conformance only; no actual runtime/native authorization or enforcement proof",
+  "cases": [
+    {
+      "id": "PREIMPORT-EXISTING_CHECKOUT-positive",
+      "input_sha256": "a6a7e300ad62d323d8d37747fc0ab427c4e5e476c23e5984cd695e0456fb16a8",
+      "expected_accept": true,
+      "observed_accept": true,
+      "matched": true,
+      "error": null
+    },
+    {
+      "id": "PREIMPORT-EXISTING_CHECKOUT-over-allocation_live_bytes",
+      "input_sha256": "fd3e89259f9c66a263974495b94e3db58cf784e09449ab577a65504075882429",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:268435457 is greater than the maximum of 268435456"
+    },
+    {
+      "id": "PREIMPORT-EXISTING_CHECKOUT-over-cache_insert_bytes",
+      "input_sha256": "be4ef3bea40cf343ec861ee562a232348bb767014c1dfbb0c2981f326ed63756",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:268435457 is greater than the maximum of 268435456"
+    },
+    {
+      "id": "PREIMPORT-EXISTING_CHECKOUT-over-cache_insertions",
+      "input_sha256": "8e26ac92a5e97d5b629cddbdc697ec21401edb7fbdd3b1e64b71b032ef41552b",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:32769 is greater than the maximum of 32768"
+    },
+    {
+      "id": "PREIMPORT-EXISTING_CHECKOUT-over-cache_live_bytes",
+      "input_sha256": "31d46a9488bd100b8f5948c8226a1fc702eeb32a79af0d6395d9ade60290c9e6",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:67108865 is greater than the maximum of 67108864"
+    },
+    {
+      "id": "PREIMPORT-EXISTING_CHECKOUT-over-cache_live_objects",
+      "input_sha256": "c96fe688fdaf51e77c633713a6d0a20cc1f2a6b0f2648e0e2bc532df7292131c",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:16385 is greater than the maximum of 16384"
+    },
+    {
+      "id": "PREIMPORT-EXISTING_CHECKOUT-over-command_chars",
+      "input_sha256": "db9d12b1fad45ea0cf5c3889f595078a931af22d1af926563f6727335b1bc2ad",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:16385 is greater than the maximum of 16384"
+    },
+    {
+      "id": "PREIMPORT-EXISTING_CHECKOUT-over-comparison_bytes",
+      "input_sha256": "fae80ed92140252d6a727de02323f57acf8639927f53d1476cbf2f6577b68a3f",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:8589934593 is greater than the maximum of 8589934592"
+    },
+    {
+      "id": "PREIMPORT-EXISTING_CHECKOUT-over-diagnostic_bytes",
+      "input_sha256": "dd756fbe4a861fea5c491c5c225149d310b438de1b619987a5f59723920fe837",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:2097153 is greater than the maximum of 2097152"
+    },
+    {
+      "id": "PREIMPORT-EXISTING_CHECKOUT-over-entry_visits",
+      "input_sha256": "8813221e5b4ea47b317bce5ba292b7662fbd4cf9d0d74503116ea61a0e28c525",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:262145 is greater than the maximum of 262144"
+    },
+    {
+      "id": "PREIMPORT-EXISTING_CHECKOUT-over-file_read_bytes",
+      "input_sha256": "634fa9ffdf7558d5df6a18865de2a6b802e377b9bcd271d176f732c25460a15b",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:17179869185 is greater than the maximum of 17179869184"
+    },
+    {
+      "id": "PREIMPORT-EXISTING_CHECKOUT-over-file_write_bytes",
+      "input_sha256": "2a1f0e0472b08040e11037088c388bddad55cbbe7189298f5f47410b3a586067",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:8589934593 is greater than the maximum of 8589934592"
+    },
+    {
+      "id": "PREIMPORT-EXISTING_CHECKOUT-over-git_input_bytes",
+      "input_sha256": "47c21a5947c2653f3a5e274cdf44c16ecda45b03f91eb102bf74c891eb79b9d0",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:268435457 is greater than the maximum of 268435456"
+    },
+    {
+      "id": "PREIMPORT-EXISTING_CHECKOUT-over-git_operations",
+      "input_sha256": "3b5b1476aa31610c962d34aa47e46ef44d6982a7ea81451119cb51044239bdda",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:65537 is greater than the maximum of 65536"
+    },
+    {
+      "id": "PREIMPORT-EXISTING_CHECKOUT-over-git_output_bytes",
+      "input_sha256": "4fa226070b17eecf31eb2030cf3b875532f00d33a49a13b790780e155d721068",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:4294967297 is greater than the maximum of 4294967296"
+    },
+    {
+      "id": "PREIMPORT-EXISTING_CHECKOUT-over-metadata_read_bytes",
+      "input_sha256": "a0653e0d4d6ffd771d6cf533cdbc2f9e3a34f0fd7e7833d3e88ef71efa9b500e",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:268435457 is greater than the maximum of 268435456"
+    },
+    {
+      "id": "PREIMPORT-EXISTING_CHECKOUT-over-network_input_bytes",
+      "input_sha256": "73227548b14beeafa5105cefc740c0037dd476dc705c39b27c03fe5d453ea0b6",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:67108865 is greater than the maximum of 67108864"
+    },
+    {
+      "id": "PREIMPORT-EXISTING_CHECKOUT-over-network_output_bytes",
+      "input_sha256": "3efb5fcdddf4afd214ddedbecf20cab4e3c63b017e99261405d5a8efcf2af955",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:268435457 is greater than the maximum of 268435456"
+    },
+    {
+      "id": "PREIMPORT-EXISTING_CHECKOUT-over-network_requests",
+      "input_sha256": "2c7b5227a727420c4bb1134ad7108e302acdebc0cd215b249446528e51bb9cff",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:33 is greater than the maximum of 32"
+    },
+    {
+      "id": "PREIMPORT-EXISTING_CHECKOUT-over-object_copy_bytes",
+      "input_sha256": "a039b9f4c75371e570a5df4b3e8643a63dbd014a914d0d14e04a20ba450377c0",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:4294967297 is greater than the maximum of 4294967296"
+    },
+    {
+      "id": "PREIMPORT-EXISTING_CHECKOUT-over-path_chars",
+      "input_sha256": "a7039abf70043548aa8324c57c6836731061ce1593f03fb39b39c5f851c3b84b",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:1025 is greater than the maximum of 1024"
+    },
+    {
+      "id": "PREIMPORT-EXISTING_CHECKOUT-over-physical_paths",
+      "input_sha256": "fbb21d214c9fd43c9d1a8982634b17aaf5ff63718db503e3c79e8649ffa64bfb",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:65537 is greater than the maximum of 65536"
+    },
+    {
+      "id": "PREIMPORT-EXISTING_CHECKOUT-over-process_group_rss_bytes",
+      "input_sha256": "048460939790efe81634c1734c44089b4fa20f0d96484ac05f96718738339b98",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:1073741825 is greater than the maximum of 1073741824"
+    },
+    {
+      "id": "PREIMPORT-EXISTING_CHECKOUT-over-process_operations",
+      "input_sha256": "46bcdf908c4904d9edde19536f416194bffba848746fd1744ed6fbcb7892e6f2",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:65665 is greater than the maximum of 65664"
+    },
+    {
+      "id": "PREIMPORT-EXISTING_CHECKOUT-over-ref_chars",
+      "input_sha256": "f3598b2031408b3b2b2b1db7d088f380bb403c2008eee2558d4a13008642f1cc",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:1025 is greater than the maximum of 1024"
+    },
+    {
+      "id": "PREIMPORT-EXISTING_CHECKOUT-over-signing_operations",
+      "input_sha256": "1cbd754a11db62d5893b172929f540d270460275e2707b0d075f6c4638d6473e",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:9 is greater than the maximum of 8"
+    },
+    {
+      "id": "PREIMPORT-EXISTING_CHECKOUT-over-single_blob_bytes",
+      "input_sha256": "7d8cdfd37a34591e2c03bfccf9c1d1fcb8a9398530d27934345a891b7304b49f",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:67108865 is greater than the maximum of 67108864"
+    },
+    {
+      "id": "PREIMPORT-EXISTING_CHECKOUT-over-single_metadata_bytes",
+      "input_sha256": "1f08f4ef2f3a076bc4f118598a9b0b09475dd7bc386944437cc891f477c87e45",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:16777217 is greater than the maximum of 16777216"
+    },
+    {
+      "id": "PREIMPORT-EXISTING_CHECKOUT-over-tracked_entries_per_snapshot",
+      "input_sha256": "309fb86fd0a6d1e2782a37b00646079d7aaa9cd4e22879ab81d0d4373e6a6e74",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:16385 is greater than the maximum of 16384"
+    },
+    {
+      "id": "PREIMPORT-EXISTING_CHECKOUT-over-worklist_entries",
+      "input_sha256": "ff4c488b3298ffbfa16db901f257c1042e2ffb4058ca008e3b095e13b80f4ef2",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:65537 is greater than the maximum of 65536"
+    },
+    {
+      "id": "PREIMPORT-EXISTING_CHECKOUT-wrong-size",
+      "input_sha256": "ce20f88c7ea6660da90c44ebb0dfa20a70f67751747828702941ae08b67ef0f0",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:RESULT_BYTES_EXACT"
+    },
+    {
+      "id": "PREIMPORT-EXISTING_CHECKOUT-forged-publishable_positives",
+      "input_sha256": "2b21a1b94cd433083b976a01838225d9ed2a7efed2788836181fbb42631c0438",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:0 was expected"
+    },
+    {
+      "id": "PREIMPORT-EXISTING_CHECKOUT-forged-continuation_authorized",
+      "input_sha256": "898b5412db0d97ea325ec267f56ce1d5424a8e45b5c5b677bfdb52c22db94928",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:False was expected"
+    },
+    {
+      "id": "PREIMPORT-EXISTING_CHECKOUT-forged-acceptance_eligible",
+      "input_sha256": "8cb8afe25ec2127d32f387b12fdc4f6a2bdb9fa07468b08ce1eda9626dfa9546",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:False was expected"
+    },
+    {
+      "id": "PREIMPORT-EXISTING_CHECKOUT-forged-execution_reuse",
+      "input_sha256": "2f05f3a9f658b6584974ed9027542cdcf38982a20f613fca55ae1284350ae843",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:False was expected"
+    },
+    {
+      "id": "PREIMPORT-EXISTING_CHECKOUT-forged-native_limits_unchanged",
+      "input_sha256": "f23c53d8dcff7147e263c8ecd35d862ca7fec5dd5ddfa57edd4c8d4de93a9879",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:True was expected"
+    },
+    {
+      "id": "PREIMPORT-EXISTING_CHECKOUT-forged-observer_exit",
+      "input_sha256": "df0db25f53ffc6ce317d32865b6a1e04ee8620532a68b36ca7092f2cd4716f7a",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:0 is not of type 'null'"
+    },
+    {
+      "id": "PREIMPORT-EXISTING_CHECKOUT-forged-observer_state",
+      "input_sha256": "8f3fe17235d3e4156aceece739636bca3621fa85973f858acf8af865dd3c4c10",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:'LIVE' was expected"
+    },
+    {
+      "id": "PREIMPORT-EXISTING_CHECKOUT-forged-counter_state",
+      "input_sha256": "6957b3c521495b91f44f173a2ddeeb7ba1ae2fe999d753980440c73b6224ed14",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:'EXACT' was expected"
+    },
+    {
+      "id": "PREIMPORT-EXISTING_CHECKOUT-native-0-NOT_REACHED",
+      "input_sha256": "c6582cc2373eee3aa438d367b17d42423332ec147ed64006baf9b43c77a4519e",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:NATIVE_COMPLETE_CONJUNCTION"
+    },
+    {
+      "id": "PREIMPORT-EXISTING_CHECKOUT-native-0-DENIED",
+      "input_sha256": "5a72e4e373f4c88d50d39b806d99fea6661cabecd5a305a703669fb66ca0bf7b",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:NATIVE_COMPLETE_CONJUNCTION"
+    },
+    {
+      "id": "PREIMPORT-EXISTING_CHECKOUT-native-0-INTERRUPTED",
+      "input_sha256": "e9a3f7a0af4892730e6685ce7a260c75c00a8099d56197ad10822e549de8c71e",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:NATIVE_COMPLETE_CONJUNCTION"
+    },
+    {
+      "id": "PREIMPORT-EXISTING_CHECKOUT-omit-phase-0",
+      "input_sha256": "73cbe3da1f79180b50c95aa79176c5f435569c798e3d8dcb6cdd24bf7f3406ec",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:SUCCESS_PHASES"
+    },
+    {
+      "id": "PREIMPORT-EXISTING_CHECKOUT-omit-phase-1",
+      "input_sha256": "e7fb6f923b877688bae26cb07549f3c1e62a4b3dd97658fa9840e79ae2e3ec62",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:SUCCESS_PHASES"
+    },
+    {
+      "id": "PREIMPORT-EXISTING_CHECKOUT-omit-phase-2",
+      "input_sha256": "318ec1b14b3c29b6fd34746aac474e497eac739c2da8df59e22aca01e1c35de7",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:SUCCESS_PHASES"
+    },
+    {
+      "id": "PREIMPORT-EXISTING_CHECKOUT-omit-phase-3",
+      "input_sha256": "573213dc01f43896ae462d09872b9be7afc5744d989398f216f6fdafe8664268",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:SUCCESS_PHASES"
+    },
+    {
+      "id": "PREIMPORT-EXISTING_CHECKOUT-omit-phase-4",
+      "input_sha256": "40ec1c954abf0f3a371a708f2b98eff31bd6281a612e790d0865b4cbf6a0336e",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:SUCCESS_PHASES"
+    },
+    {
+      "id": "PREIMPORT-EXISTING_CHECKOUT-omit-phase-5",
+      "input_sha256": "c0f2f94b8a9470efa4872dacbffe84478328a3f47cf93e8e1d2e54053fdd2d70",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:SUCCESS_PHASES"
+    },
+    {
+      "id": "PREIMPORT-EXISTING_CHECKOUT-omit-phase-6",
+      "input_sha256": "3e74520a1de20997f0ff96a0a0cb3f06aeec90400bef1783d8a5beb62e8737bd",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:SUCCESS_PHASES"
+    },
+    {
+      "id": "PREIMPORT-EXISTING_CHECKOUT-omit-phase-7",
+      "input_sha256": "2223fda7426112ea0b727617282ce6f2ae80dfa32454e6dcafc506ab680e1efa",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:SUCCESS_PHASES"
+    },
+    {
+      "id": "PREIMPORT-EXISTING_CHECKOUT-omit-phase-8",
+      "input_sha256": "734c3aa2703ee6bb9009cec645339a047175ecf8df98db3faae995e4b69c088b",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:SUCCESS_PHASES"
+    },
+    {
+      "id": "PREIMPORT-EXISTING_CHECKOUT-driver-UNKNOWN",
+      "input_sha256": "ecef3b728225f0839faea066dc187855a11fbec111de5b35801fee47db6a30af",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:0 was expected"
+    },
+    {
+      "id": "PREIMPORT-EXISTING_CHECKOUT-driver-EXITED",
+      "input_sha256": "0804931a7e65eec46f935c3a631bd69add03747274656fec5557fc648b0c1501",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:0 was expected"
+    },
+    {
+      "id": "PREIMPORT-EXISTING_CHECKOUT-driver-NOT_STARTED",
+      "input_sha256": "67bd403ca42ba6c39586cfa3b2fae95874aa06f19015512acd7ef6f101d8f469",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:0 was expected"
+    },
+    {
+      "id": "PREIMPORT-EXISTING_CHECKOUT-child-UNKNOWN",
+      "input_sha256": "c02232e2b6bd2b8005189a7a888331ca5b90c5d0a52330b8614cf844d93b0c48",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:0 was expected"
+    },
+    {
+      "id": "PREIMPORT-EXISTING_CHECKOUT-child-EXITED",
+      "input_sha256": "3eb71ba5508785db8c219e641d4f39234377985f3f05e163626392cd37d7a8a7",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:0 was expected"
+    },
+    {
+      "id": "PREIMPORT-EXISTING_CHECKOUT-child-NOT_STARTED",
+      "input_sha256": "50a25470ee2f8c1c3caceb31184b8f9b3f34f7601b94e4cc34b9b5ff441f7e7c",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:0 was expected"
+    },
+    {
+      "id": "PREIMPORT-EXISTING_CHECKOUT-deadline",
+      "input_sha256": "028143a2df8a03741dcad5c443768357ecfe5756b787a91f38549ca5f9ffb580",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:DEADLINE_REQUIRES_DENIAL"
+    },
+    {
+      "id": "PREIMPORT-EXISTING_CHECKOUT-unknown-field",
+      "input_sha256": "1ca2ec328d278d9d613b28252a82ca97ad9d80ce9d2559fe45b0f4db72ebfd52",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:Additional properties are not allowed ('public_authority' was unexpected)"
+    },
+    {
+      "id": "FINAL-BARE_CLONE-positive",
+      "input_sha256": "c9cc21d60fa3f3a85a5e3a1570febe688f3997975a590138704701b6d9586a6d",
+      "expected_accept": true,
+      "observed_accept": true,
+      "matched": true,
+      "error": null
+    },
+    {
+      "id": "FINAL-BARE_CLONE-over-allocation_live_bytes",
+      "input_sha256": "ab067905bd4f29cd58d1ff2978457c406e75d70f119933057c41dcc4246cdc11",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:268435457 is greater than the maximum of 268435456"
+    },
+    {
+      "id": "FINAL-BARE_CLONE-over-cache_insert_bytes",
+      "input_sha256": "5f887db8d972eb7d2d8e0d5326a18f4c3d3cfa1640c998062794e5642528a249",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:268435457 is greater than the maximum of 268435456"
+    },
+    {
+      "id": "FINAL-BARE_CLONE-over-cache_insertions",
+      "input_sha256": "759cda43978321b4cbd1759653ad16e1c5a37e7dc929c4dfce547385b09bf889",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:32769 is greater than the maximum of 32768"
+    },
+    {
+      "id": "FINAL-BARE_CLONE-over-cache_live_bytes",
+      "input_sha256": "937b2405c00416a10ab1428f83abdd43c5b49c9b5b7bbcb5bd06861cb95844ad",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:67108865 is greater than the maximum of 67108864"
+    },
+    {
+      "id": "FINAL-BARE_CLONE-over-cache_live_objects",
+      "input_sha256": "2826e80ded0c90299a5da66aaf3faacf6c391bfbcbccbbc273dc2ebbb9d151a3",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:16385 is greater than the maximum of 16384"
+    },
+    {
+      "id": "FINAL-BARE_CLONE-over-command_chars",
+      "input_sha256": "546e1423916cff8652094b5a98636286090c722c94753bc2378f42fbd9aed144",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:16385 is greater than the maximum of 16384"
+    },
+    {
+      "id": "FINAL-BARE_CLONE-over-comparison_bytes",
+      "input_sha256": "45eaa88d133c37526b68e2f09e46a970fb69961b1e465f240377706fb2b7f41a",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:8589934593 is greater than the maximum of 8589934592"
+    },
+    {
+      "id": "FINAL-BARE_CLONE-over-diagnostic_bytes",
+      "input_sha256": "8bb78e0f90bde2615570d51de81c1d2c1fa0756d83a5356c8fffce89ef228064",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:2097153 is greater than the maximum of 2097152"
+    },
+    {
+      "id": "FINAL-BARE_CLONE-over-entry_visits",
+      "input_sha256": "c0ca69f6a669927eb625727eff384d9d67b13f1ebc2820b38025352b3f5a6614",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:262145 is greater than the maximum of 262144"
+    },
+    {
+      "id": "FINAL-BARE_CLONE-over-file_read_bytes",
+      "input_sha256": "91b030da8d9005400713ff76f6e78c5bb62a2804c41a598ba600316e51f2867e",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:17179869185 is greater than the maximum of 17179869184"
+    },
+    {
+      "id": "FINAL-BARE_CLONE-over-file_write_bytes",
+      "input_sha256": "58192a68e00250f1e8abf17e428ab6d427f044b7c0e26f8b937632922dd93dca",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:8589934593 is greater than the maximum of 8589934592"
+    },
+    {
+      "id": "FINAL-BARE_CLONE-over-git_input_bytes",
+      "input_sha256": "0010c8c222db698708a5b91eb75d2bc3ccd4a8e1c9dd7fc46a2b78e9da92581d",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:268435457 is greater than the maximum of 268435456"
+    },
+    {
+      "id": "FINAL-BARE_CLONE-over-git_operations",
+      "input_sha256": "30fdeb3ed7d027da8ce80d832082f4d865d41db9b6fdc85d0426a184d4cddd64",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:65537 is greater than the maximum of 65536"
+    },
+    {
+      "id": "FINAL-BARE_CLONE-over-git_output_bytes",
+      "input_sha256": "df2a556f8ec38f4699c22876a28d44deb54530b926a0671b91b1c8a289046a90",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:4294967297 is greater than the maximum of 4294967296"
+    },
+    {
+      "id": "FINAL-BARE_CLONE-over-metadata_read_bytes",
+      "input_sha256": "6d8873c803459a8bffc29dfb012b42ce1c7401b73c6338d765d1766fa6c20e63",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:268435457 is greater than the maximum of 268435456"
+    },
+    {
+      "id": "FINAL-BARE_CLONE-over-network_input_bytes",
+      "input_sha256": "50f8d39678f49a28278b762a0e82621203014130d633c0736139d68583c10276",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:67108865 is greater than the maximum of 67108864"
+    },
+    {
+      "id": "FINAL-BARE_CLONE-over-network_output_bytes",
+      "input_sha256": "a98a43ade33b6037756db6302763d3406b2bf7a953126348dc218871946cbff6",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:268435457 is greater than the maximum of 268435456"
+    },
+    {
+      "id": "FINAL-BARE_CLONE-over-network_requests",
+      "input_sha256": "3a8d19a0883c7dd9dd74baa86f6188d5bf88429852c0a47f1599d8f5d04e70a7",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:33 is greater than the maximum of 32"
+    },
+    {
+      "id": "FINAL-BARE_CLONE-over-object_copy_bytes",
+      "input_sha256": "b5ea6fe03a8bb57325a4369a79c6a0fe8f6cd6b9b4ab84809b5c1f8796dbe3f3",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:4294967297 is greater than the maximum of 4294967296"
+    },
+    {
+      "id": "FINAL-BARE_CLONE-over-path_chars",
+      "input_sha256": "d8df88a944defcbe0c3843921662796e0bd7f0a86d9eee1fb8bae58182e0c821",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:1025 is greater than the maximum of 1024"
+    },
+    {
+      "id": "FINAL-BARE_CLONE-over-physical_paths",
+      "input_sha256": "5202eaf9bba742e1aea8e3d3abcc9eee0df6ed72b1d7d5e994ea96a73426fde0",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:65537 is greater than the maximum of 65536"
+    },
+    {
+      "id": "FINAL-BARE_CLONE-over-process_group_rss_bytes",
+      "input_sha256": "757aee4e07352bd8a1083fec4226eac8134abb1311ed31957d51ae1f04957f5c",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:1073741825 is greater than the maximum of 1073741824"
+    },
+    {
+      "id": "FINAL-BARE_CLONE-over-process_operations",
+      "input_sha256": "dea0ae4ca6a676ce097fd8ac6e7f0e47ebbfcbbe34e43490d6cdaff70751e550",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:65665 is greater than the maximum of 65664"
+    },
+    {
+      "id": "FINAL-BARE_CLONE-over-ref_chars",
+      "input_sha256": "a24e6968107da149936cd1c1f5a3866437ce73327a9b9d9018398d7d4b6e6ca4",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:1025 is greater than the maximum of 1024"
+    },
+    {
+      "id": "FINAL-BARE_CLONE-over-signing_operations",
+      "input_sha256": "811fe70630da3d64b1e82bd7330ac6c48a3bd53506ceff2f22043f80a0a7d22f",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:9 is greater than the maximum of 8"
+    },
+    {
+      "id": "FINAL-BARE_CLONE-over-single_blob_bytes",
+      "input_sha256": "0bb7ce50e0e553e498e06d11de92d038734504e18bb8c618663cee4bc8f5dd65",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:67108865 is greater than the maximum of 67108864"
+    },
+    {
+      "id": "FINAL-BARE_CLONE-over-single_metadata_bytes",
+      "input_sha256": "c86ba0038a2fefd386932a865623d5f1be508be3bddcabc0de035affc52abfda",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:16777217 is greater than the maximum of 16777216"
+    },
+    {
+      "id": "FINAL-BARE_CLONE-over-tracked_entries_per_snapshot",
+      "input_sha256": "53c2e066c7c34bb7cfbd5f5c3ed0a0e88d1697b7ea0efa2d864ec224a7ca2837",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:16385 is greater than the maximum of 16384"
+    },
+    {
+      "id": "FINAL-BARE_CLONE-over-worklist_entries",
+      "input_sha256": "ab2246caef6e92b1236efc960a74152863d806275f37bbc0e8d6414b7305017a",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:65537 is greater than the maximum of 65536"
+    },
+    {
+      "id": "FINAL-BARE_CLONE-wrong-size",
+      "input_sha256": "181ebf6b03ca52b1ade91e45b6355379dddd193a32b7365d4ecda9b842a1f6fe",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:RESULT_BYTES_EXACT"
+    },
+    {
+      "id": "FINAL-BARE_CLONE-forged-publishable_positives",
+      "input_sha256": "3d00a8657d81bbe7b2cf1d17b4bade5bf6e332f3992fd33fcf8adc4febfc5d09",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:0 was expected"
+    },
+    {
+      "id": "FINAL-BARE_CLONE-forged-continuation_authorized",
+      "input_sha256": "6910df9d0c44453c528bc9c0b29d4ba3a3eb9fd107608d8bc400cd3085bfd87c",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:False was expected"
+    },
+    {
+      "id": "FINAL-BARE_CLONE-forged-acceptance_eligible",
+      "input_sha256": "00eb8a9d71687ec88e9a1d9f3ded39bd57e66a11895c3943df1572f6cc9005b1",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:False was expected"
+    },
+    {
+      "id": "FINAL-BARE_CLONE-forged-execution_reuse",
+      "input_sha256": "46738eea8cf877166dc838f42f695379fff3705818cb3d266ea78a19a8338d59",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:False was expected"
+    },
+    {
+      "id": "FINAL-BARE_CLONE-forged-native_limits_unchanged",
+      "input_sha256": "0d4dd0eb8fc6a4f332c268a42248a31b94d0fc3436b9a341e5494870add08cdc",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:True was expected"
+    },
+    {
+      "id": "FINAL-BARE_CLONE-forged-observer_exit",
+      "input_sha256": "8497c62c2e8576cca4948b00c5a1b3bd4d3ec9d76c2d5d49d388eb469b1319e8",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:0 is not of type 'null'"
+    },
+    {
+      "id": "FINAL-BARE_CLONE-forged-observer_state",
+      "input_sha256": "8675e7ffe3002262862b01017f66db39ae4dbeb381f233679d6cde45660cca10",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:'LIVE' was expected"
+    },
+    {
+      "id": "FINAL-BARE_CLONE-forged-counter_state",
+      "input_sha256": "4e536a2b0b66caaadbfcc2bbf9dfd79e503b5e9a13e74374fab59f8fd428b1b3",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:'EXACT' was expected"
+    },
+    {
+      "id": "FINAL-BARE_CLONE-native-0-NOT_REACHED",
+      "input_sha256": "99e9e17881725b890ebfd62c7ff798a60a25ac2100b9b22b455ba254456833ea",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:NATIVE_ORDER"
+    },
+    {
+      "id": "FINAL-BARE_CLONE-native-0-DENIED",
+      "input_sha256": "10b3b41d6e673bca7a3b0cefc67a5c4154ef7c7e441e8c9107294105d3aeb0e0",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:NATIVE_ORDER"
+    },
+    {
+      "id": "FINAL-BARE_CLONE-native-0-INTERRUPTED",
+      "input_sha256": "52885d77f25f61dc9d347ad31206b46558b3022b1c9f480427ee609188168c87",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:NATIVE_ORDER"
+    },
+    {
+      "id": "FINAL-BARE_CLONE-native-1-NOT_REACHED",
+      "input_sha256": "8263eed39fca16fc1cd175a617affcdc681d4f203a2a110cc109980f85101a05",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:NATIVE_COMPLETE_CONJUNCTION"
+    },
+    {
+      "id": "FINAL-BARE_CLONE-native-1-DENIED",
+      "input_sha256": "547aef29d3a294456c04251765a299184e2b1a51522c2d49adae8c00e82b5d3f",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:NATIVE_COMPLETE_CONJUNCTION"
+    },
+    {
+      "id": "FINAL-BARE_CLONE-native-1-INTERRUPTED",
+      "input_sha256": "bed74dd078800a85333d37bcc48b7ab478b74f556514da27b500aba4ed468014",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:NATIVE_COMPLETE_CONJUNCTION"
+    },
+    {
+      "id": "FINAL-BARE_CLONE-omit-phase-0",
+      "input_sha256": "68795a98fcd5e3608927f8222ed3f0df660caef589f834c0c4ba14bc2e608c35",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:SUCCESS_PHASES"
+    },
+    {
+      "id": "FINAL-BARE_CLONE-omit-phase-1",
+      "input_sha256": "3fa71ae39c2055726ad57445792110c35901c3561ddcf580a9c7ddf4379dbcfe",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:SUCCESS_PHASES"
+    },
+    {
+      "id": "FINAL-BARE_CLONE-omit-phase-2",
+      "input_sha256": "51b4f4939c39b95e79c9a33bb8ee33a60b332f3d89c43c8e284576ebed362a06",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:SUCCESS_PHASES"
+    },
+    {
+      "id": "FINAL-BARE_CLONE-omit-phase-3",
+      "input_sha256": "2c7872b6a5125225efdfb594df9308777562857ae50e809c57a67e5b8e0db4c4",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:SUCCESS_PHASES"
+    },
+    {
+      "id": "FINAL-BARE_CLONE-omit-phase-4",
+      "input_sha256": "8e77188310009aed9e347cceeace9ef06545f6c088898201ceec842ddccf6e86",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:SUCCESS_PHASES"
+    },
+    {
+      "id": "FINAL-BARE_CLONE-omit-phase-5",
+      "input_sha256": "d02567cf6ea2b325c265c85ed7d938d13b83e6df3c8b41588731d507723003bc",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:SUCCESS_PHASES"
+    },
+    {
+      "id": "FINAL-BARE_CLONE-omit-phase-6",
+      "input_sha256": "d651697018cccd8c993735fea43446eace4babd5a2b0636057e64a369a537e4a",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:SUCCESS_PHASES"
+    },
+    {
+      "id": "FINAL-BARE_CLONE-omit-phase-7",
+      "input_sha256": "e3cba478f79d0954fdb7890e8e64f1493a33ffb4479afe8f4ceffae38fbe05e8",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:SUCCESS_PHASES"
+    },
+    {
+      "id": "FINAL-BARE_CLONE-omit-phase-8",
+      "input_sha256": "953472552fc44b3b47ccf783a83efbcc01cec9933744c00be7cea03a14152d3f",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:SUCCESS_PHASES"
+    },
+    {
+      "id": "FINAL-BARE_CLONE-driver-UNKNOWN",
+      "input_sha256": "90966efd86a190c2679a94bf9416b3cf62c0a5fe85d4430a2931839a275254df",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:0 was expected"
+    },
+    {
+      "id": "FINAL-BARE_CLONE-driver-EXITED",
+      "input_sha256": "285a4fa99b48b94707aac6b51ab134c644765c26741a38ab187e515e06fa4dcc",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:0 was expected"
+    },
+    {
+      "id": "FINAL-BARE_CLONE-driver-NOT_STARTED",
+      "input_sha256": "d62c6cd008cc4960b05b5ad8892de18b31d80bf1c48921be465fc6b4d4cbba84",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:0 was expected"
+    },
+    {
+      "id": "FINAL-BARE_CLONE-child-UNKNOWN",
+      "input_sha256": "76015f03db800c7b62aa25d890f13aab14b4ebabe91c5d42105c6d36de93b94a",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:0 was expected"
+    },
+    {
+      "id": "FINAL-BARE_CLONE-child-EXITED",
+      "input_sha256": "52039588f1fd214efd6dcede50e59ca464be83a5f90de721d0a1e10f0dab6238",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:0 was expected"
+    },
+    {
+      "id": "FINAL-BARE_CLONE-child-NOT_STARTED",
+      "input_sha256": "b2fbc1378e998711757d0911afceb5eaff8ac50a58d364e3df3e143b41d6ed84",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:0 was expected"
+    },
+    {
+      "id": "FINAL-BARE_CLONE-deadline",
+      "input_sha256": "c5fe7482090693fa1b369dcd7b9eafea8c59c2bcb27036cea1540b71050ba8b6",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:DEADLINE_REQUIRES_DENIAL"
+    },
+    {
+      "id": "FINAL-BARE_CLONE-unknown-field",
+      "input_sha256": "b16f929a7465b4fd8a187b84540aee931df0bf577dde0cc8815e31e8a52aa3f7",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:Additional properties are not allowed ('public_authority' was unexpected)"
+    },
+    {
+      "id": "FINAL-MATERIALIZED_CHECKOUT-positive",
+      "input_sha256": "25b8c93ab39534e7ed353a1100db9e7d4834eb3aea132ea06891d5636ce83c84",
+      "expected_accept": true,
+      "observed_accept": true,
+      "matched": true,
+      "error": null
+    },
+    {
+      "id": "FINAL-MATERIALIZED_CHECKOUT-over-allocation_live_bytes",
+      "input_sha256": "9d71235ea2f077547c2851252b1b86d5f0f687114e900c78f08f36ec748cf362",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:268435457 is greater than the maximum of 268435456"
+    },
+    {
+      "id": "FINAL-MATERIALIZED_CHECKOUT-over-cache_insert_bytes",
+      "input_sha256": "c3ecbebdbe16244f14218d37c499a95f8827dd9197310588e557bd08363f12ea",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:268435457 is greater than the maximum of 268435456"
+    },
+    {
+      "id": "FINAL-MATERIALIZED_CHECKOUT-over-cache_insertions",
+      "input_sha256": "04083f17bb20f683c29f2ef076ebc2038a1d5af0d4097b583ecefac3638da05a",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:32769 is greater than the maximum of 32768"
+    },
+    {
+      "id": "FINAL-MATERIALIZED_CHECKOUT-over-cache_live_bytes",
+      "input_sha256": "e39bdeb51c2474aa7ce75ade89a93b0fa6e04cdba012537031c4ee65e77b9f63",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:67108865 is greater than the maximum of 67108864"
+    },
+    {
+      "id": "FINAL-MATERIALIZED_CHECKOUT-over-cache_live_objects",
+      "input_sha256": "b3751d79d50cad0781a3600c38ec3374d31bcd3f48de6fa896b61d8be0b64d59",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:16385 is greater than the maximum of 16384"
+    },
+    {
+      "id": "FINAL-MATERIALIZED_CHECKOUT-over-command_chars",
+      "input_sha256": "80054a32cd687048de7bbcb53bfb449c22c96ad15064653ac05f330375e6535c",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:16385 is greater than the maximum of 16384"
+    },
+    {
+      "id": "FINAL-MATERIALIZED_CHECKOUT-over-comparison_bytes",
+      "input_sha256": "9e5c52dab48c81429b16b5371cb94020727cb2ada3dd10faa521f26f715ee060",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:8589934593 is greater than the maximum of 8589934592"
+    },
+    {
+      "id": "FINAL-MATERIALIZED_CHECKOUT-over-diagnostic_bytes",
+      "input_sha256": "c10767c695763505e5ddf2f5aa8c951f3aae447c0237a704b998417d8a1534e1",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:2097153 is greater than the maximum of 2097152"
+    },
+    {
+      "id": "FINAL-MATERIALIZED_CHECKOUT-over-entry_visits",
+      "input_sha256": "ec86f8f34d79322515a99dd0bb61a1a18107f95ee78a274002dc1457525e0acc",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:262145 is greater than the maximum of 262144"
+    },
+    {
+      "id": "FINAL-MATERIALIZED_CHECKOUT-over-file_read_bytes",
+      "input_sha256": "7079f6957226a7d3fc38f674ed84925603163cef06ecd6001620576033670595",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:17179869185 is greater than the maximum of 17179869184"
+    },
+    {
+      "id": "FINAL-MATERIALIZED_CHECKOUT-over-file_write_bytes",
+      "input_sha256": "380804cb80b6fd20a53453d489df30f2636285bddcd36a39bcb507a5dae3fe06",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:8589934593 is greater than the maximum of 8589934592"
+    },
+    {
+      "id": "FINAL-MATERIALIZED_CHECKOUT-over-git_input_bytes",
+      "input_sha256": "173e2d2dc86cb9974627f17737cb8901a56d5ed98fd688ec8c0a51e90e3601f0",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:268435457 is greater than the maximum of 268435456"
+    },
+    {
+      "id": "FINAL-MATERIALIZED_CHECKOUT-over-git_operations",
+      "input_sha256": "3b6abcb1c1417eb78d944b8f80bba6d67107fb8d4bb4610cf49fe10c8d9bcf5a",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:65537 is greater than the maximum of 65536"
+    },
+    {
+      "id": "FINAL-MATERIALIZED_CHECKOUT-over-git_output_bytes",
+      "input_sha256": "fc33095da447dbd8fcd72856114acb8761ac0e8777e9462f3a360c65107c2c66",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:4294967297 is greater than the maximum of 4294967296"
+    },
+    {
+      "id": "FINAL-MATERIALIZED_CHECKOUT-over-metadata_read_bytes",
+      "input_sha256": "188d7b90246cb1d5c0598df6195d8230d16549efdf3308132b1f6a4b8ab2d4f6",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:268435457 is greater than the maximum of 268435456"
+    },
+    {
+      "id": "FINAL-MATERIALIZED_CHECKOUT-over-network_input_bytes",
+      "input_sha256": "16bfa27814b7c05636fe9beadcff8109aea15fe1c4d18bcda5ddc008d88ae686",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:67108865 is greater than the maximum of 67108864"
+    },
+    {
+      "id": "FINAL-MATERIALIZED_CHECKOUT-over-network_output_bytes",
+      "input_sha256": "8a799c5beb08d0c8429c7badcad6693bdb1876cc8086f39029c54c0f6b9003aa",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:268435457 is greater than the maximum of 268435456"
+    },
+    {
+      "id": "FINAL-MATERIALIZED_CHECKOUT-over-network_requests",
+      "input_sha256": "175c8727e53f32370bdadfb21a4b9091fe83e5be1220f2ded7ec5e5d9b9e1c17",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:33 is greater than the maximum of 32"
+    },
+    {
+      "id": "FINAL-MATERIALIZED_CHECKOUT-over-object_copy_bytes",
+      "input_sha256": "52f7327e1bb00c9b4fb959c4a3f2b3fd4ebe5ab4a5fb2cfb975218d107135ede",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:4294967297 is greater than the maximum of 4294967296"
+    },
+    {
+      "id": "FINAL-MATERIALIZED_CHECKOUT-over-path_chars",
+      "input_sha256": "b6e5b77df5a01b0dec26dbfea3c6e6dba11ad50453c8395ecfe02f3bffd7ffb4",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:1025 is greater than the maximum of 1024"
+    },
+    {
+      "id": "FINAL-MATERIALIZED_CHECKOUT-over-physical_paths",
+      "input_sha256": "ba8057309ce7ee1b72c43debc0b83ec54680a9c9ae5a1b387b61b7bbb4c4172b",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:65537 is greater than the maximum of 65536"
+    },
+    {
+      "id": "FINAL-MATERIALIZED_CHECKOUT-over-process_group_rss_bytes",
+      "input_sha256": "23462079401dd14de281b65268b53f9d6ada7ca1431425734300c1d970d44315",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:1073741825 is greater than the maximum of 1073741824"
+    },
+    {
+      "id": "FINAL-MATERIALIZED_CHECKOUT-over-process_operations",
+      "input_sha256": "c2d2fd0971f4a095922b934ff7962f92c1a7e4bbca674042d8dc4ecc64c823d5",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:65665 is greater than the maximum of 65664"
+    },
+    {
+      "id": "FINAL-MATERIALIZED_CHECKOUT-over-ref_chars",
+      "input_sha256": "3f3a6031fd6b9365adc6fa84a66c39e6435827b4bbf98cca2032679777ee4795",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:1025 is greater than the maximum of 1024"
+    },
+    {
+      "id": "FINAL-MATERIALIZED_CHECKOUT-over-signing_operations",
+      "input_sha256": "4dc11f5a85ecbef774ff83254020c5b5f68185690a54182bd7e9ca1866dbd529",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:9 is greater than the maximum of 8"
+    },
+    {
+      "id": "FINAL-MATERIALIZED_CHECKOUT-over-single_blob_bytes",
+      "input_sha256": "da736290c054c966caa0bdf1cd3feb7b998a58bd9b45695cd790f1c31025027f",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:67108865 is greater than the maximum of 67108864"
+    },
+    {
+      "id": "FINAL-MATERIALIZED_CHECKOUT-over-single_metadata_bytes",
+      "input_sha256": "84de3dc508d59d63f70db8bf27f8ae6ed7be59161fbf3fcbf5a611718bdfba92",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:16777217 is greater than the maximum of 16777216"
+    },
+    {
+      "id": "FINAL-MATERIALIZED_CHECKOUT-over-tracked_entries_per_snapshot",
+      "input_sha256": "edaf9ec3f6e36fe2df775e35dd6ba9a9dfd05d1304da0c69a2710892d37ae6b1",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:16385 is greater than the maximum of 16384"
+    },
+    {
+      "id": "FINAL-MATERIALIZED_CHECKOUT-over-worklist_entries",
+      "input_sha256": "d179d649801e46b2cfaa074c9a049c355f4596714751b4e1590146b4ee80d2ba",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:65537 is greater than the maximum of 65536"
+    },
+    {
+      "id": "FINAL-MATERIALIZED_CHECKOUT-wrong-size",
+      "input_sha256": "02f80161ade8e8266b2ae1610f5bc4899eb9340f29c434f1f1d5cf8a9aae083a",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:RESULT_BYTES_EXACT"
+    },
+    {
+      "id": "FINAL-MATERIALIZED_CHECKOUT-forged-publishable_positives",
+      "input_sha256": "05004eea416953d8acb85ef5ae68b59bd6622a9b48ccbee17235ae2c9b8e16df",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:0 was expected"
+    },
+    {
+      "id": "FINAL-MATERIALIZED_CHECKOUT-forged-continuation_authorized",
+      "input_sha256": "0ced9d8d6aec83ad191be1515d5c51786741d96277a3020a58de365f902695c6",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:False was expected"
+    },
+    {
+      "id": "FINAL-MATERIALIZED_CHECKOUT-forged-acceptance_eligible",
+      "input_sha256": "ed9654341ab239a5e1d6bbdbdd60d7d7e9ad606e5d266353f4b1a90cc24c83cb",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:False was expected"
+    },
+    {
+      "id": "FINAL-MATERIALIZED_CHECKOUT-forged-execution_reuse",
+      "input_sha256": "c0d91944ae4269b592a50fec72a87b858382fbd3c15585f17308fba76976f96f",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:False was expected"
+    },
+    {
+      "id": "FINAL-MATERIALIZED_CHECKOUT-forged-native_limits_unchanged",
+      "input_sha256": "12cc21d0fdaffd26593bb9af330992b4f39949fdb20d59b33af874d1567c237d",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:True was expected"
+    },
+    {
+      "id": "FINAL-MATERIALIZED_CHECKOUT-forged-observer_exit",
+      "input_sha256": "465deb334239b36aec7062d0876c4c72bcb5821dac7be61bf1ccf8ac6b1d0dec",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:0 is not of type 'null'"
+    },
+    {
+      "id": "FINAL-MATERIALIZED_CHECKOUT-forged-observer_state",
+      "input_sha256": "9db2c71b38bf423a01abca92e0c81b6dced31c197ea5604c5f3b33115dd3ca52",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:'LIVE' was expected"
+    },
+    {
+      "id": "FINAL-MATERIALIZED_CHECKOUT-forged-counter_state",
+      "input_sha256": "87552715e9b66c026614635bebba4121f2b60a44cec6a793d2c8c9529c837665",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:'EXACT' was expected"
+    },
+    {
+      "id": "FINAL-MATERIALIZED_CHECKOUT-native-0-NOT_REACHED",
+      "input_sha256": "c35fed979092af4cb94a66d0d3820d123dad3d5102fbbd0c50370e0744278b83",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:NATIVE_ORDER"
+    },
+    {
+      "id": "FINAL-MATERIALIZED_CHECKOUT-native-0-DENIED",
+      "input_sha256": "32c99a4284b8cb75a1561e2deac6944ff1439230843742078a47a0a9f78527e5",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:NATIVE_ORDER"
+    },
+    {
+      "id": "FINAL-MATERIALIZED_CHECKOUT-native-0-INTERRUPTED",
+      "input_sha256": "d8c04fa4023cbf557afed0ea91bd939ebadc4742c142ee447e010cfc704e79e5",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:NATIVE_ORDER"
+    },
+    {
+      "id": "FINAL-MATERIALIZED_CHECKOUT-native-1-NOT_REACHED",
+      "input_sha256": "d167a5baae4140a724c0d1a679a1f4b0699da9122061e0d6420e20e8731802db",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:NATIVE_COMPLETE_CONJUNCTION"
+    },
+    {
+      "id": "FINAL-MATERIALIZED_CHECKOUT-native-1-DENIED",
+      "input_sha256": "ea55663946e5d1b35378839c7259b874c6a52c481375146a838cb33d9dcdfe4d",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:NATIVE_COMPLETE_CONJUNCTION"
+    },
+    {
+      "id": "FINAL-MATERIALIZED_CHECKOUT-native-1-INTERRUPTED",
+      "input_sha256": "6d66e4eb7f206e4ee61d7fd8c46079f1bb258b389b6c40d8159e4c12dd0c4d25",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:NATIVE_COMPLETE_CONJUNCTION"
+    },
+    {
+      "id": "FINAL-MATERIALIZED_CHECKOUT-omit-phase-0",
+      "input_sha256": "4fc65d9540d56fd23604c3438be0dfff62c5e9d9376c22bc317e86ed9ff2b7ef",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:SUCCESS_PHASES"
+    },
+    {
+      "id": "FINAL-MATERIALIZED_CHECKOUT-omit-phase-1",
+      "input_sha256": "8fe6a6839dce0fb37c3bf21b6a508596342dbc50c25096434029db79e655ac54",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:SUCCESS_PHASES"
+    },
+    {
+      "id": "FINAL-MATERIALIZED_CHECKOUT-omit-phase-2",
+      "input_sha256": "bd0ea0caa3e3fd07d0a14be35a8165d357844d728692447abd584516f114b81a",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:SUCCESS_PHASES"
+    },
+    {
+      "id": "FINAL-MATERIALIZED_CHECKOUT-omit-phase-3",
+      "input_sha256": "2c68fb326ddac6e04c65440efe7379a6f7a43ddd5d50d352754d805eeb52d643",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:SUCCESS_PHASES"
+    },
+    {
+      "id": "FINAL-MATERIALIZED_CHECKOUT-omit-phase-4",
+      "input_sha256": "e3c2afa55eea55b403405478ce23bab61f8f5f55e0ea80b69b3796368d8cdbb7",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:SUCCESS_PHASES"
+    },
+    {
+      "id": "FINAL-MATERIALIZED_CHECKOUT-omit-phase-5",
+      "input_sha256": "11f3f4259fcac60439a4a578a29da0d966f911163a5957764b4bc10b58fc1d2c",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:SUCCESS_PHASES"
+    },
+    {
+      "id": "FINAL-MATERIALIZED_CHECKOUT-omit-phase-6",
+      "input_sha256": "4e2fbbe8f65c6e278fb481ececb1a7e3caf2298b5490345d04e86097b78ec409",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:SUCCESS_PHASES"
+    },
+    {
+      "id": "FINAL-MATERIALIZED_CHECKOUT-omit-phase-7",
+      "input_sha256": "a3f8766cf619710d41bfcddf86745cd32a7418a3bb505a8491076a7a165c37a5",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:SUCCESS_PHASES"
+    },
+    {
+      "id": "FINAL-MATERIALIZED_CHECKOUT-omit-phase-8",
+      "input_sha256": "7638872a8fa3ba1bff539f190a97a80feb552a2bf0249bea82f2351abdaad8c3",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:SUCCESS_PHASES"
+    },
+    {
+      "id": "FINAL-MATERIALIZED_CHECKOUT-driver-UNKNOWN",
+      "input_sha256": "c3fb927739f5e8ce83511a89cab7fbf5390b20ab1b59997291072859c9320efe",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:0 was expected"
+    },
+    {
+      "id": "FINAL-MATERIALIZED_CHECKOUT-driver-EXITED",
+      "input_sha256": "2cd93ea5445460a0da5729498b1c95ddbb9958df7180f800d6852467b22b6da6",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:0 was expected"
+    },
+    {
+      "id": "FINAL-MATERIALIZED_CHECKOUT-driver-NOT_STARTED",
+      "input_sha256": "81c5349135e3f7b543f275cf8f64ec45ced24781a47667adce077371c8c48529",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:0 was expected"
+    },
+    {
+      "id": "FINAL-MATERIALIZED_CHECKOUT-child-UNKNOWN",
+      "input_sha256": "b8aaa59c58635c9eb4d963fdcb36f053fa621add0f83ce56a0f891e8a6447c27",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:0 was expected"
+    },
+    {
+      "id": "FINAL-MATERIALIZED_CHECKOUT-child-EXITED",
+      "input_sha256": "b2bf3ece78b46ba10b5c05d5597a77ae8ac56d69dba6559e3e3edc27821f08d9",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:0 was expected"
+    },
+    {
+      "id": "FINAL-MATERIALIZED_CHECKOUT-child-NOT_STARTED",
+      "input_sha256": "827a51407d10f9b82158f65873489a7a5a8e3c3c130548491ee7376fc3e56306",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:0 was expected"
+    },
+    {
+      "id": "FINAL-MATERIALIZED_CHECKOUT-deadline",
+      "input_sha256": "392bc421aa1980faf59cd4e16482bd12ab4262ac351833384e7dfda5d98d0369",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:DEADLINE_REQUIRES_DENIAL"
+    },
+    {
+      "id": "FINAL-MATERIALIZED_CHECKOUT-unknown-field",
+      "input_sha256": "dfa8791e2059aec1fb8a2b131e5b8e920592241bcbab10aed764788defb32fa6",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:Additional properties are not allowed ('public_authority' was unexpected)"
+    },
+    {
+      "id": "truthful-BARE_CLONE-store_device-SOURCE_BEFORE-DENIED",
+      "input_sha256": "f572edd36347d188c4f370c29a7ea7a2ea335237b09307ec76a39c343dedad63",
+      "expected_accept": true,
+      "observed_accept": true,
+      "matched": true,
+      "error": null
+    },
+    {
+      "id": "truthful-BARE_CLONE-store_device-SOURCE_BEFORE-DENIED-wrong-cause",
+      "input_sha256": "66a53d8eae5eda57a219b6f903d28da98358e3b36f4d63719bf0f9be0d1416e1",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:FINAL_INITIAL_MISMATCH_FAILURE_PATH"
+    },
+    {
+      "id": "truthful-BARE_CLONE-store_device-SOURCE_BEFORE-INTERRUPTED",
+      "input_sha256": "88e595241c72094b560bd4a9aca101f291f60cb3b9358f9cbeb9d8c2c02aab35",
+      "expected_accept": true,
+      "observed_accept": true,
+      "matched": true,
+      "error": null
+    },
+    {
+      "id": "truthful-BARE_CLONE-store_device-SOURCE_BEFORE-INTERRUPTED-wrong-cause",
+      "input_sha256": "0b4c42c249ec604f2352bd218749e8a5c5e535d79c074f4203e44c06a2620797",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:FINAL_INITIAL_MISMATCH_FAILURE_PATH"
+    },
+    {
+      "id": "truthful-BARE_CLONE-store_device-SOURCE_AFTER-DENIED",
+      "input_sha256": "fec19c0f460d695af0979a0da26f95b30719cfac872381cbc8821adf265b841a",
+      "expected_accept": true,
+      "observed_accept": true,
+      "matched": true,
+      "error": null
+    },
+    {
+      "id": "truthful-BARE_CLONE-store_device-SOURCE_AFTER-DENIED-wrong-cause",
+      "input_sha256": "8a93c867975004dd2d25d90b735fb6abd17ed354b1d7d2cea8c4c90e58f0e355",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:FINAL_TERMINAL_MISMATCH_FAILURE_PATH"
+    },
+    {
+      "id": "truthful-BARE_CLONE-store_device-SOURCE_AFTER-INTERRUPTED",
+      "input_sha256": "b8b124510af1e93bfcb1bb1c3b8aa269e797672da0c27310b74d1e1c7dcd5931",
+      "expected_accept": true,
+      "observed_accept": true,
+      "matched": true,
+      "error": null
+    },
+    {
+      "id": "truthful-BARE_CLONE-store_device-SOURCE_AFTER-INTERRUPTED-wrong-cause",
+      "input_sha256": "df779c2274d8dca2e302d22f98bcf436f41955ea9c86ba910eca85333c6155c3",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:FINAL_TERMINAL_MISMATCH_FAILURE_PATH"
+    },
+    {
+      "id": "truthful-BARE_CLONE-store_device-FINAL_BOUNDARY-DENIED",
+      "input_sha256": "e2d958d4bdd3a8178ccf19405330950935f6d03a883ea8aca62c6dd2bfcd9958",
+      "expected_accept": true,
+      "observed_accept": true,
+      "matched": true,
+      "error": null
+    },
+    {
+      "id": "truthful-BARE_CLONE-store_device-FINAL_BOUNDARY-DENIED-wrong-cause",
+      "input_sha256": "c371fe72e0e9dd392993f24915baa5257d4e23cc2f833beecce4f62e74c0189b",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:FINAL_TERMINAL_MISMATCH_FAILURE_PATH"
+    },
+    {
+      "id": "truthful-BARE_CLONE-store_device-FINAL_BOUNDARY-INTERRUPTED",
+      "input_sha256": "bfc62f90629751a0b0188ca1e48f4eb87d8b9aea7b388cdade405abd6c1511d7",
+      "expected_accept": true,
+      "observed_accept": true,
+      "matched": true,
+      "error": null
+    },
+    {
+      "id": "truthful-BARE_CLONE-store_device-FINAL_BOUNDARY-INTERRUPTED-wrong-cause",
+      "input_sha256": "374d9ad32d13b70f800ba4bac251d40544876d92e427cd48cc65dac89a01dbcc",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:FINAL_TERMINAL_MISMATCH_FAILURE_PATH"
+    },
+    {
+      "id": "truthful-BARE_CLONE-store_inode-SOURCE_BEFORE-DENIED",
+      "input_sha256": "51ac2ff1c59137bfa9ad4e1d4a76c530ae0dd4d4323ef4be9cff859d26586d5c",
+      "expected_accept": true,
+      "observed_accept": true,
+      "matched": true,
+      "error": null
+    },
+    {
+      "id": "truthful-BARE_CLONE-store_inode-SOURCE_BEFORE-DENIED-wrong-cause",
+      "input_sha256": "469ea13096e9293c271f8e110bfe11ef6743c627ec0fde78d3104852263c33b1",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:FINAL_INITIAL_MISMATCH_FAILURE_PATH"
+    },
+    {
+      "id": "truthful-BARE_CLONE-store_inode-SOURCE_BEFORE-INTERRUPTED",
+      "input_sha256": "527d0b9d15658e001d7ec111ecc6e4a541dbc119a1164da885c78ff4210679f4",
+      "expected_accept": true,
+      "observed_accept": true,
+      "matched": true,
+      "error": null
+    },
+    {
+      "id": "truthful-BARE_CLONE-store_inode-SOURCE_BEFORE-INTERRUPTED-wrong-cause",
+      "input_sha256": "b9feac9ec6bfeb604d882617d5e333bf2789cec415dc28b0506777a429c9e924",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:FINAL_INITIAL_MISMATCH_FAILURE_PATH"
+    },
+    {
+      "id": "truthful-BARE_CLONE-store_inode-SOURCE_AFTER-DENIED",
+      "input_sha256": "0d00590488000ef7a580151a7b01f566a50c5ae5c149fa22e75245708a5fd1f6",
+      "expected_accept": true,
+      "observed_accept": true,
+      "matched": true,
+      "error": null
+    },
+    {
+      "id": "truthful-BARE_CLONE-store_inode-SOURCE_AFTER-DENIED-wrong-cause",
+      "input_sha256": "a4d2ed9d1796cd5d1b644f46f76836888d9dee1c58a4a30d5e6a06550d7ca663",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:FINAL_TERMINAL_MISMATCH_FAILURE_PATH"
+    },
+    {
+      "id": "truthful-BARE_CLONE-store_inode-SOURCE_AFTER-INTERRUPTED",
+      "input_sha256": "bf1cf6711e6669169f69fd5866bb340df55625b9d45076fa16abbc48f610cb41",
+      "expected_accept": true,
+      "observed_accept": true,
+      "matched": true,
+      "error": null
+    },
+    {
+      "id": "truthful-BARE_CLONE-store_inode-SOURCE_AFTER-INTERRUPTED-wrong-cause",
+      "input_sha256": "72e9fd4aee22a7142f29a9b1c867e867125d7ff43df39a34da8366fc82548c0b",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:FINAL_TERMINAL_MISMATCH_FAILURE_PATH"
+    },
+    {
+      "id": "truthful-BARE_CLONE-store_inode-FINAL_BOUNDARY-DENIED",
+      "input_sha256": "cb70f13439b10038deed714fbb2a5722123922fc4738f213d32342c4f949973c",
+      "expected_accept": true,
+      "observed_accept": true,
+      "matched": true,
+      "error": null
+    },
+    {
+      "id": "truthful-BARE_CLONE-store_inode-FINAL_BOUNDARY-DENIED-wrong-cause",
+      "input_sha256": "c16e1e9098610ef4a623f44416f7ea09c8074dca82cde9b44513fe363f6c0a5d",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:FINAL_TERMINAL_MISMATCH_FAILURE_PATH"
+    },
+    {
+      "id": "truthful-BARE_CLONE-store_inode-FINAL_BOUNDARY-INTERRUPTED",
+      "input_sha256": "5b435e92d505ae36e082a3537046e469a5026d2583fc25f12ccc3327209a447b",
+      "expected_accept": true,
+      "observed_accept": true,
+      "matched": true,
+      "error": null
+    },
+    {
+      "id": "truthful-BARE_CLONE-store_inode-FINAL_BOUNDARY-INTERRUPTED-wrong-cause",
+      "input_sha256": "8d989d7ea840935f00184a29747de53ac77d977c5a43a763be9d6a55d9afe8ab",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:FINAL_TERMINAL_MISMATCH_FAILURE_PATH"
+    },
+    {
+      "id": "truthful-BARE_CLONE-objects_device-SOURCE_BEFORE-DENIED",
+      "input_sha256": "7ee2326b08dd71e3a526944a4991024833237ebed20ea287e2be720227974dc6",
+      "expected_accept": true,
+      "observed_accept": true,
+      "matched": true,
+      "error": null
+    },
+    {
+      "id": "truthful-BARE_CLONE-objects_device-SOURCE_BEFORE-DENIED-wrong-cause",
+      "input_sha256": "515126ab1a7de6c1208420aab364429514eabbd3f564818da133cd6c775a37d3",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:FINAL_INITIAL_MISMATCH_FAILURE_PATH"
+    },
+    {
+      "id": "truthful-BARE_CLONE-objects_device-SOURCE_BEFORE-INTERRUPTED",
+      "input_sha256": "5ed31ea7be9b825c4fef87c79ec416db19659bc7e2903838856c8ef28c7d7190",
+      "expected_accept": true,
+      "observed_accept": true,
+      "matched": true,
+      "error": null
+    },
+    {
+      "id": "truthful-BARE_CLONE-objects_device-SOURCE_BEFORE-INTERRUPTED-wrong-cause",
+      "input_sha256": "539a2525024d599d84a791a04128a40e6406aa2b7d6fe15b5e4f8cc443e9ffe9",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:FINAL_INITIAL_MISMATCH_FAILURE_PATH"
+    },
+    {
+      "id": "truthful-BARE_CLONE-objects_device-SOURCE_AFTER-DENIED",
+      "input_sha256": "0c45d98d3223589d806ad09b52d7ce3deb4aab9e2247078ad2d733fbfbff0e0a",
+      "expected_accept": true,
+      "observed_accept": true,
+      "matched": true,
+      "error": null
+    },
+    {
+      "id": "truthful-BARE_CLONE-objects_device-SOURCE_AFTER-DENIED-wrong-cause",
+      "input_sha256": "bcca7413d1f7d98f2f0526f1ed74c2a745216c42a2661796cd4b91762d7c95be",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:FINAL_TERMINAL_MISMATCH_FAILURE_PATH"
+    },
+    {
+      "id": "truthful-BARE_CLONE-objects_device-SOURCE_AFTER-INTERRUPTED",
+      "input_sha256": "61e4c59290aad3db9c9735c17503206603191e24476a483ed46468cdf8b32c93",
+      "expected_accept": true,
+      "observed_accept": true,
+      "matched": true,
+      "error": null
+    },
+    {
+      "id": "truthful-BARE_CLONE-objects_device-SOURCE_AFTER-INTERRUPTED-wrong-cause",
+      "input_sha256": "9e9de049673209de8e08a9d05c198115407c6a5dfef201c17ba5c1d8e9f71ea9",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:FINAL_TERMINAL_MISMATCH_FAILURE_PATH"
+    },
+    {
+      "id": "truthful-BARE_CLONE-objects_device-FINAL_BOUNDARY-DENIED",
+      "input_sha256": "602f23e2005f812cda38404acbf79baafbccaa47a158a01afdd5b9085ae60580",
+      "expected_accept": true,
+      "observed_accept": true,
+      "matched": true,
+      "error": null
+    },
+    {
+      "id": "truthful-BARE_CLONE-objects_device-FINAL_BOUNDARY-DENIED-wrong-cause",
+      "input_sha256": "cda9df192bd40bde98d166e73f64ad9f9e32f68761aa0c18f5a482ca41f84e85",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:FINAL_TERMINAL_MISMATCH_FAILURE_PATH"
+    },
+    {
+      "id": "truthful-BARE_CLONE-objects_device-FINAL_BOUNDARY-INTERRUPTED",
+      "input_sha256": "237bf1f4ce1cc6e73f416c23aff0176662b3915fb15e837c6975117f023f0b9b",
+      "expected_accept": true,
+      "observed_accept": true,
+      "matched": true,
+      "error": null
+    },
+    {
+      "id": "truthful-BARE_CLONE-objects_device-FINAL_BOUNDARY-INTERRUPTED-wrong-cause",
+      "input_sha256": "330a7b4cc5fc390867f92292d9574b448a897739b018cdece5ba6d242e04bf45",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:FINAL_TERMINAL_MISMATCH_FAILURE_PATH"
+    },
+    {
+      "id": "truthful-BARE_CLONE-objects_inode-SOURCE_BEFORE-DENIED",
+      "input_sha256": "3bccf20d8d966c014709a47b73aa8400f67d8887b0244d3abca7beca4552c6a8",
+      "expected_accept": true,
+      "observed_accept": true,
+      "matched": true,
+      "error": null
+    },
+    {
+      "id": "truthful-BARE_CLONE-objects_inode-SOURCE_BEFORE-DENIED-wrong-cause",
+      "input_sha256": "1b48552218cb0838dcc30684c27310546b2f2c1a15d2475667f1c7db9503faae",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:FINAL_INITIAL_MISMATCH_FAILURE_PATH"
+    },
+    {
+      "id": "truthful-BARE_CLONE-objects_inode-SOURCE_BEFORE-INTERRUPTED",
+      "input_sha256": "b6d27d631a05fd2e44455aa4991bdffc3c34e94040837bf9917321158df04738",
+      "expected_accept": true,
+      "observed_accept": true,
+      "matched": true,
+      "error": null
+    },
+    {
+      "id": "truthful-BARE_CLONE-objects_inode-SOURCE_BEFORE-INTERRUPTED-wrong-cause",
+      "input_sha256": "12adb3384cbe120cb8b97eda523134799dc624ab2e5ca0d3694d68186df6c454",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:FINAL_INITIAL_MISMATCH_FAILURE_PATH"
+    },
+    {
+      "id": "truthful-BARE_CLONE-objects_inode-SOURCE_AFTER-DENIED",
+      "input_sha256": "53f2d36b411db914a8ed2c0e281c04738f587c8aa0110b0889bba799ceea714f",
+      "expected_accept": true,
+      "observed_accept": true,
+      "matched": true,
+      "error": null
+    },
+    {
+      "id": "truthful-BARE_CLONE-objects_inode-SOURCE_AFTER-DENIED-wrong-cause",
+      "input_sha256": "cecc8959abf2c60518738b613495e9519222e4ba4034b4ed8b8baceae5619805",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:FINAL_TERMINAL_MISMATCH_FAILURE_PATH"
+    },
+    {
+      "id": "truthful-BARE_CLONE-objects_inode-SOURCE_AFTER-INTERRUPTED",
+      "input_sha256": "0b8c6f1e2428fad04d47a0fd66baf6ae7c14de9d1ac90717d85f49c997530841",
+      "expected_accept": true,
+      "observed_accept": true,
+      "matched": true,
+      "error": null
+    },
+    {
+      "id": "truthful-BARE_CLONE-objects_inode-SOURCE_AFTER-INTERRUPTED-wrong-cause",
+      "input_sha256": "2ee9a08a5486da410a6333e7128f536243c816e812e5aa6fe6ea6dc007f484fa",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:FINAL_TERMINAL_MISMATCH_FAILURE_PATH"
+    },
+    {
+      "id": "truthful-BARE_CLONE-objects_inode-FINAL_BOUNDARY-DENIED",
+      "input_sha256": "fe0061555ba3fe1e378842e9a4fafe112b79d3a23878d5a502bf7203d88ad23b",
+      "expected_accept": true,
+      "observed_accept": true,
+      "matched": true,
+      "error": null
+    },
+    {
+      "id": "truthful-BARE_CLONE-objects_inode-FINAL_BOUNDARY-DENIED-wrong-cause",
+      "input_sha256": "34d934b9bd21875ea175a27455acab7fb5682bdf6624010c83778d8483c95959",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:FINAL_TERMINAL_MISMATCH_FAILURE_PATH"
+    },
+    {
+      "id": "truthful-BARE_CLONE-objects_inode-FINAL_BOUNDARY-INTERRUPTED",
+      "input_sha256": "18e28e20925a59bf45a4dcc6301aabcd9cc349245b58638963de47a05fce132b",
+      "expected_accept": true,
+      "observed_accept": true,
+      "matched": true,
+      "error": null
+    },
+    {
+      "id": "truthful-BARE_CLONE-objects_inode-FINAL_BOUNDARY-INTERRUPTED-wrong-cause",
+      "input_sha256": "99c6672bd93a943ac4659f485c9365e7ff66c91999a508dcfece3ee2b24e4083",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:FINAL_TERMINAL_MISMATCH_FAILURE_PATH"
+    },
+    {
+      "id": "truthful-MATERIALIZED_CHECKOUT-store_device-SOURCE_BEFORE-DENIED",
+      "input_sha256": "e55a3c3064e0386d5f74dcda7d8cafa8dd43f213984bb314bbba5e15e9d9c736",
+      "expected_accept": true,
+      "observed_accept": true,
+      "matched": true,
+      "error": null
+    },
+    {
+      "id": "truthful-MATERIALIZED_CHECKOUT-store_device-SOURCE_BEFORE-DENIED-wrong-cause",
+      "input_sha256": "44b65333a185857ec8e1565212f4ee912b31d0578bfa9c00b79fa0c5874b4425",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:FINAL_INITIAL_MISMATCH_FAILURE_PATH"
+    },
+    {
+      "id": "truthful-MATERIALIZED_CHECKOUT-store_device-SOURCE_BEFORE-INTERRUPTED",
+      "input_sha256": "cf01b09d0e5fb517565c4677c2d07f5e8b2be8bdb878205c4bfb4c8d1f8ff1d6",
+      "expected_accept": true,
+      "observed_accept": true,
+      "matched": true,
+      "error": null
+    },
+    {
+      "id": "truthful-MATERIALIZED_CHECKOUT-store_device-SOURCE_BEFORE-INTERRUPTED-wrong-cause",
+      "input_sha256": "487323a0b98538046711683d45dc0a5a8b92d61de83e767906eba6e53ddf487f",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:FINAL_INITIAL_MISMATCH_FAILURE_PATH"
+    },
+    {
+      "id": "truthful-MATERIALIZED_CHECKOUT-store_device-SOURCE_AFTER-DENIED",
+      "input_sha256": "8269ecfd8075ef3c568c4e8df3df884980648faa722db161112e8c0d0f8c6135",
+      "expected_accept": true,
+      "observed_accept": true,
+      "matched": true,
+      "error": null
+    },
+    {
+      "id": "truthful-MATERIALIZED_CHECKOUT-store_device-SOURCE_AFTER-DENIED-wrong-cause",
+      "input_sha256": "2a7680aea03638c4e2f8d7a614e15012b129b8c93b6a8632ed4cee09e9ba9b7b",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:FINAL_TERMINAL_MISMATCH_FAILURE_PATH"
+    },
+    {
+      "id": "truthful-MATERIALIZED_CHECKOUT-store_device-SOURCE_AFTER-INTERRUPTED",
+      "input_sha256": "4b991fbebdecd9a169316fd126d2c86af63fd12a75a212875482fdfb919fc6b3",
+      "expected_accept": true,
+      "observed_accept": true,
+      "matched": true,
+      "error": null
+    },
+    {
+      "id": "truthful-MATERIALIZED_CHECKOUT-store_device-SOURCE_AFTER-INTERRUPTED-wrong-cause",
+      "input_sha256": "de30db7b8a4f9abcfcd4f4ed4d3a9cd964b115f66d1e0fd2523ca6fdf0849b8a",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:FINAL_TERMINAL_MISMATCH_FAILURE_PATH"
+    },
+    {
+      "id": "truthful-MATERIALIZED_CHECKOUT-store_device-FINAL_BOUNDARY-DENIED",
+      "input_sha256": "bec0558eb06cd02f955bcad8f8aecb4f4774f8c6b8518a5c3c064b6cbfd8dc3b",
+      "expected_accept": true,
+      "observed_accept": true,
+      "matched": true,
+      "error": null
+    },
+    {
+      "id": "truthful-MATERIALIZED_CHECKOUT-store_device-FINAL_BOUNDARY-DENIED-wrong-cause",
+      "input_sha256": "11faf7ddcd77136be2924bc26312c60d59edebc6050f14314abfaa521ce680e7",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:FINAL_TERMINAL_MISMATCH_FAILURE_PATH"
+    },
+    {
+      "id": "truthful-MATERIALIZED_CHECKOUT-store_device-FINAL_BOUNDARY-INTERRUPTED",
+      "input_sha256": "03c45768f7d2e2403ea91160cb900672cbed34e0be8627498796a5253fc40202",
+      "expected_accept": true,
+      "observed_accept": true,
+      "matched": true,
+      "error": null
+    },
+    {
+      "id": "truthful-MATERIALIZED_CHECKOUT-store_device-FINAL_BOUNDARY-INTERRUPTED-wrong-cause",
+      "input_sha256": "693957471067e2d7ed02faf3193597725ef280a2dc4c32a7c07b6ed5a70be8be",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:FINAL_TERMINAL_MISMATCH_FAILURE_PATH"
+    },
+    {
+      "id": "truthful-MATERIALIZED_CHECKOUT-store_inode-SOURCE_BEFORE-DENIED",
+      "input_sha256": "99e030f64b5b09f81f266d8285a4401ce5152534584269b474dbc2a74b061e12",
+      "expected_accept": true,
+      "observed_accept": true,
+      "matched": true,
+      "error": null
+    },
+    {
+      "id": "truthful-MATERIALIZED_CHECKOUT-store_inode-SOURCE_BEFORE-DENIED-wrong-cause",
+      "input_sha256": "98172f4a58b252168ba1dfd27174252a479e0c396dd5ecdfd9409f92a39789d9",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:FINAL_INITIAL_MISMATCH_FAILURE_PATH"
+    },
+    {
+      "id": "truthful-MATERIALIZED_CHECKOUT-store_inode-SOURCE_BEFORE-INTERRUPTED",
+      "input_sha256": "e014fc7fd10ca902b9b63370fc44a091126b0d7f525d7fe223ac58a89e17ecfe",
+      "expected_accept": true,
+      "observed_accept": true,
+      "matched": true,
+      "error": null
+    },
+    {
+      "id": "truthful-MATERIALIZED_CHECKOUT-store_inode-SOURCE_BEFORE-INTERRUPTED-wrong-cause",
+      "input_sha256": "5c0c02fa147b20962182c2a13f9708b9ec0c78fde780c8fdacd85bd51deff42d",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:FINAL_INITIAL_MISMATCH_FAILURE_PATH"
+    },
+    {
+      "id": "truthful-MATERIALIZED_CHECKOUT-store_inode-SOURCE_AFTER-DENIED",
+      "input_sha256": "f256da2313563913c71e54c6b49b2bd269ea8f61fab59729cae212c1c6e9f190",
+      "expected_accept": true,
+      "observed_accept": true,
+      "matched": true,
+      "error": null
+    },
+    {
+      "id": "truthful-MATERIALIZED_CHECKOUT-store_inode-SOURCE_AFTER-DENIED-wrong-cause",
+      "input_sha256": "fa9d7e5f75e2fa8bee419d5450a12278210071b5f71b283e11fbef12a2407f32",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:FINAL_TERMINAL_MISMATCH_FAILURE_PATH"
+    },
+    {
+      "id": "truthful-MATERIALIZED_CHECKOUT-store_inode-SOURCE_AFTER-INTERRUPTED",
+      "input_sha256": "c46c0771e0d5df27eda6de7da4d9019cb3c1531164ba5449c60c6061d2d8f292",
+      "expected_accept": true,
+      "observed_accept": true,
+      "matched": true,
+      "error": null
+    },
+    {
+      "id": "truthful-MATERIALIZED_CHECKOUT-store_inode-SOURCE_AFTER-INTERRUPTED-wrong-cause",
+      "input_sha256": "5016b36a7ac3d10717be0ab42430eda90eee53c58d8782d3ae950bcabe9c93bd",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:FINAL_TERMINAL_MISMATCH_FAILURE_PATH"
+    },
+    {
+      "id": "truthful-MATERIALIZED_CHECKOUT-store_inode-FINAL_BOUNDARY-DENIED",
+      "input_sha256": "e1dacfe3a6fadaaf251fc3109e5e1a2e38db2b7f80eeebb332257a0fd700b37c",
+      "expected_accept": true,
+      "observed_accept": true,
+      "matched": true,
+      "error": null
+    },
+    {
+      "id": "truthful-MATERIALIZED_CHECKOUT-store_inode-FINAL_BOUNDARY-DENIED-wrong-cause",
+      "input_sha256": "ce4b6cba54d1056270b223858b7ee1283ccd1342cdda956889c417d6920f587b",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:FINAL_TERMINAL_MISMATCH_FAILURE_PATH"
+    },
+    {
+      "id": "truthful-MATERIALIZED_CHECKOUT-store_inode-FINAL_BOUNDARY-INTERRUPTED",
+      "input_sha256": "8a0d74f17ec556f8b852b0651f3b1cceb2946406da5737a7145c65a9e4e48e5d",
+      "expected_accept": true,
+      "observed_accept": true,
+      "matched": true,
+      "error": null
+    },
+    {
+      "id": "truthful-MATERIALIZED_CHECKOUT-store_inode-FINAL_BOUNDARY-INTERRUPTED-wrong-cause",
+      "input_sha256": "fee4acaf8f7bb22a3146da43bf68bcfe5aa0bda4ae4be92ab5f0afdfd21b9eaf",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:FINAL_TERMINAL_MISMATCH_FAILURE_PATH"
+    },
+    {
+      "id": "truthful-MATERIALIZED_CHECKOUT-objects_device-SOURCE_BEFORE-DENIED",
+      "input_sha256": "3f78e858607f0e5be5633a0e13da3a0d4e571bca15971b668357e76c0e9f77b7",
+      "expected_accept": true,
+      "observed_accept": true,
+      "matched": true,
+      "error": null
+    },
+    {
+      "id": "truthful-MATERIALIZED_CHECKOUT-objects_device-SOURCE_BEFORE-DENIED-wrong-cause",
+      "input_sha256": "e245607013ab14a013e17fbe6fcbb62211eaf41a719353907ba9204ac10f4999",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:FINAL_INITIAL_MISMATCH_FAILURE_PATH"
+    },
+    {
+      "id": "truthful-MATERIALIZED_CHECKOUT-objects_device-SOURCE_BEFORE-INTERRUPTED",
+      "input_sha256": "96bd75ce927c82cc55eae448ea91055dc553a87928120820f91cc8f6b3855e4a",
+      "expected_accept": true,
+      "observed_accept": true,
+      "matched": true,
+      "error": null
+    },
+    {
+      "id": "truthful-MATERIALIZED_CHECKOUT-objects_device-SOURCE_BEFORE-INTERRUPTED-wrong-cause",
+      "input_sha256": "4d289e7259d44e17bd4f8ce9b715b4493cf92ca59759eb466adece2edb82e35e",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:FINAL_INITIAL_MISMATCH_FAILURE_PATH"
+    },
+    {
+      "id": "truthful-MATERIALIZED_CHECKOUT-objects_device-SOURCE_AFTER-DENIED",
+      "input_sha256": "fa8d8d839b45892cf2fa2e46109358167cf7dd207a79b7e78c019128e4254051",
+      "expected_accept": true,
+      "observed_accept": true,
+      "matched": true,
+      "error": null
+    },
+    {
+      "id": "truthful-MATERIALIZED_CHECKOUT-objects_device-SOURCE_AFTER-DENIED-wrong-cause",
+      "input_sha256": "4cac81e8c5ee2beb1a6ca1802e1ec010caa7b181b78baeed1a99a2cf0cb7424f",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:FINAL_TERMINAL_MISMATCH_FAILURE_PATH"
+    },
+    {
+      "id": "truthful-MATERIALIZED_CHECKOUT-objects_device-SOURCE_AFTER-INTERRUPTED",
+      "input_sha256": "b787d5ab3b55707aa279fab3e1ea6448fc53abb6fb14919b16df31353945af8e",
+      "expected_accept": true,
+      "observed_accept": true,
+      "matched": true,
+      "error": null
+    },
+    {
+      "id": "truthful-MATERIALIZED_CHECKOUT-objects_device-SOURCE_AFTER-INTERRUPTED-wrong-cause",
+      "input_sha256": "db2bfee0ca22c2ce053e913d849780a669f87da949800bac8b0bef983d0f23d2",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:FINAL_TERMINAL_MISMATCH_FAILURE_PATH"
+    },
+    {
+      "id": "truthful-MATERIALIZED_CHECKOUT-objects_device-FINAL_BOUNDARY-DENIED",
+      "input_sha256": "ff66bf42e3b798155fe499b99727b054a7dc21a6a7a7787c97d23399fe20f7c3",
+      "expected_accept": true,
+      "observed_accept": true,
+      "matched": true,
+      "error": null
+    },
+    {
+      "id": "truthful-MATERIALIZED_CHECKOUT-objects_device-FINAL_BOUNDARY-DENIED-wrong-cause",
+      "input_sha256": "056345857fb83d4a0cf3b22f1e9304eee3e72c4c7fbb3ee8e77c45caefd846c2",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:FINAL_TERMINAL_MISMATCH_FAILURE_PATH"
+    },
+    {
+      "id": "truthful-MATERIALIZED_CHECKOUT-objects_device-FINAL_BOUNDARY-INTERRUPTED",
+      "input_sha256": "ea0bd8530af1e9617461d15724c4179239d110d872a57116dc0dc838d697fe37",
+      "expected_accept": true,
+      "observed_accept": true,
+      "matched": true,
+      "error": null
+    },
+    {
+      "id": "truthful-MATERIALIZED_CHECKOUT-objects_device-FINAL_BOUNDARY-INTERRUPTED-wrong-cause",
+      "input_sha256": "7f078a85446e53ee08dfffe04a0c57be29e96c53c6021fcb3986e11e87fc109f",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:FINAL_TERMINAL_MISMATCH_FAILURE_PATH"
+    },
+    {
+      "id": "truthful-MATERIALIZED_CHECKOUT-objects_inode-SOURCE_BEFORE-DENIED",
+      "input_sha256": "5c75d5c2d8247206150f1f40678457c26f83c35dd1bbfab5a09c75e8b69f3302",
+      "expected_accept": true,
+      "observed_accept": true,
+      "matched": true,
+      "error": null
+    },
+    {
+      "id": "truthful-MATERIALIZED_CHECKOUT-objects_inode-SOURCE_BEFORE-DENIED-wrong-cause",
+      "input_sha256": "6d2a40203f32edd3f2446c0525a2735ef668d0f0a6b4e1696da17155926aa7ce",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:FINAL_INITIAL_MISMATCH_FAILURE_PATH"
+    },
+    {
+      "id": "truthful-MATERIALIZED_CHECKOUT-objects_inode-SOURCE_BEFORE-INTERRUPTED",
+      "input_sha256": "a734eac45d9e02af637b8fedda7b268644ace68874760997c3af34d74563d7dc",
+      "expected_accept": true,
+      "observed_accept": true,
+      "matched": true,
+      "error": null
+    },
+    {
+      "id": "truthful-MATERIALIZED_CHECKOUT-objects_inode-SOURCE_BEFORE-INTERRUPTED-wrong-cause",
+      "input_sha256": "f66ec32b8051a30ca333c838d79e3e70e4f6c02d14da943946b139543876c73f",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:FINAL_INITIAL_MISMATCH_FAILURE_PATH"
+    },
+    {
+      "id": "truthful-MATERIALIZED_CHECKOUT-objects_inode-SOURCE_AFTER-DENIED",
+      "input_sha256": "82084ec95705a361d342a0736f6c0f74d6814dddb174f3397589a1a3352946a3",
+      "expected_accept": true,
+      "observed_accept": true,
+      "matched": true,
+      "error": null
+    },
+    {
+      "id": "truthful-MATERIALIZED_CHECKOUT-objects_inode-SOURCE_AFTER-DENIED-wrong-cause",
+      "input_sha256": "93386e112ec8e61be758b347b2e8a6f65066a7f29fcfcf8141fb28ab61c4d968",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:FINAL_TERMINAL_MISMATCH_FAILURE_PATH"
+    },
+    {
+      "id": "truthful-MATERIALIZED_CHECKOUT-objects_inode-SOURCE_AFTER-INTERRUPTED",
+      "input_sha256": "7be0afb5f5743951efaa41beb4c32677ba6125208fc36dbddbfb304d3d25dfb3",
+      "expected_accept": true,
+      "observed_accept": true,
+      "matched": true,
+      "error": null
+    },
+    {
+      "id": "truthful-MATERIALIZED_CHECKOUT-objects_inode-SOURCE_AFTER-INTERRUPTED-wrong-cause",
+      "input_sha256": "ca2ecf504a7a2b5c0175425818e0ea36f1b8cfcf14e6767e8fd285d8eb20f5a9",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:FINAL_TERMINAL_MISMATCH_FAILURE_PATH"
+    },
+    {
+      "id": "truthful-MATERIALIZED_CHECKOUT-objects_inode-FINAL_BOUNDARY-DENIED",
+      "input_sha256": "3c3d8cbc5fb850ac3a04d5272dbdd8ecd34b82bc4a98caa9d02ead8b1c1dc779",
+      "expected_accept": true,
+      "observed_accept": true,
+      "matched": true,
+      "error": null
+    },
+    {
+      "id": "truthful-MATERIALIZED_CHECKOUT-objects_inode-FINAL_BOUNDARY-DENIED-wrong-cause",
+      "input_sha256": "be4f20b45fb7532391f6e4ca6b905c8f7de806dd0735bdd7f026519de4ac2db6",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:FINAL_TERMINAL_MISMATCH_FAILURE_PATH"
+    },
+    {
+      "id": "truthful-MATERIALIZED_CHECKOUT-objects_inode-FINAL_BOUNDARY-INTERRUPTED",
+      "input_sha256": "4000ee95dde9f294eb6590fff98b0f94a6196e23776917cdd7816f072603f5fc",
+      "expected_accept": true,
+      "observed_accept": true,
+      "matched": true,
+      "error": null
+    },
+    {
+      "id": "truthful-MATERIALIZED_CHECKOUT-objects_inode-FINAL_BOUNDARY-INTERRUPTED-wrong-cause",
+      "input_sha256": "c991e956c8bea6f4a0de6624f02efbd3e7c00d2b9f5fac5c238bcc48010585c4",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:FINAL_TERMINAL_MISMATCH_FAILURE_PATH"
+    },
+    {
+      "id": "forged-equal-BARE_CLONE-store_device",
+      "input_sha256": "fa2e5208b7e104d78d69dfdab2630848ed764b3aa5f004be2dae831e5eab7d87",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:FINAL_SUCCESS_ACQUIRED_STORE_IDENTITY"
+    },
+    {
+      "id": "forged-equal-BARE_CLONE-store_inode",
+      "input_sha256": "14855662be538e28c48ecee9d6fadd22c5ce59231969ea7a434c9e48f6a078bf",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:FINAL_SUCCESS_ACQUIRED_STORE_IDENTITY"
+    },
+    {
+      "id": "forged-equal-BARE_CLONE-objects_device",
+      "input_sha256": "13dec584def384c050168d4ca18bcb70958077c83c50ebbb050407555d8784c5",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:FINAL_SUCCESS_ACQUIRED_STORE_IDENTITY"
+    },
+    {
+      "id": "forged-equal-BARE_CLONE-objects_inode",
+      "input_sha256": "4e6a9d8e5bdfdb1e4d9305087e613043db7d53a3a50ed02e250c10691c42e94a",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:FINAL_SUCCESS_ACQUIRED_STORE_IDENTITY"
+    },
+    {
+      "id": "forged-equal-MATERIALIZED_CHECKOUT-store_device",
+      "input_sha256": "eaee90874c6f031a33155c859c1a899e48a3b09bec749c3094303d825a933ed3",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:FINAL_SUCCESS_ACQUIRED_STORE_IDENTITY"
+    },
+    {
+      "id": "forged-equal-MATERIALIZED_CHECKOUT-store_inode",
+      "input_sha256": "b48cc00a174efb35964160130934fb12f36484e9e5017ccc1e8a385cf1b08e90",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:FINAL_SUCCESS_ACQUIRED_STORE_IDENTITY"
+    },
+    {
+      "id": "forged-equal-MATERIALIZED_CHECKOUT-objects_device",
+      "input_sha256": "c8ecd5dea7db8b2a2c1b526687a521297510bc27439937584e66e1c26b493217",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:FINAL_SUCCESS_ACQUIRED_STORE_IDENTITY"
+    },
+    {
+      "id": "forged-equal-MATERIALIZED_CHECKOUT-objects_inode",
+      "input_sha256": "a65977aed0437b9301db29b47dc9ef0e7d39b764eadc2ac21a4c48a4e941e6aa",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:FINAL_SUCCESS_ACQUIRED_STORE_IDENTITY"
+    },
+    {
+      "id": "trace-PREIMPORT-positive",
+      "input_sha256": "aed1b81b6b6197cbdb7438888ecd329dae5f992be110e57706835f8521439b55",
+      "expected_accept": true,
+      "observed_accept": true,
+      "matched": true,
+      "error": null
+    },
+    {
+      "id": "trace-PREIMPORT-omit-LOCK_ACQUIRED-1",
+      "input_sha256": "90561062ab1d54777186c0be16bb36dcdf6d1e635a17afd869a56115a9a5c9d2",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:EVENT_SEQUENCE"
+    },
+    {
+      "id": "trace-PREIMPORT-omit-AUTH_BEFORE-2",
+      "input_sha256": "1bbb078e5e747b040463bf125eea0b09d6388351d38916326516b60981d3d91b",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:EVENT_SEQUENCE"
+    },
+    {
+      "id": "trace-PREIMPORT-omit-SOURCE_BEFORE-3",
+      "input_sha256": "9ecd0cefa9308c9c10153422704bb9d5892a778a3df107a900a341b553dafa36",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:EVENT_SEQUENCE"
+    },
+    {
+      "id": "trace-PREIMPORT-omit-IMPORT_COMPLETE-4",
+      "input_sha256": "0422604253dd9b2f6443e42a93fa6ed6a83642385a3586b5bc45af7062d30de2",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:EVENT_SEQUENCE"
+    },
+    {
+      "id": "trace-PREIMPORT-omit-ASSET_BINDING-5",
+      "input_sha256": "b9ef05c0096de2b0ba69e65d49e80648478608965bcdd32bfb156ee7260c7746",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:EVENT_SEQUENCE"
+    },
+    {
+      "id": "trace-PREIMPORT-omit-START_D-6",
+      "input_sha256": "e6f0813820ad0eaa1f74100499a02ce8378f1a5847baa3ad68b0d2cc64a19ddb",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:EVENT_SEQUENCE"
+    },
+    {
+      "id": "trace-PREIMPORT-omit-START_C-7",
+      "input_sha256": "fa5423c58e75b03f188968f0037423a623a8766f82f513056f0d9d96ee0099ac",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:EVENT_SEQUENCE"
+    },
+    {
+      "id": "trace-PREIMPORT-omit-NATIVE_OUTPUT-8",
+      "input_sha256": "fc5cd40aa489207e0eaee004017f54d8b84ba6b1904cb3f1e1a418ed496d74fc",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:EVENT_SEQUENCE"
+    },
+    {
+      "id": "trace-PREIMPORT-omit-SOURCE_AFTER-9",
+      "input_sha256": "d102dcc8c773d0528f30ee48c3ef7f70c2a70458ce2f32799b86b6a863937884",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:EVENT_SEQUENCE"
+    },
+    {
+      "id": "trace-PREIMPORT-omit-AUTH_AFTER-10",
+      "input_sha256": "9de509ea05e4a2268f03342df9a0496673fb0b793b0a191e37294e7952605a4d",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:EVENT_SEQUENCE"
+    },
+    {
+      "id": "trace-PREIMPORT-omit-C_EXIT-11",
+      "input_sha256": "622f4781be1571baf54eb4f71a03cfa6a17a7f044336a9213c7d33980d162034",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:EVENT_SEQUENCE"
+    },
+    {
+      "id": "trace-PREIMPORT-omit-D_EXIT-12",
+      "input_sha256": "04a98d3cdbc895d1f6f5a32665f563b14e44643f3e32fbf37d5d4eafde60e1e2",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:EVENT_SEQUENCE"
+    },
+    {
+      "id": "trace-PREIMPORT-omit-CLEANUP_DONE-13",
+      "input_sha256": "86745bcfa1e2fbf9ed5e1de059ba3fec578d9bbea89da0b53d72bd1e025543ca",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:EVENT_SEQUENCE"
+    },
+    {
+      "id": "trace-PREIMPORT-omit-SIZE_RECORD-14",
+      "input_sha256": "f3af15d265b544e2f0c3dc87d327e6c0e1b332abaef78bc82c9fc9c4fc56a3f5",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:EVENT_SEQUENCE"
+    },
+    {
+      "id": "trace-PREIMPORT-omit-FINAL_CHECK-15",
+      "input_sha256": "75f91e8634c3941437d906bd576958e283dba3e14345f241bf8613f47fe5d47f",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:EVENT_SEQUENCE"
+    },
+    {
+      "id": "trace-PREIMPORT-omit-COMMIT_ELIGIBLE-16",
+      "input_sha256": "fa16c3ec4728c648d04d856cde848ab36c7cdbcb96aacb46bf910a7b928e8f6c",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:EVENT_SEQUENCE"
+    },
+    {
+      "id": "trace-PREIMPORT-omit-UNLOCK-17",
+      "input_sha256": "2f95eab5767d1502b654e64c582b3c7d83382cf51fa7d693cc27cc5090b738c9",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:EVENT_SEQUENCE"
+    },
+    {
+      "id": "trace-PREIMPORT-wrong-owner-LOCK_ACQUIRED",
+      "input_sha256": "a07584085a1b2dadff47b3910ef084ae4b94d1ba3c8e085f46989e9a9d62b13e",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:PROCESS_OWNER"
+    },
+    {
+      "id": "trace-PREIMPORT-wrong-owner-AUTH_BEFORE",
+      "input_sha256": "3e0409df47874b5aced40de26d9d4413b00daa4d8f050876f36e2514258547a6",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:PROCESS_OWNER"
+    },
+    {
+      "id": "trace-PREIMPORT-wrong-owner-SOURCE_BEFORE",
+      "input_sha256": "64a011ba263e895ec762ac6253d170a3aa4c629866f9e9c55b7044292f3e2ef8",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:PROCESS_OWNER"
+    },
+    {
+      "id": "trace-PREIMPORT-wrong-owner-ASSET_BINDING",
+      "input_sha256": "5749f74433049866688aeb2c86331b3bf6d66018eab4b12898182ad678769130",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:PROCESS_OWNER"
+    },
+    {
+      "id": "trace-PREIMPORT-wrong-owner-FINAL_CHECK",
+      "input_sha256": "b0cb72c352f850db41cb603eac0541700910d00f6fdea2bc70423c770eca2617",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:PROCESS_OWNER"
+    },
+    {
+      "id": "trace-PREIMPORT-wrong-owner-COMMIT_ELIGIBLE",
+      "input_sha256": "7de5217b142fd35ccb64f700e13ca45bd80c5fd07f79711edfbfefa35effd2e5",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:PROCESS_OWNER"
+    },
+    {
+      "id": "trace-PREIMPORT-ledger-reset",
+      "input_sha256": "69d70c480d336ba673c1b7bb04ee542484d90d0a097f7f9ec579a6940810ca40",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:SAME_LEDGER"
+    },
+    {
+      "id": "trace-PREIMPORT-late-stop",
+      "input_sha256": "4f8712ba77722d8f086f540bc1dd97808ef7d6c35c1b03bfe03c668a5c20f216",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:OVERALL_TRACE_DEADLINE"
+    },
+    {
+      "id": "trace-FINAL-positive",
+      "input_sha256": "a3077c6a63bc4e8fb807f87a12a5f1d023c018aa2f4b0a7b0ff88889c81e1334",
+      "expected_accept": true,
+      "observed_accept": true,
+      "matched": true,
+      "error": null
+    },
+    {
+      "id": "trace-FINAL-omit-LOCK_ACQUIRED-1",
+      "input_sha256": "c60dee71b2bc2a9ab5c485b7c6f008f2cc10123f73219a210a7e80dea6982be5",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:EVENT_SEQUENCE"
+    },
+    {
+      "id": "trace-FINAL-omit-AUTH_BEFORE-2",
+      "input_sha256": "9301ed64ceccc9c4c56413754496964a9aa6ce41eb6eec4f7a1191c82313e458",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:EVENT_SEQUENCE"
+    },
+    {
+      "id": "trace-FINAL-omit-IMPORT_COMPLETE-3",
+      "input_sha256": "94eb609903024c99d27f231937e6569b7291ca28a6eb61f343d4dfca101bcc55",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:EVENT_SEQUENCE"
+    },
+    {
+      "id": "trace-FINAL-omit-SOURCE_BEFORE-4",
+      "input_sha256": "ef3c204e9a0f163753b954f5bce9339cf12b170bc4a6691d3e7d32060f4300ae",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:EVENT_SEQUENCE"
+    },
+    {
+      "id": "trace-FINAL-omit-ASSET_BINDING-5",
+      "input_sha256": "81dbe1592b39db0b2f52ddb7760ff868e48d521b4a24d9a458f7fea1713c3482",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:EVENT_SEQUENCE"
+    },
+    {
+      "id": "trace-FINAL-omit-START_D-6",
+      "input_sha256": "05eb43a28cfe939c90321f3f08bd8de0e152b18f46332d339e6dd560d9af53cd",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:EVENT_SEQUENCE"
+    },
+    {
+      "id": "trace-FINAL-omit-START_C-7",
+      "input_sha256": "c3d65118c50fb68c2e990117607bcc5ed13c78163c91e05a1d394e41a7299c10",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:EVENT_SEQUENCE"
+    },
+    {
+      "id": "trace-FINAL-omit-NATIVE_OUTPUT-8",
+      "input_sha256": "1531046633bd5deda9c459201fb7967b52f9603f96cde0b9ce9636bbb1a7780a",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:EVENT_SEQUENCE"
+    },
+    {
+      "id": "trace-FINAL-omit-SOURCE_AFTER-9",
+      "input_sha256": "afde9da05174ada46ff4b2193022cf3306b2f31312d0d5d35a3b384b4f3ccbcb",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:EVENT_SEQUENCE"
+    },
+    {
+      "id": "trace-FINAL-omit-AUTH_AFTER-10",
+      "input_sha256": "a3d3175ede592f1316d41d6ce9893f2326be1fd82e722c240b2285f80c5dac79",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:EVENT_SEQUENCE"
+    },
+    {
+      "id": "trace-FINAL-omit-WORKER_START-11",
+      "input_sha256": "39381baf59881e79624c3937d05feffe5e061a995da82765d8f833463ab12153",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:EVENT_SEQUENCE"
+    },
+    {
+      "id": "trace-FINAL-omit-WORKER_DONE-12",
+      "input_sha256": "6a9a6dd31196a64eb6ec83a2f8393f43f2f4945dbeefb46a8fe5e46b2c4f07ec",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:EVENT_SEQUENCE"
+    },
+    {
+      "id": "trace-FINAL-omit-RECHECK_SOURCE-13",
+      "input_sha256": "c8a00145ddc230e68fd768e41ddb445e17e50ad2a8d43af71fe7c5b52444b778",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:EVENT_SEQUENCE"
+    },
+    {
+      "id": "trace-FINAL-omit-RECHECK_AUTH-14",
+      "input_sha256": "3254a3dd0eb14f45d504b4c00c8eb839a261560fcbcf57022f69bf7e5f2d69e1",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:EVENT_SEQUENCE"
+    },
+    {
+      "id": "trace-FINAL-omit-C_EXIT-15",
+      "input_sha256": "b737df669b4c8c238c46249f6b8826947b9364a93c9448f535a764517066be2b",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:EVENT_SEQUENCE"
+    },
+    {
+      "id": "trace-FINAL-omit-D_EXIT-16",
+      "input_sha256": "a364e54e2f84769c96702f63990b6b3679b5959d1f3f8cdb4eb2358bd4c82b6e",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:EVENT_SEQUENCE"
+    },
+    {
+      "id": "trace-FINAL-omit-CLEANUP_DONE-17",
+      "input_sha256": "9ca684dfccb9052887477c10aaedef5ed78d05abdda8947758ff9e85045d1ae7",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:EVENT_SEQUENCE"
+    },
+    {
+      "id": "trace-FINAL-omit-SIZE_RECORD-18",
+      "input_sha256": "0f1f1acb1c4e50c8d3ce3ec94d61bbf11f8d079614fa46bf23d0604e7d3202bc",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:EVENT_SEQUENCE"
+    },
+    {
+      "id": "trace-FINAL-omit-FINAL_CHECK-19",
+      "input_sha256": "b61db5032e365bd33b9d110c5db411c788079efd0af918557184c273dcdda216",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:EVENT_SEQUENCE"
+    },
+    {
+      "id": "trace-FINAL-omit-PUBLISH_ATTEMPT-20",
+      "input_sha256": "41c11237258e57ca8589236ac9590902fbf51359da5716dc36bcf8eb24665e5d",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:EVENT_SEQUENCE"
+    },
+    {
+      "id": "trace-FINAL-omit-PUBLISH_ACK-21",
+      "input_sha256": "85cfbbfd492c6cb74ce4ba483e1204baa4b5f8d6282cb8b5f37a66013988cf92",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:EVENT_SEQUENCE"
+    },
+    {
+      "id": "trace-FINAL-omit-SIZE_RECORD-22",
+      "input_sha256": "507624011c8c0549d735796548abd56771303c4bcf440b6b37f8cca1ea293ddb",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:EVENT_SEQUENCE"
+    },
+    {
+      "id": "trace-FINAL-omit-FINAL_CHECK-23",
+      "input_sha256": "3b58f4340058701d3907019ca7ee53fca47e683c7110cd670287c79345e60d7d",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:EVENT_SEQUENCE"
+    },
+    {
+      "id": "trace-FINAL-omit-COMMIT_ELIGIBLE-24",
+      "input_sha256": "634ae4bfc4c0bcd8defc0f8706440fe0dd28d33a39531fbbca0ed40c4a7138b4",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:EVENT_SEQUENCE"
+    },
+    {
+      "id": "trace-FINAL-omit-UNLOCK-25",
+      "input_sha256": "c84586702c4eccf0a0f959a22406a01d42764875cc37484646a1481f5b02d28e",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:EVENT_SEQUENCE"
+    },
+    {
+      "id": "trace-FINAL-wrong-owner-LOCK_ACQUIRED",
+      "input_sha256": "68c7e294b2951931b0172be42bf1570f1c2e48caf95d013fc0ed484ff5281e08",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:PROCESS_OWNER"
+    },
+    {
+      "id": "trace-FINAL-wrong-owner-AUTH_BEFORE",
+      "input_sha256": "f113722ff0638e201042d608dc5975ad32a2a2854984d90711de51cef54887e2",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:PROCESS_OWNER"
+    },
+    {
+      "id": "trace-FINAL-wrong-owner-SOURCE_BEFORE",
+      "input_sha256": "d3aa45312487d438d4758b0f4a9a0174b4abc21653626984c5fa7acde3d48680",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:PROCESS_OWNER"
+    },
+    {
+      "id": "trace-FINAL-wrong-owner-ASSET_BINDING",
+      "input_sha256": "48717db94e938b76ddd4f65e7cb30bebc1fcb6ee13ab7245c73aa80de4e477da",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:PROCESS_OWNER"
+    },
+    {
+      "id": "trace-FINAL-wrong-owner-FINAL_CHECK",
+      "input_sha256": "f4fc84e3c8ab48780df47a2e468e707d5f69050d4bd3f5e57428cd7ef2e05623",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:PROCESS_OWNER"
+    },
+    {
+      "id": "trace-FINAL-wrong-owner-COMMIT_ELIGIBLE",
+      "input_sha256": "b2c6ca0ff3efaa462f3caf54b677ed1629d363351588cfd403660250c5b7a033",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:PROCESS_OWNER"
+    },
+    {
+      "id": "trace-FINAL-ledger-reset",
+      "input_sha256": "a6115907f416925262b198275f587472336b3d2567ad57a6f1d0c1fcb086443b",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:SAME_LEDGER"
+    },
+    {
+      "id": "trace-FINAL-late-stop",
+      "input_sha256": "9dab3e374cd955db4013e7611780ae906d6f8565dc01e69aeea3315920d1fb39",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:OVERALL_TRACE_DEADLINE"
+    },
+    {
+      "id": "trace-uncertain-publication",
+      "input_sha256": "d98224e8a50b39e6fbf7772a2b360b4ee5c744b80175ef4bdbc12bf9183952b0",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:FAILED_EVENT_NO_ELIGIBILITY"
+    },
+    {
+      "id": "emergency-complete",
+      "input_sha256": "b66229b3fe3eee306fce3c9234810a5e0e807b8f6ae4a866ac453e968051a8af",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:False was expected"
+    },
+    {
+      "id": "emergency-publishable_positives",
+      "input_sha256": "ccfbe183265dad613294b0f1cbd4da786bd76482fe7b9b0c21332b166450466f",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:0 was expected"
+    },
+    {
+      "id": "emergency-continuation_authorized",
+      "input_sha256": "edb1d4998eb2ef57d9509fef16a9a974107fd6bea9e631dcf576742cc4ab32ed",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:False was expected"
+    },
+    {
+      "id": "emergency-acceptance_eligible",
+      "input_sha256": "ad5f269589e19d2c6c3b77a78d145128dac36e5fe60dc5d2210e57753fe51c84",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:False was expected"
+    },
+    {
+      "id": "emergency-execution_reuse",
+      "input_sha256": "7e3792c91cf8379d731aae1aba1f02813e120de56bebf564f83fc56bedac41f9",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:False was expected"
+    },
+    {
+      "id": "emergency-driver_exit",
+      "input_sha256": "f6535c5b7345d29a30e7c23b5eccd44d3000f7d5b1235ee5cf258c742ebdf952",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:EMERGENCY_EXIT_STATE"
+    },
+    {
+      "id": "emergency-observer_exit",
+      "input_sha256": "20e2a9cc0adea9f643cf7de0dc48034c8ea5b3d04e5e3718de1c42c6e2b5d177",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:EMERGENCY_EXIT_STATE"
+    },
+    {
+      "id": "emergency-counter_state",
+      "input_sha256": "33c01f824be1644ee49e7f3097bfe09e064d2da264a7848b12a2c05011174149",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValidationError:'LOWER_BOUND' was expected"
+    },
+    {
+      "id": "emergency-positive",
+      "input_sha256": "644e7b89c2b066ff425c05be56da39ab99e644b0f2975f7cf8498a943b40a046",
+      "expected_accept": true,
+      "observed_accept": true,
+      "matched": true,
+      "error": null
+    },
+    {
+      "id": "decoder-0",
+      "input_sha256": "05a39a24ff999000c849c95371a2800339f1a0497ba35b4fa3738d21dd1859e8",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:DUPLICATE_KEY"
+    },
+    {
+      "id": "decoder-1",
+      "input_sha256": "f58016491972f30a06be024b912c781898ed461b0787245de568e9d3f835667b",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:NONFINITE"
+    },
+    {
+      "id": "decoder-2",
+      "input_sha256": "b7c93249c91b97a4ed8be382723d05997d132ae5a10c9c994938785884e13991",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:LEXICAL_BOUND"
+    },
+    {
+      "id": "decoder-3",
+      "input_sha256": "2fa73502f829ae23ba3d230252776399d80dc15825c5857cae8c86c6facb02fe",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:STRING_BOUND"
+    },
+    {
+      "id": "decoder-4",
+      "input_sha256": "fbe0ac1d77f96a4476952018a1ab17bc1bdbd07801a740b5e0261c09e7cccdfe",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "InvalidDefinition:INPUT_BYTES_BOUND"
+    },
+    {
+      "id": "governance-valid",
+      "input_sha256": "66f2851d67a2234f0a89dcb15442a55a673f2f1c776a253b5dc24e47bc6881b3",
+      "expected_accept": true,
+      "observed_accept": true,
+      "matched": true,
+      "error": null
+    },
+    {
+      "id": "governance-missing",
+      "input_sha256": "1155fc1691e6a47f0ddbcd5d4468bad691433ccdbd3bed2b2e3582e1553777c8",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValueError:guard"
+    },
+    {
+      "id": "governance-duplicate",
+      "input_sha256": "74f486ed6d74276d3ee37835136984c1927ec76e2b565e45929e4a5008fb2eed",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValueError:guard"
+    },
+    {
+      "id": "governance-foreign",
+      "input_sha256": "72cfc94bfb353f67e2a298b978455ce41a4f13a6c60b5055ea0b7a10624208f0",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValueError:guard"
+    },
+    {
+      "id": "governance-projection",
+      "input_sha256": "c1211452ee8a2996279730fe3a34eb5b35acdc148a936afd0ea1178e8ae79d12",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValueError:guard"
+    },
+    {
+      "id": "governance-authority",
+      "input_sha256": "cbcbaf6527a349f116143dfa64809c6cf8f6e34a4dc5d49e2c3fef76d6a40b79",
+      "expected_accept": false,
+      "observed_accept": false,
+      "matched": true,
+      "error": "ValueError:guard"
+    }
+  ],
+  "total": 368,
+  "matched": 368,
+  "unexpected": []
+}
