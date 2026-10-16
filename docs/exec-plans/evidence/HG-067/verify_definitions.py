@@ -119,7 +119,7 @@ def main():
         with (out/(label+'.log')).open('wb') as output:
             proc=subprocess.run(argv,cwd=E,env=actual,stdout=output,stderr=subprocess.STDOUT)
         receipts.append({'argv':argv,'cwd':str(E),'environment':{k:actual[k] for k in ('PYTHONPATH','PYTHONDONTWRITEBYTECODE','KINETICLOOP_HARNESS_ROOT','KINETICLOOP_HARNESS_WORKERS','KINETICLOOP_HARNESS_OBSERVER')},'child_exit':proc.returncode,'elapsed_ns':time.monotonic_ns()-start,'log_sha256':sha((out/(label+'.log')).read_bytes())})
-        (out/'EXECUTION.json').write_text(json.dumps(receipts,indent=2)+'\n')
+        (out/'COMMAND_RECEIPTS.json').write_text(json.dumps(receipts,indent=2)+'\n')
         print('definition_'+label+'_child_exit='+str(proc.returncode),flush=True)
         if proc.returncode:raise SystemExit(proc.returncode)
     positive=identity(out/'execution.json',out/'junit.xml',out/'collection.json')
