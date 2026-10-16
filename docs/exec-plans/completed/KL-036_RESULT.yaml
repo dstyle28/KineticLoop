@@ -1,0 +1,798 @@
+task_identity: harness-backlog-v0.2/KL-036
+display_task_id: KL-036
+task_definition_version: v0.2
+base_commit: af09be228fbc89d074b6e863c83e1fdda343d55b
+tested_commit: e81cc2ccff69bf32a42f7c81b4671c99879b544b
+merge_commit: null
+task_status: BLOCKED
+task_checks_status: PASS
+integration_status: UNMERGED
+summary: Bounded isolated TEST worker/reaper implementation and both independent review corrections are complete.
+  All sixteen exact packet checks PASS at the recorded tested revision, with real process/SQL/rollback/accounting/T6
+  and own cleanup evidence. Readiness is BLOCKED because complete lossless compact evidence exceeds the unchanged
+  16 MiB aggregate storage limit; separate prospective storage governance is required. No product, milestone, release,
+  App/full-DB admission or merge PASS is claimed.
+commands_run:
+- check_id: harness_regressions_pass
+  command: uv run kl test-harness
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/harness_regressions_pass-runner-pytest.log.json
+- check_id: worker_identity_namespace_pu
+  command: uv run pytest -q tests/unit/workflow/test_worker_reaper.py::test_identity_and_namespace
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/worker_identity_namespace_pu-execution.log.json
+- check_id: worker_lease_deadline_pu
+  command: uv run pytest -q tests/unit/workflow/test_worker_reaper.py::test_lease_and_deadline_boundaries
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/worker_lease_deadline_pu-execution.log.json
+- check_id: worker_takeover_fencing_dc
+  command: uv run pytest -q tests/db/test_worker_reaper.py::test_takeover_fences_distinct_processes
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/worker_takeover_fencing_dc-execution.log.json
+- check_id: reaper_stale_candidate_dc
+  command: uv run pytest -q tests/db/test_worker_reaper.py::test_reaper_rechecks_after_lock
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/reaper_stale_candidate_dc-execution.log.json
+- check_id: reaper_unowned_deadline_dc
+  command: uv run pytest -q tests/db/test_worker_reaper.py::test_unowned_admitted_deadline
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/reaper_unowned_deadline_dc-execution.log.json
+- check_id: reaper_atomicity_history_dc
+  command: uv run pytest -q tests/db/test_worker_reaper.py::test_reaper_atomicity_and_history
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/reaper_atomicity_history_dc-execution.log.json
+- check_id: reaper_unknown_accounting_dc
+  command: uv run pytest -q tests/db/test_worker_reaper.py::test_unknown_call_preserves_budget
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/reaper_unknown_accounting_dc-execution.log.json
+- check_id: worker_independent_reaper_wf
+  command: uv run pytest -q tests/db/test_worker_reaper.py::test_independent_reaper_survives_worker_loss
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/worker_independent_reaper_wf-execution.log.json
+- check_id: reaper_preserves_committed_success_wf
+  command: uv run pytest -q tests/db/test_worker_reaper.py::test_reaper_cannot_reverse_t6_success
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/reaper_preserves_committed_success_wf-execution.log.json
+- check_id: worker_reaper_unit_suite
+  command: uv run pytest -q tests/unit/workflow/test_worker_reaper.py
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/worker_reaper_unit_suite-execution.log.json
+- check_id: worker_reaper_db_suite
+  command: uv run pytest -q tests/db/test_worker_reaper.py
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/worker_reaper_db_suite-execution.log.json
+- check_id: unit_regressions_pass
+  command: uv run kl test-unit
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/unit_regressions_pass-execution.log.json
+- check_id: lint_passes
+  command: uv run kl lint
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/lint_passes-execution.log.json
+- check_id: typecheck_passes
+  command: uv run kl typecheck
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/typecheck_passes-execution.log.json
+- check_id: harness_validation_passes
+  command: uv run kl check-harness
+  result: PASS
+  evidence_ref: docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/harness_validation_passes-execution.log.json
+requirements_covered: []
+files_changed:
+- docs/contracts/worker_reaper.md
+- docs/exec-plans/completed/KL-036_RESULT.yaml
+- docs/exec-plans/evidence/KL-036/ADMISSION.json
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/0452041d715040a2487678162e5a6722bfc9d686fcf3b1a840a5790a4b3a1296.gz
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/06663c3f13331692eaf5a871c193ea80c0ff7e9522dbcd49d4643b455287c079.gz
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/086ba5ef1fb6538ed6a0233bf9acb22b9a54a2acfa88cd4bd3d40fbc48eb426b.gz
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/09918c790a83283a260d8fd170662314e9e048f483ddf929e4ffbb5904a235cd.gz
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/0f7d2e7aa1a5ea6715575ec23c083eb05487d8639fe7938f60e7de0a739003f9.gz
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/114b4ae18bc0705c9fee984766c166844b4cb9388ff982b986a83e1e08116644.gz
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/1232c1b499613cbdc7c4f602b916db0783204e54234e2fe343b649940272bf63.gz
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/127f6fc757371136b38a1abe25496938ee7fd0fe4d1aad2868161aa6da815794.gz
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/15c26ba1ed7b9da6ae0f58733407864e1e98e6cdaa1b9d916dd28b2a7af5696c.gz
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/1757d365467fd5e9fe7dedf5af9c38b4699c413029bd58b68642f3e3e1ef3a09.gz
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/176fcd680cb8eb29a41754f9db5a14c61f43c2416a8b3f0b0469aee4748724f5.gz
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/17d6a596a2ee9e4d3d77c2b8922136d24683b2800634a6b44985c123e5eb58b2.gz
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/1be8791a0b58d0b8d4aae6853944c5deb72358b549a93719c60aa92a7657d3a0.gz
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/1f568a28bb56b8192de31283315257bf25ffa6475c04c15a32de582825db7931.gz
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/1fb780528fa72552004ff849f5d31f23bd8224ae5dd0b89a57df8272fe422f17.gz
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/3591ce9c805bc87bc71a5cf61c85844abac1a0a35a691df8d9da99dd1de7cf70.gz
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/35adb703c07ae76d918c5e6e8a46d0d545d57c587a430214e7dca86194278ae7.gz
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/3ba7ccfdc3609d4613b69bf1bde1f538e2d8e7a0d4d9e562c1fb36c9bc3cc43c.gz
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/3bcd10216c3f333e3442f0609118e15addfece6a0e792d30c98f4bd5391c3345.gz
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/3d307c65792a5327bf86e8db0925eb9548e22adb59b5774771e6c7c340361991.gz
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/3d7f9154e549521601576703a60a32d8ee50fbf8304d8752d5e643f120e45279.gz
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/47315e991149308528cfcb62da054eac2e26c5e62031cb34b988cc0283b6cbe6.gz
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/4bb06bb4833ea2d6ca8f5fc7f390120cf55b24074cd7c492bee333a8c9838f93.gz
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/4c9ee0fa1ab6c407b17bafcb14a1abc088e3d4af88c31ab6f08dc74991b7b372.gz
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/4e2d3334eebc2a1413aa6361033935bd6fbcdcb7d8c67df5e48597c51e2fa4c0.gz
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/5c29ead8ee9e7c0f984262999bc5e3fd91d59f2ebe9d62429ba0f9c600eaf52f.gz
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/5c2e6ac30ec053edd3f73478c396c66e931b02898e99f69c468c8313c97c83fb.gz
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/61e8048ed2933813a4e8a8ad769cda9cfc9fba8571b0935cc186d8d5ef1754f3.gz
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/648c19b1ca4a5295df17577b0136afe53760f02d589b7f18c122b117d9f46fd0.gz
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/661db06699039cbf46a96d62878aae90e400a9f97675159ca77400d8e92b5a86.gz
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3-unit_regressions_pass-collection.json.json
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/6b9d7159b6b0e8580d40cff384089ef4c13843e3f21591e2287e32b56b0a4606.gz
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/6e7d782c17e9f96fa8c826e8d695420635305af7cdeddaad055966f1a1736338.gz
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/6f722516c5e65f1f830ba5d7c922c23ed74651ba50ed22a5360a351c85bc6c28.gz
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/6f888496f6afa100a0d3bb1c279642e037ca23c6cde4115952291d9e8559b11c.gz
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/7434bcaacc65441bc5eb4550484d76b41d229fae94decaec266cd01a0429d774.gz
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/7eecd9bd0b7b69ee4de56f4ea55efb69cd9d146fd63a22a21ec1fd5f76f883c8.gz
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18.gz
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/867ce21ff1ff570f2fa2e4f92e8febf706c213cd6ac4bdcd3ebbf6f3425c478d.gz
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/88c06ec8d0878314ccd8030fd996fba9d67d57abd91a897cdfa7d29086befd46.gz
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/894cbfcdc7b9c5fd0dd9ee121336f6ec83921fb33583d7c12614430acd0347de.gz
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/96d7fa1d43e857aca623e8c4c8102d32df948cf5f8089ad2915080035192517b.gz
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/9839df8f5931d42ff3a4e5990e876b629ec87f4a3314419103c02cfcaed4a0d2.gz
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/995d81b2e62fca275a36190ee75d119d839a37885e1f4a6d4ea9229ccee32bc0.gz
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/9bbef6de135862b8428cd547f05b23b5ff09a794ba1be36d6ca136efd52adba7.gz
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/9e95b2dccac71124323c080e996cb6883c4d563a623df1d482b810e2a7bd4b18.gz
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/CHECK_INDEX.json
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/LOCAL_QUARANTINE_ACCESS.json
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/STORAGE_NORMALIZATION.json
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/SUPERSEDED.json
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/a1109b4294fa2f3a6b73e3cdd8eed81e0616d84ef919f974b30f6b4ec944fdf3.gz
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/a3fb9667c8d6468776bdfe30f2f36f4aa3a6809041b8d1a84fb0c3d861839873.gz
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/a5d77d310fff9fe099d0271a87142631454207eca9e20c6bfe98cdb59cefa5e1.gz
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/a6e9c75a9f8244a4689ed00235177ac30be6eae1179ad88629519e124883f1e1.gz
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/ab06ea096c58a22842a718e3d83f74a9076a4f165095c6f17dcd63167294b3bc.gz
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/ab741180152118fef22915d4218d569960f20f3a5eb6fc06604dd178fb2311b7.gz
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/adfc6940fad983e99b58d3d49bb1f102e79b852abaec8fcc02d4b838eca2abc9.gz
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/b5d7d1c281ad66172ce38ea03741aaf34839021a813af9953a4f174734739853.gz
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/b9b5fda128ec8eaf3e1c3819ef6b2ef35c33ed85be20d98c64d35858065c0fe9.gz
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/bee1e9880733b948d75edc54d998b67b5379c9da5193699e4b7134776610ca3c.gz
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/c4e423a095416707c128ffd98ed54c61b1bc8357dc8e182688e561361724c1eb.gz
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/c55406d30f024830d3c693244dec2696de1a0fac23eabaf280b0f3482e2a074e.gz
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/ca9107529263fb774cb50cecc7564d31f51485a0a904e7d5bf75a1d3edc8f858.gz
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/cd7e464b522e041671e775a4fc192247b21ccdf60c937095e8e2e45cb431ecbb.gz
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/ce71d70db1e92a09b31341d09991a10324ca3e7fd7a82dbc7bb63d9f77d6d70a.gz
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/ce9793425d9d24d783f816447a1804247b5e3ed51b3398f633a24fa93369ca2f.gz
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/e6181b4648e9d989ac830cb5f7169369491c51dcdb50077f9c245ab29d198f8c.gz
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/e69178b38e8a6c89be92cc76ec93dfff76c5026636667b817a66eff7d7036225.gz
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1-unit_regressions_pass-collection.json.json
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/ecb1675020d518ca6915a4c7e23db50065f556d770b8fccf0bd00acb4be692bb.gz
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/f3fa795a7da457a8fa3947c6be960899090b51c4935bde9ee135962981ac066a.gz
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/f96eb6c38e700c85b751d3fe27c0b6f4cd654b2473d2d00c8e3ee45b60671359.gz
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/fa3b48b1a819dea2292fa744934dfbbc7d6671764fd41d5174d0cf648f32f53a.gz
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/fc108981c8838b4496322344f7a206290ac29076cae8b24362c46d77f2e9ee79.gz
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/fc789c841c4ac171679179cb9ec38b4cc97eeded43a9a2db15c2336f7ec68930.gz
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/harness_regressions_pass-execution.log.json
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/harness_regressions_pass-runner-collection.log.json
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/harness_regressions_pass-runner-execution.json.json
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/harness_regressions_pass-runner-junit.xml.json
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/harness_regressions_pass-runner-manifest.json.json
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/harness_regressions_pass-runner-pytest.log.json
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/harness_validation_passes-execution.log.json
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/lint_passes-execution.log.json
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/nested-command-probe.json
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/nested-command-probe.py
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/reaper_atomicity_history_dc-collection.json.json
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/reaper_atomicity_history_dc-collection.log.json
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/reaper_atomicity_history_dc-execution.json.json
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/reaper_atomicity_history_dc-execution.log.json
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/reaper_atomicity_history_dc-junit.xml.json
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/reaper_preserves_committed_success_wf-collection.json.json
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/reaper_preserves_committed_success_wf-collection.log.json
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/reaper_preserves_committed_success_wf-execution.json.json
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/reaper_preserves_committed_success_wf-execution.log.json
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/reaper_preserves_committed_success_wf-junit.xml.json
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/reaper_stale_candidate_dc-collection.json.json
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/reaper_stale_candidate_dc-collection.log.json
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/reaper_stale_candidate_dc-execution.json.json
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/reaper_stale_candidate_dc-execution.log.json
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/reaper_stale_candidate_dc-junit.xml.json
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/reaper_unknown_accounting_dc-collection.json.json
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/reaper_unknown_accounting_dc-collection.log.json
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/reaper_unknown_accounting_dc-execution.json.json
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/reaper_unknown_accounting_dc-execution.log.json
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/reaper_unknown_accounting_dc-junit.xml.json
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/reaper_unowned_deadline_dc-collection.json.json
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/reaper_unowned_deadline_dc-collection.log.json
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/reaper_unowned_deadline_dc-execution.json.json
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/reaper_unowned_deadline_dc-execution.log.json
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/reaper_unowned_deadline_dc-junit.xml.json
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/typecheck_passes-execution.log.json
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/unit_regressions_pass-collection.json.json
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/unit_regressions_pass-collection.log.json
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/unit_regressions_pass-execution.json.json
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/unit_regressions_pass-execution.log.json
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/unit_regressions_pass-junit.xml.json
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/worker_identity_namespace_pu-collection.json.json
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/worker_identity_namespace_pu-collection.log.json
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/worker_identity_namespace_pu-execution.json.json
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/worker_identity_namespace_pu-execution.log.json
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/worker_identity_namespace_pu-junit.xml.json
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/worker_independent_reaper_wf-collection.json.json
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/worker_independent_reaper_wf-collection.log.json
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/worker_independent_reaper_wf-execution.json.json
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/worker_independent_reaper_wf-execution.log.json
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/worker_independent_reaper_wf-junit.xml.json
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/worker_lease_deadline_pu-collection.json.json
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/worker_lease_deadline_pu-collection.log.json
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/worker_lease_deadline_pu-execution.json.json
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/worker_lease_deadline_pu-execution.log.json
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/worker_lease_deadline_pu-junit.xml.json
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/worker_reaper_db_suite-collection.json.json
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/worker_reaper_db_suite-collection.log.json
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/worker_reaper_db_suite-execution.json.json
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/worker_reaper_db_suite-execution.log.json
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/worker_reaper_db_suite-junit.xml.json
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/worker_reaper_unit_suite-collection.json.json
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/worker_reaper_unit_suite-collection.log.json
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/worker_reaper_unit_suite-execution.json.json
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/worker_reaper_unit_suite-execution.log.json
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/worker_reaper_unit_suite-junit.xml.json
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/worker_takeover_fencing_dc-collection.json.json
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/worker_takeover_fencing_dc-collection.log.json
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/worker_takeover_fencing_dc-execution.json.json
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/worker_takeover_fencing_dc-execution.log.json
+- docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/worker_takeover_fencing_dc-junit.xml.json
+- docs/exec-plans/evidence/KL-036/checks-4c062e028761a16e369f2aeacf8269b520fcd1c9-07f6ed02/0f4d702fb9d6592b9e7727b071f074e7933f9c4ab27adddf7e84c38cad22186d.gz
+- docs/exec-plans/evidence/KL-036/checks-4c062e028761a16e369f2aeacf8269b520fcd1c9-07f6ed02/7ff0b905a09899f775c981dfa43025bc1b112964d6b18d7555917b0ce675860c.gz
+- docs/exec-plans/evidence/KL-036/checks-4c062e028761a16e369f2aeacf8269b520fcd1c9-07f6ed02/83ce7b3f4882f1127f6f2b221549e6074849f729de96772c01357677e5d0bb6b.gz
+- docs/exec-plans/evidence/KL-036/checks-4c062e028761a16e369f2aeacf8269b520fcd1c9-07f6ed02/CHECK_INDEX.json
+- docs/exec-plans/evidence/KL-036/checks-4c062e028761a16e369f2aeacf8269b520fcd1c9-07f6ed02/d8b9fef9900c548ddb330cb7ef2f4b2f5c3fe8bf98fe08a9c45e3f93c8f1b62f.gz
+- docs/exec-plans/evidence/KL-036/checks-4c062e028761a16e369f2aeacf8269b520fcd1c9-07f6ed02/worker_reaper_db_suite-collection.json.json
+- docs/exec-plans/evidence/KL-036/checks-4c062e028761a16e369f2aeacf8269b520fcd1c9-07f6ed02/worker_reaper_db_suite-collection.log.json
+- docs/exec-plans/evidence/KL-036/checks-4c062e028761a16e369f2aeacf8269b520fcd1c9-07f6ed02/worker_reaper_db_suite-execution.json.json
+- docs/exec-plans/evidence/KL-036/checks-4c062e028761a16e369f2aeacf8269b520fcd1c9-07f6ed02/worker_reaper_db_suite-execution.log.json
+- docs/exec-plans/evidence/KL-036/checks-4c062e028761a16e369f2aeacf8269b520fcd1c9-07f6ed02/worker_reaper_db_suite-junit.xml.json
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/044a3e54104607ce182b3f9ef53a4c0b5db3f5fa9e0727829589099507e4fddf.gz
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/05ab95f4e1399e10285970c66116f15644d193a0bb9e7e4d2b01909553c946b8.gz
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/086ba5ef1fb6538ed6a0233bf9acb22b9a54a2acfa88cd4bd3d40fbc48eb426b.gz
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/09918c790a83283a260d8fd170662314e9e048f483ddf929e4ffbb5904a235cd.gz
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/0a5e5be4a2fce41ffff13aae694e7a47e9fd7551d66ca5091675053221d444da.gz
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/0d7142caba37e0455ff084acbff96cf23f040dda801553be1c77dffc7983d601.gz
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/12a22bb8cb6e543cd1d7f572785193ea60c5bfd403474a436cbcd645f9ce4d74.gz
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/13431a892cde1c1210cf401f67bad423747b944c7af7423a6fb9cbd8f1223e58.gz
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/16a27a09f0f287d9456d7cf42859fadb3003a42ec95f7040bf9a131924b44328.gz
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/1740ab3f1938dc5ff3d2745736ac6efe5587a48b57fa5123e835ad53cce00e33.gz
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/1758a76bdf6d960c7c6417b861686412146cfc5bb7f89c5327c8ab2d26678876.gz
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/1d278ba555869c6958acc0ae83317bfdac1283797b231681d2934015c482ef6f.gz
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/1f568a28bb56b8192de31283315257bf25ffa6475c04c15a32de582825db7931.gz
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/24957a100dcf7281d95fb9d370121b590f031afea93b2e72c1a31528453fabe5.gz
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/265053c576c68a71b5bc14d83cd57fa6a49cdb7a69a39273f2d4720c2cf780e6.gz
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/26f519cd943f39ddfdc6f7033b68cae551b4b3eacd03966a02f2cdb530b5eeaf.gz
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/27777b81e82633f19bb878ecf2ade49762ede48b7b62000690bed68480409941.gz
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/2c7dc7ae667c90999818c129e7707445e8166a6c25100118872c101c45b1f6cf.gz
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/2cc6d03483d9ea33346c084c8697b67bcc60c939af7aa9548ff37a7f8c1d1354.gz
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/320a6515164fd008c378edc4ab3a1c81bad4e399de0b5b91f1c5db050f6a0eef.gz
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/3591ce9c805bc87bc71a5cf61c85844abac1a0a35a691df8d9da99dd1de7cf70.gz
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/3d307c65792a5327bf86e8db0925eb9548e22adb59b5774771e6c7c340361991.gz
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/3da6da6c3b6ea473703933179d976ae253ec82ff5e28d9d04efcb0b61b91f496.gz
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/47315e991149308528cfcb62da054eac2e26c5e62031cb34b988cc0283b6cbe6.gz
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/4c9ee0fa1ab6c407b17bafcb14a1abc088e3d4af88c31ab6f08dc74991b7b372.gz
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/4e2d3334eebc2a1413aa6361033935bd6fbcdcb7d8c67df5e48597c51e2fa4c0.gz
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/52123e12e551ba2dc2b72db0683228abe0f41ebbae2aacf40ae7bb899e8b5c63.gz
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/54bb3e10ee3f1b11dd03873365b8d5a3cf2ed4b2533e86921498f95051c5df04.gz
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/5e8920dcf59e6288d4ebb65eadc7e91418054fc6ef8b99069b0c75db2d5ef7d3.gz
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/61e8048ed2933813a4e8a8ad769cda9cfc9fba8571b0935cc186d8d5ef1754f3.gz
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/64dcdaccc6f4c29d08ed20e959908a0810a128aac26ddb64bc9e98582b83e005.gz
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/6b723e8d057536321808107e2e98067e6b33fe9ba2d091f60f84bb967890cfea.gz
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/6f6844d9e7db0d4a702f0d9389583ad498d25912859c2a2d97e38a50c8727d9e.gz
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/6f888496f6afa100a0d3bb1c279642e037ca23c6cde4115952291d9e8559b11c.gz
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/7434bcaacc65441bc5eb4550484d76b41d229fae94decaec266cd01a0429d774.gz
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/745c4f9ecdc8666f6365eb692bf17f204fed5981298ed1ab8eb28ec24d9cae57.gz
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/796242d724391324755cd3f354a50aa48f86afe07a8f23289e801b58f0dc93bd.gz
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18.gz
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/8a57fcba51bd274903446d2b136c8782aba3496fc08730bf3bcfd77c43597c58.gz
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/946a259771a2758ed4045cd307a06e0f35be031ecc41da218406c8bd14a58ecf.gz
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/952c0c4ac0dac38257427f439fd280c6705f0ee1129549acd322202e86b5018c.gz
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/95d1b84fbee7021823149cdb8fa68be6e6175dcdacb7db00ebbe6b1f65801141.gz
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/9839df8f5931d42ff3a4e5990e876b629ec87f4a3314419103c02cfcaed4a0d2.gz
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/9bbef6de135862b8428cd547f05b23b5ff09a794ba1be36d6ca136efd52adba7.gz
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/9d323062316da73090c9906ad759650400998c03a248b88fe50669291602ce43.gz
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/9e95b2dccac71124323c080e996cb6883c4d563a623df1d482b810e2a7bd4b18.gz
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/9f231bf0dc63c8affa3d2201eb19818fb23060a277b5c2f66614cf50f7c55de8.gz
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/CHECK_INDEX.json
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/FINAL_ASSERTIONS.json
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/REVIEW_SUPERSEDED.json
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/STORAGE_NORMALIZATION.json
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/TRIAL_INDEX.json
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/a1fc716bd68affe30ccabf747314ff135ba3121c9c1e1ed7e17260add3215ad0.gz
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/a5d77d310fff9fe099d0271a87142631454207eca9e20c6bfe98cdb59cefa5e1.gz
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/ab06ea096c58a22842a718e3d83f74a9076a4f165095c6f17dcd63167294b3bc.gz
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/adfc6940fad983e99b58d3d49bb1f102e79b852abaec8fcc02d4b838eca2abc9.gz
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/b11cd6c52308fb9ece691bb6e1b19f66f49d0790d434899a604e4d77d9ba29ba.gz
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/b36b3d071ca443fc5bad058771440448fb43ffe575c9643703f3afad85abcee6.gz
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/c55406d30f024830d3c693244dec2696de1a0fac23eabaf280b0f3482e2a074e.gz
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/c65ca514c4e357f98cf7226b67330971623b084073808984a76b39aa5ba07b73.gz
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/ca6cf6314f7941e12a0c080068453c23118bfd6a76587acc7563cbc4ea66de30.gz
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/cd7e464b522e041671e775a4fc192247b21ccdf60c937095e8e2e45cb431ecbb.gz
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/d776484fe7431f2370f7140a03d7804d806ad1d2d7a26440c548c01dda2d5b1b.gz
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/daf9b797867259a53a5a2bcfd400d65cbe82192975aa82ab80b3feae619df333.gz
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/e31d340c6c6f89130bb494fcdfb5bad7cb80bced723aeb3191262a4c2fb1ae1a.gz
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/e69178b38e8a6c89be92cc76ec93dfff76c5026636667b817a66eff7d7036225.gz
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/ebd3872b45241b8659eb4de77ceb94aa2242e90e36cb00bd48b6442a5c33f93c.gz
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/edab7c907102ea8c7b575e42424a32ce4a0fff9ddd4f29ad0b1c2712727c5c71.gz
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/eec41828b1662b344bcbaa4a0e118367a432c0fd77c33a90b7795777484b319f.gz
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/f364f1fbd082be070a0e62ecf95be7691674a2606b082ecf3e21ff1d4c03ddee.gz
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/f4f3eb10efce60bcae38372c0167f3ea6f2aa4d69e881039956a6ae394bd9e22.gz
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/f51951939d6a387b9f03c2e469a07324b2c3e4c88815cda015ff7bff5d27a42a.gz
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/f96eb6c38e700c85b751d3fe27c0b6f4cd654b2473d2d00c8e3ee45b60671359.gz
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/fc6330ab85bd3bba08d82eedb604971c2883582686fe5e558aad9ed22590b2c9.gz
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/harness_regressions_pass-execution.log.json
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/harness_regressions_pass-runner-execution.json.json
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/harness_regressions_pass-runner-junit.xml.json
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/harness_regressions_pass-runner-manifest.json.json
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/harness_regressions_pass-runner-pytest.log.json
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/harness_validation_passes-execution.log.json
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/lint_passes-execution.log.json
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/nested-command-probe.json
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/preflight-db.json
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/preflight-lint.json
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/preflight-typecheck.json
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/preflight-unit.json
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/reaper_atomicity_history_dc-collection.json.json
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/reaper_atomicity_history_dc-collection.log.json
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/reaper_atomicity_history_dc-execution.json.json
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/reaper_atomicity_history_dc-execution.log.json
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/reaper_atomicity_history_dc-junit.xml.json
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/reaper_preserves_committed_success_wf-collection.json.json
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/reaper_preserves_committed_success_wf-collection.log.json
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/reaper_preserves_committed_success_wf-execution.json.json
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/reaper_preserves_committed_success_wf-execution.log.json
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/reaper_preserves_committed_success_wf-junit.xml.json
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/reaper_stale_candidate_dc-collection.json.json
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/reaper_stale_candidate_dc-collection.log.json
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/reaper_stale_candidate_dc-execution.json.json
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/reaper_stale_candidate_dc-execution.log.json
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/reaper_stale_candidate_dc-junit.xml.json
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/reaper_unknown_accounting_dc-collection.json.json
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/reaper_unknown_accounting_dc-collection.log.json
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/reaper_unknown_accounting_dc-execution.json.json
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/reaper_unknown_accounting_dc-execution.log.json
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/reaper_unknown_accounting_dc-junit.xml.json
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/reaper_unowned_deadline_dc-collection.json.json
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/reaper_unowned_deadline_dc-collection.log.json
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/reaper_unowned_deadline_dc-execution.json.json
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/reaper_unowned_deadline_dc-execution.log.json
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/reaper_unowned_deadline_dc-junit.xml.json
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/typecheck_passes-execution.log.json
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/unit_regressions_pass-collection.log.json
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/unit_regressions_pass-execution.json.json
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/unit_regressions_pass-execution.log.json
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/unit_regressions_pass-junit.xml.json
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/worker_identity_namespace_pu-collection.json.json
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/worker_identity_namespace_pu-collection.log.json
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/worker_identity_namespace_pu-execution.json.json
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/worker_identity_namespace_pu-execution.log.json
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/worker_identity_namespace_pu-junit.xml.json
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/worker_independent_reaper_wf-collection.json.json
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/worker_independent_reaper_wf-collection.log.json
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/worker_independent_reaper_wf-execution.json.json
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/worker_independent_reaper_wf-execution.log.json
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/worker_independent_reaper_wf-junit.xml.json
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/worker_lease_deadline_pu-collection.json.json
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/worker_lease_deadline_pu-collection.log.json
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/worker_lease_deadline_pu-execution.json.json
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/worker_lease_deadline_pu-execution.log.json
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/worker_lease_deadline_pu-junit.xml.json
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/worker_reaper_db_suite-collection.json.json
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/worker_reaper_db_suite-collection.log.json
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/worker_reaper_db_suite-execution.json.json
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/worker_reaper_db_suite-execution.log.json
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/worker_reaper_db_suite-junit.xml.json
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/worker_reaper_unit_suite-collection.json.json
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/worker_reaper_unit_suite-collection.log.json
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/worker_reaper_unit_suite-execution.json.json
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/worker_reaper_unit_suite-execution.log.json
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/worker_reaper_unit_suite-junit.xml.json
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/worker_takeover_fencing_dc-collection.json.json
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/worker_takeover_fencing_dc-collection.log.json
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/worker_takeover_fencing_dc-execution.json.json
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/worker_takeover_fencing_dc-execution.log.json
+- docs/exec-plans/evidence/KL-036/checks-6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3/worker_takeover_fencing_dc-junit.xml.json
+- docs/exec-plans/evidence/KL-036/checks-b74155983473fcc8ab1884fd6b6ad8459964365f-9ebdf50b/09918c790a83283a260d8fd170662314e9e048f483ddf929e4ffbb5904a235cd.gz
+- docs/exec-plans/evidence/KL-036/checks-b74155983473fcc8ab1884fd6b6ad8459964365f-9ebdf50b/20dd007f0bb40a2daa6c5b2d61141e6b8571e79efa7d8de9c645a4204e5a72da.gz
+- docs/exec-plans/evidence/KL-036/checks-b74155983473fcc8ab1884fd6b6ad8459964365f-9ebdf50b/21e40674c64b5ba9bc1f95e153216f54a779fcba574a6fee15938afe3d6e6e46.gz
+- docs/exec-plans/evidence/KL-036/checks-b74155983473fcc8ab1884fd6b6ad8459964365f-9ebdf50b/439ced4b36be7371ab905cccdf4108a32da6085041e77dccb36ed46914548f61.gz
+- docs/exec-plans/evidence/KL-036/checks-b74155983473fcc8ab1884fd6b6ad8459964365f-9ebdf50b/5fd38a57ce488044b3a557574e3e6eb0073266ce178ba7a81aa83df8d605e119.gz
+- docs/exec-plans/evidence/KL-036/checks-b74155983473fcc8ab1884fd6b6ad8459964365f-9ebdf50b/6d871cc454b1e722f5848c9b30d5e61c2d8e3dad4d438a28fd9e24bbc5f4502b.gz
+- docs/exec-plans/evidence/KL-036/checks-b74155983473fcc8ab1884fd6b6ad8459964365f-9ebdf50b/7ff6e2ed752bb66dcf08e244bbce1f37fbe25c507f2607c0612b4f4dd0a71522.gz
+- docs/exec-plans/evidence/KL-036/checks-b74155983473fcc8ab1884fd6b6ad8459964365f-9ebdf50b/91aa8bb53210053a459abab9466fb82bc630c69f59e5d00515fbb5209312062d.gz
+- docs/exec-plans/evidence/KL-036/checks-b74155983473fcc8ab1884fd6b6ad8459964365f-9ebdf50b/CHECK_INDEX.json
+- docs/exec-plans/evidence/KL-036/checks-b74155983473fcc8ab1884fd6b6ad8459964365f-9ebdf50b/a0b47be6385936325277c180db44834c24fb101bd45689aae1396167b10707ac.gz
+- docs/exec-plans/evidence/KL-036/checks-b74155983473fcc8ab1884fd6b6ad8459964365f-9ebdf50b/a3c78bcce1b9163c6a54f21d1e5bfddacbd177bf4ddf3390a0d06c0cbd564ac3.gz
+- docs/exec-plans/evidence/KL-036/checks-b74155983473fcc8ab1884fd6b6ad8459964365f-9ebdf50b/a42378f810b530f2efeff239becc20d66b68d43ac8a0f6cc1cb8dc09f1947c9c.gz
+- docs/exec-plans/evidence/KL-036/checks-b74155983473fcc8ab1884fd6b6ad8459964365f-9ebdf50b/b741559-normalized-interrupted-b741559-9ebdf50b-interrupted-b741559-9ebdf50b-harness_regressions_pass-runner-collection.log.json
+- docs/exec-plans/evidence/KL-036/checks-b74155983473fcc8ab1884fd6b6ad8459964365f-9ebdf50b/b741559-normalized-interrupted-b741559-9ebdf50b-interrupted-b741559-9ebdf50b-harness_regressions_pass-runner-execution.json.json
+- docs/exec-plans/evidence/KL-036/checks-b74155983473fcc8ab1884fd6b6ad8459964365f-9ebdf50b/b741559-normalized-interrupted-b741559-9ebdf50b-interrupted-b741559-9ebdf50b-harness_regressions_pass-runner-junit.xml.json
+- docs/exec-plans/evidence/KL-036/checks-b74155983473fcc8ab1884fd6b6ad8459964365f-9ebdf50b/bc7cd34848e1f6a77ddab4ea722b471f7558716ddcdd2dee2c5c666d6c803868.gz
+- docs/exec-plans/evidence/KL-036/checks-b74155983473fcc8ab1884fd6b6ad8459964365f-9ebdf50b/bdacf81ae3994997f82f0c161626755f31cfaa19104fee56c6b28bec1b9afe8e.gz
+- docs/exec-plans/evidence/KL-036/checks-b74155983473fcc8ab1884fd6b6ad8459964365f-9ebdf50b/cf42c3eb3317d285b2fa1f23999170ea85f277fe84a07d56d3e974a72baf9311.gz
+- docs/exec-plans/evidence/KL-036/checks-b74155983473fcc8ab1884fd6b6ad8459964365f-9ebdf50b/dd6de036cfaa5cda4b16be668306fbf3dae10fd3f7fb11ab6741012556559997.gz
+- docs/exec-plans/evidence/KL-036/checks-b74155983473fcc8ab1884fd6b6ad8459964365f-9ebdf50b/e69178b38e8a6c89be92cc76ec93dfff76c5026636667b817a66eff7d7036225.gz
+- docs/exec-plans/evidence/KL-036/checks-b74155983473fcc8ab1884fd6b6ad8459964365f-9ebdf50b/harness_regressions_pass-execution.log.json
+- docs/exec-plans/evidence/KL-036/checks-b74155983473fcc8ab1884fd6b6ad8459964365f-9ebdf50b/harness_regressions_pass-runner-collection.log.json
+- docs/exec-plans/evidence/KL-036/checks-b74155983473fcc8ab1884fd6b6ad8459964365f-9ebdf50b/harness_regressions_pass-runner-execution.json.json
+- docs/exec-plans/evidence/KL-036/checks-b74155983473fcc8ab1884fd6b6ad8459964365f-9ebdf50b/harness_regressions_pass-runner-junit.xml.json
+- docs/exec-plans/evidence/KL-036/checks-b74155983473fcc8ab1884fd6b6ad8459964365f-9ebdf50b/harness_regressions_pass-runner-manifest.json.json
+- docs/exec-plans/evidence/KL-036/checks-b74155983473fcc8ab1884fd6b6ad8459964365f-9ebdf50b/harness_regressions_pass-runner-pytest.log.json
+- docs/exec-plans/evidence/KL-036/checks-b74155983473fcc8ab1884fd6b6ad8459964365f-9ebdf50b/worker_identity_namespace_pu-collection.json.json
+- docs/exec-plans/evidence/KL-036/checks-b74155983473fcc8ab1884fd6b6ad8459964365f-9ebdf50b/worker_identity_namespace_pu-collection.log.json
+- docs/exec-plans/evidence/KL-036/checks-b74155983473fcc8ab1884fd6b6ad8459964365f-9ebdf50b/worker_identity_namespace_pu-execution.json.json
+- docs/exec-plans/evidence/KL-036/checks-b74155983473fcc8ab1884fd6b6ad8459964365f-9ebdf50b/worker_identity_namespace_pu-execution.log.json
+- docs/exec-plans/evidence/KL-036/checks-b74155983473fcc8ab1884fd6b6ad8459964365f-9ebdf50b/worker_identity_namespace_pu-junit.xml.json
+- docs/exec-plans/evidence/KL-036/checks-b74155983473fcc8ab1884fd6b6ad8459964365f-9ebdf50b/worker_lease_deadline_pu-collection.json.json
+- docs/exec-plans/evidence/KL-036/checks-b74155983473fcc8ab1884fd6b6ad8459964365f-9ebdf50b/worker_lease_deadline_pu-collection.log.json
+- docs/exec-plans/evidence/KL-036/checks-b74155983473fcc8ab1884fd6b6ad8459964365f-9ebdf50b/worker_lease_deadline_pu-execution.json.json
+- docs/exec-plans/evidence/KL-036/checks-b74155983473fcc8ab1884fd6b6ad8459964365f-9ebdf50b/worker_lease_deadline_pu-execution.log.json
+- docs/exec-plans/evidence/KL-036/checks-b74155983473fcc8ab1884fd6b6ad8459964365f-9ebdf50b/worker_lease_deadline_pu-junit.xml.json
+- docs/exec-plans/evidence/KL-036/checks-c9caccb34ce459650ec90dc01797f81c5a3d4f73-77646691/02f999b5931e166aeb0ee675bd536933fe7feb2a9a4f70958e1f671c739c579a.gz
+- docs/exec-plans/evidence/KL-036/checks-c9caccb34ce459650ec90dc01797f81c5a3d4f73-77646691/05be42bd9362a08b15a12f5a710f48df99b1ad3cc5d747e67644fc94672b2d98.gz
+- docs/exec-plans/evidence/KL-036/checks-c9caccb34ce459650ec90dc01797f81c5a3d4f73-77646691/CHECK_INDEX.json
+- docs/exec-plans/evidence/KL-036/checks-c9caccb34ce459650ec90dc01797f81c5a3d4f73-77646691/ab06ea096c58a22842a718e3d83f74a9076a4f165095c6f17dcd63167294b3bc.gz
+- docs/exec-plans/evidence/KL-036/checks-c9caccb34ce459650ec90dc01797f81c5a3d4f73-77646691/db3a3270247fe0741bf24c6a00398f43a33b2d986b5979dc32d92dcfc3a03929.gz
+- docs/exec-plans/evidence/KL-036/checks-c9caccb34ce459650ec90dc01797f81c5a3d4f73-77646691/fb123272a13e3a20ab6560010bc973c2e120897c261b71704e23e6a195778b86.gz
+- docs/exec-plans/evidence/KL-036/checks-c9caccb34ce459650ec90dc01797f81c5a3d4f73-77646691/reaper_stale_candidate_dc-collection.json.json
+- docs/exec-plans/evidence/KL-036/checks-c9caccb34ce459650ec90dc01797f81c5a3d4f73-77646691/reaper_stale_candidate_dc-collection.log.json
+- docs/exec-plans/evidence/KL-036/checks-c9caccb34ce459650ec90dc01797f81c5a3d4f73-77646691/reaper_stale_candidate_dc-execution.json.json
+- docs/exec-plans/evidence/KL-036/checks-c9caccb34ce459650ec90dc01797f81c5a3d4f73-77646691/reaper_stale_candidate_dc-execution.log.json
+- docs/exec-plans/evidence/KL-036/checks-c9caccb34ce459650ec90dc01797f81c5a3d4f73-77646691/reaper_stale_candidate_dc-junit.xml.json
+- docs/exec-plans/evidence/KL-036/checks-d0c66e30d88aafd911a56f3a8a0787e507dce6de-9f354716/3dd84d173ca5d614aa79efb8eec71efee7d9ac7f4342684b99966a75122d8996.gz
+- docs/exec-plans/evidence/KL-036/checks-d0c66e30d88aafd911a56f3a8a0787e507dce6de-9f354716/CHECK_INDEX.json
+- docs/exec-plans/evidence/KL-036/checks-d0c66e30d88aafd911a56f3a8a0787e507dce6de-9f354716/a5648ada5050350c99e0f5be031a7629c6c339464e93ddbe208925b3fe271f06.gz
+- docs/exec-plans/evidence/KL-036/checks-d0c66e30d88aafd911a56f3a8a0787e507dce6de-9f354716/cd5f045700f89b1c70dd35987bd218af95b1375733b96196964a00ae3d6d9b03.gz
+- docs/exec-plans/evidence/KL-036/checks-d0c66e30d88aafd911a56f3a8a0787e507dce6de-9f354716/cd7e464b522e041671e775a4fc192247b21ccdf60c937095e8e2e45cb431ecbb.gz
+- docs/exec-plans/evidence/KL-036/checks-d0c66e30d88aafd911a56f3a8a0787e507dce6de-9f354716/e3fcba6828b4505dda54f27827f2611974a66596ef6b48b8e41f5c1940a6e8f5.gz
+- docs/exec-plans/evidence/KL-036/checks-d0c66e30d88aafd911a56f3a8a0787e507dce6de-9f354716/worker_reaper_db_suite-collection.json.json
+- docs/exec-plans/evidence/KL-036/checks-d0c66e30d88aafd911a56f3a8a0787e507dce6de-9f354716/worker_reaper_db_suite-collection.log.json
+- docs/exec-plans/evidence/KL-036/checks-d0c66e30d88aafd911a56f3a8a0787e507dce6de-9f354716/worker_reaper_db_suite-execution.json.json
+- docs/exec-plans/evidence/KL-036/checks-d0c66e30d88aafd911a56f3a8a0787e507dce6de-9f354716/worker_reaper_db_suite-execution.log.json
+- docs/exec-plans/evidence/KL-036/checks-d0c66e30d88aafd911a56f3a8a0787e507dce6de-9f354716/worker_reaper_db_suite-junit.xml.json
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/04471d7372bf3c420d4d6d1dbc02d13376faf977c1c2d41c957c5e3261735d14.gz
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/086ba5ef1fb6538ed6a0233bf9acb22b9a54a2acfa88cd4bd3d40fbc48eb426b.gz
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/09918c790a83283a260d8fd170662314e9e048f483ddf929e4ffbb5904a235cd.gz
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/0b1a59d36a35dc9a69e57e7dc1e66cb28727cb620df47c7f24f1e5f31c80d4df.gz
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/10c2469ca875aa64ae0d2f6fb6562c4c8db983e9c16152d178b2e0a22c6bc704.gz
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/16a27a09f0f287d9456d7cf42859fadb3003a42ec95f7040bf9a131924b44328.gz
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/1764def88236eacb6b5e0785c0090321f174189b148f3df8853e7780244e95e2.gz
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/1a6f1dd4b0f50a0e0f633b3151ddc9585eea3379c34965ac0cef36028d74e13b.gz
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/1f568a28bb56b8192de31283315257bf25ffa6475c04c15a32de582825db7931.gz
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/21ac3db5b0880e74ac658083f4619b0c3f6323777c500b6e355f20a163cd6ec8.gz
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/22905ac61e8c32aa6d5c71d646352f486bf8f3aba2b2a4bad4cb583a5194c0a5.gz
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/2652e16cfc94d376af8f1cdbacf0d209c4c9c8ee69d685414c53446830bae4fa.gz
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/298cfdd923d2016f615a66847621a083bf7ea43fd0d55bab7fb9384462727864.gz
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/2c8699f95214e571bfce5cc366cbbde65a98642df87ca889eb23490754c50552.gz
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/3591ce9c805bc87bc71a5cf61c85844abac1a0a35a691df8d9da99dd1de7cf70.gz
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/3600b011d45f7e72057df85ab92243e8e67a682c4a3f6741a6f085abe25f7745.gz
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/37787dd67a4b59a6f9df5340042544dd615f86eb620f071587272f7fb7eef1c4.gz
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/3825874e80cdd0a827cfa1607c838ec8eff02d7933bd81f6b09f93d2e50febd6.gz
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/3b2d8ef67f3ab708cc7c5b169237c7cac9c8599f795f1f4f8e9aa6071c093648.gz
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/3d307c65792a5327bf86e8db0925eb9548e22adb59b5774771e6c7c340361991.gz
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/442381224a3daec179b10b3b1e465cc00623fcf475d26c16c7d061705fef9b5c.gz
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/47315e991149308528cfcb62da054eac2e26c5e62031cb34b988cc0283b6cbe6.gz
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/4a1f7cf19e01950b71c51a176c77e20fb1686c1b18699ac43dc21ebdc4db8324.gz
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/4c9ee0fa1ab6c407b17bafcb14a1abc088e3d4af88c31ab6f08dc74991b7b372.gz
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/4da1f3106ae1d6df56bbe49578a27e1a5aab5e50cd9fc8187c0c6a2bcd4e3d92.gz
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/4e2d3334eebc2a1413aa6361033935bd6fbcdcb7d8c67df5e48597c51e2fa4c0.gz
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/4e966ca7112f16138c79fdbe5345d9c4ce8f754d731350cb74608caaf2d3e4b6.gz
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/4f03ff7ef8c3cfead6a9acd28c1afd4632fa84525b9906a98128b67f06d53bc6.gz
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/4f8c5a39139dd548efd4df405610c8c69afa0324cfac47c501d1b9bc59eb6051.gz
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/4fad4b1a54ccc9196841a040beac3209a40ab0c84ac5d829a49311dff7b47840.gz
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/539a1c31987d2906f6e4d5a2b77f804ddc3dfc71fa084186cbfbe0eb686af809.gz
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/556b4a49c9e8834ff6de825fdaedb22b7effa1186be08c887663fb998f861b28.gz
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/5629931c155694adbbb091b266c445bc92e5dcbff90625d36e242692cc68105c.gz
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/5817cd0d8ddf7791bab27e62b1ceb96ade64576a680e8ed7529b492cf73f460a.gz
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/5abbc0be69478ecc5a5725adb19c39832256f397c67f4c7a72bcbd4ca20961ea.gz
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/5fd38a57ce488044b3a557574e3e6eb0073266ce178ba7a81aa83df8d605e119.gz
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/61153d6b7da5f84ca1837cce0413ae696a382bde6ac32d6fd176053e2ef067f7.gz
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/61e8048ed2933813a4e8a8ad769cda9cfc9fba8571b0935cc186d8d5ef1754f3.gz
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/6f888496f6afa100a0d3bb1c279642e037ca23c6cde4115952291d9e8559b11c.gz
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18.gz
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/8f4ff0c489db9a529167085802f7aa791bead33e41e47be9c31c876f6223f09d.gz
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/97a91c3d6efaddb33cc888c424e9cf6501742dbdfa2373ff67924f2638713f98.gz
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/9ccb177aacea062b9896b3b8b935148f82760e23925946b760da6cfa7f60539a.gz
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/9e7cbdbbd000dedb636e4f1d3ec19ae4db4b67ea40dc5881d913e788878763da.gz
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/9e95b2dccac71124323c080e996cb6883c4d563a623df1d482b810e2a7bd4b18.gz
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/CHECK_INDEX.json
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/FINAL_ASSERTIONS.json
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/STORAGE_BUDGET_BLOCKER.json
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/STORAGE_NORMALIZATION.json
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/a44db9d964e27153ae6dfd125732b6cce363e3581ea230a91cc05a4c4759f715.gz
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/a5d77d310fff9fe099d0271a87142631454207eca9e20c6bfe98cdb59cefa5e1.gz
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/ab06ea096c58a22842a718e3d83f74a9076a4f165095c6f17dcd63167294b3bc.gz
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/adfc6940fad983e99b58d3d49bb1f102e79b852abaec8fcc02d4b838eca2abc9.gz
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/b2a0438b8d2566e1e33e6c4a435af1cc6ede7dc7417924f36abeb7aee5ae2deb.gz
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/bd1539173bd135fff0c7fc2ca31da235115d7ad40ecc18d255f440615497ce1e.gz
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/c55406d30f024830d3c693244dec2696de1a0fac23eabaf280b0f3482e2a074e.gz
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/cc56e43e415de7382058d1827a239bdddf724ff7db8ff081ea95e3959c5ccaff.gz
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/cd7e464b522e041671e775a4fc192247b21ccdf60c937095e8e2e45cb431ecbb.gz
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/ced9efe8cd8d02d84eb8fa113358aac6a7c6b5b7200df2babadf0ec7a4eb037f.gz
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/cfd55dc6e80aea25634e8580ca9bf2fd365707256611a89d7ac3bda28b2e024f.gz
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/d5fa98bee6954bb33c7da64e8291f7f853a9b65955b0f1ae46b29be1dc8d9361.gz
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/dd13608aa9ec67648baed8fa421f87c7338eb382d056ca2d78d4ea73e54502ad.gz
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/df0014a98a8f2748c48eb5817295ae0482056ad34603a02b56fbf4f1dc1894d5.gz
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/df7768990866813f940cbf28bcfff1b1195935b46ee5137e11f366df5353e61b.gz
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/e37ed69b6e6c78ae35ebc4a95306b8929bea6d7f082695565a4b096c22abe5fc.gz
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/e69178b38e8a6c89be92cc76ec93dfff76c5026636667b817a66eff7d7036225.gz
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/e9789e4f3d5059f8000e89cc6c42a2c922b9d7d53799addbe6d10afa7d744d81.gz
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/ec2174e6a15e422123abf1df767d32cd0a92c8df07b1c1c020472e142e839855.gz
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/exact-head-storage-audit-fail.json
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/f1a6be5cab5aac85174087f86ae4965528594d5456e3c24a28fb1147a8ab9955.gz
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/f364f1fbd082be070a0e62ecf95be7691674a2606b082ecf3e21ff1d4c03ddee.gz
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/f4f3eb10efce60bcae38372c0167f3ea6f2aa4d69e881039956a6ae394bd9e22.gz
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/f9c9a586977aa5896b2d95bb3e51fd9fa18c85ed1f4fe9645f2c962173c3ee7e.gz
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/fd8c4268c4b3f99c8f323054868a6b0406e886897b0e4f8445579e6fe5956892.gz
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/harness_regressions_pass-execution.log.json
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/harness_regressions_pass-runner-collection.log.json
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/harness_regressions_pass-runner-execution.json.json
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/harness_regressions_pass-runner-junit.xml.json
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/harness_regressions_pass-runner-manifest.json.json
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/harness_regressions_pass-runner-pytest.log.json
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/harness_validation_passes-execution.log.json
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/lint_passes-execution.log.json
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/preliminary-db-suite.json
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/reaper_atomicity_history_dc-collection.json.json
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/reaper_atomicity_history_dc-collection.log.json
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/reaper_atomicity_history_dc-execution.json.json
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/reaper_atomicity_history_dc-execution.log.json
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/reaper_atomicity_history_dc-junit.xml.json
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/reaper_preserves_committed_success_wf-collection.json.json
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/reaper_preserves_committed_success_wf-collection.log.json
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/reaper_preserves_committed_success_wf-execution.json.json
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/reaper_preserves_committed_success_wf-execution.log.json
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/reaper_preserves_committed_success_wf-junit.xml.json
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/reaper_stale_candidate_dc-collection.json.json
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/reaper_stale_candidate_dc-collection.log.json
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/reaper_stale_candidate_dc-execution.json.json
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/reaper_stale_candidate_dc-execution.log.json
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/reaper_stale_candidate_dc-junit.xml.json
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/reaper_unknown_accounting_dc-collection.json.json
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/reaper_unknown_accounting_dc-collection.log.json
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/reaper_unknown_accounting_dc-execution.json.json
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/reaper_unknown_accounting_dc-execution.log.json
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/reaper_unknown_accounting_dc-junit.xml.json
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/reaper_unowned_deadline_dc-collection.json.json
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/reaper_unowned_deadline_dc-collection.log.json
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/reaper_unowned_deadline_dc-execution.json.json
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/reaper_unowned_deadline_dc-execution.log.json
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/reaper_unowned_deadline_dc-junit.xml.json
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/typecheck_passes-execution.log.json
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/unit_regressions_pass-collection.log.json
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/unit_regressions_pass-execution.json.json
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/unit_regressions_pass-execution.log.json
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/unit_regressions_pass-junit.xml.json
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/worker_identity_namespace_pu-collection.json.json
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/worker_identity_namespace_pu-collection.log.json
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/worker_identity_namespace_pu-execution.json.json
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/worker_identity_namespace_pu-execution.log.json
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/worker_identity_namespace_pu-junit.xml.json
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/worker_independent_reaper_wf-collection.json.json
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/worker_independent_reaper_wf-collection.log.json
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/worker_independent_reaper_wf-execution.json.json
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/worker_independent_reaper_wf-execution.log.json
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/worker_independent_reaper_wf-junit.xml.json
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/worker_lease_deadline_pu-collection.json.json
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/worker_lease_deadline_pu-collection.log.json
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/worker_lease_deadline_pu-execution.json.json
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/worker_lease_deadline_pu-execution.log.json
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/worker_lease_deadline_pu-junit.xml.json
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/worker_reaper_db_suite-collection.json.json
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/worker_reaper_db_suite-collection.log.json
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/worker_reaper_db_suite-execution.json.json
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/worker_reaper_db_suite-execution.log.json
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/worker_reaper_db_suite-junit.xml.json
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/worker_reaper_unit_suite-collection.json.json
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/worker_reaper_unit_suite-collection.log.json
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/worker_reaper_unit_suite-execution.json.json
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/worker_reaper_unit_suite-execution.log.json
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/worker_reaper_unit_suite-junit.xml.json
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/worker_takeover_fencing_dc-collection.json.json
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/worker_takeover_fencing_dc-collection.log.json
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/worker_takeover_fencing_dc-execution.json.json
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/worker_takeover_fencing_dc-execution.log.json
+- docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/worker_takeover_fencing_dc-junit.xml.json
+- docs/exec-plans/evidence/KL-036/checks-f28c36873ba73e254f2961ec7897ba4463cf6595-bc1123c3/2755bee7dcff7d24f1aa67102c4e779a06a9073389534bb0a40cfd1d9e03711e.gz
+- docs/exec-plans/evidence/KL-036/checks-f28c36873ba73e254f2961ec7897ba4463cf6595-bc1123c3/64b3720d64153a949653dd34b2b32180b0341c4cd93a7f16e0fd63e0c1e47529.gz
+- docs/exec-plans/evidence/KL-036/checks-f28c36873ba73e254f2961ec7897ba4463cf6595-bc1123c3/8dc2dbbc7ba81653f0aaed7888710a149ac1192d25b6296b76adc56df8dd3944.gz
+- docs/exec-plans/evidence/KL-036/checks-f28c36873ba73e254f2961ec7897ba4463cf6595-bc1123c3/CHECK_INDEX.json
+- docs/exec-plans/evidence/KL-036/checks-f28c36873ba73e254f2961ec7897ba4463cf6595-bc1123c3/cd7e464b522e041671e775a4fc192247b21ccdf60c937095e8e2e45cb431ecbb.gz
+- docs/exec-plans/evidence/KL-036/checks-f28c36873ba73e254f2961ec7897ba4463cf6595-bc1123c3/f2ca32a7aef6607f7ce7c6c4301300c90e7e8d16787d49d90ba8b45a389169a5.gz
+- docs/exec-plans/evidence/KL-036/checks-f28c36873ba73e254f2961ec7897ba4463cf6595-bc1123c3/worker_reaper_db_suite-collection.json.json
+- docs/exec-plans/evidence/KL-036/checks-f28c36873ba73e254f2961ec7897ba4463cf6595-bc1123c3/worker_reaper_db_suite-collection.log.json
+- docs/exec-plans/evidence/KL-036/checks-f28c36873ba73e254f2961ec7897ba4463cf6595-bc1123c3/worker_reaper_db_suite-execution.json.json
+- docs/exec-plans/evidence/KL-036/checks-f28c36873ba73e254f2961ec7897ba4463cf6595-bc1123c3/worker_reaper_db_suite-execution.log.json
+- docs/exec-plans/evidence/KL-036/checks-f28c36873ba73e254f2961ec7897ba4463cf6595-bc1123c3/worker_reaper_db_suite-junit.xml.json
+- docs/exec-plans/evidence/KL-036/checks-f478248ffc9ea2f91b37cb356ae1facc76870414-42aff63e/0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986-harness_regressions_pass-runner-collection.json.json
+- docs/exec-plans/evidence/KL-036/checks-f478248ffc9ea2f91b37cb356ae1facc76870414-42aff63e/54f97de6c7415742983aae8996e6beba691a50befd12177a2e35a5775f2661ac.gz
+- docs/exec-plans/evidence/KL-036/checks-f478248ffc9ea2f91b37cb356ae1facc76870414-42aff63e/566f4c412cbd48bcd7866ed350e4897fec99990adc4d2da5a747c8ff6c49ac05.gz
+- docs/exec-plans/evidence/KL-036/checks-f478248ffc9ea2f91b37cb356ae1facc76870414-42aff63e/590d1a5fa0db48265cee7ed4c2cb56b7779c4b5fe3af81d9e67cbe7d93fe9909.gz
+- docs/exec-plans/evidence/KL-036/checks-f478248ffc9ea2f91b37cb356ae1facc76870414-42aff63e/6332c24a543bf1e2b763fa708daf28c9990f7694a3a903b06fa32381e4f0757d.gz
+- docs/exec-plans/evidence/KL-036/checks-f478248ffc9ea2f91b37cb356ae1facc76870414-42aff63e/6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3-harness_regressions_pass-runner-collection.json.json
+- docs/exec-plans/evidence/KL-036/checks-f478248ffc9ea2f91b37cb356ae1facc76870414-42aff63e/9003fa2c9e03e983b92243e40a2d62aa73a4346d8d062b017bd0c79c75120074.gz
+- docs/exec-plans/evidence/KL-036/checks-f478248ffc9ea2f91b37cb356ae1facc76870414-42aff63e/CHECK_INDEX.json
+- docs/exec-plans/evidence/KL-036/checks-f478248ffc9ea2f91b37cb356ae1facc76870414-42aff63e/a80f15c54a610683d2d0e4d4250d1d49d77e7b5214525d9209fc2ae11d5e7182.gz
+- docs/exec-plans/evidence/KL-036/checks-f478248ffc9ea2f91b37cb356ae1facc76870414-42aff63e/af35216de6534816001895aa5711642205fc248093902dc21160a2edafc2f394.gz
+- docs/exec-plans/evidence/KL-036/checks-f478248ffc9ea2f91b37cb356ae1facc76870414-42aff63e/b741559-normalized-checks-b74155983473fcc8ab1884fd6b6ad8459964365f-9ebdf50b-harness_regressions_pass-runner-collection.json.json
+- docs/exec-plans/evidence/KL-036/checks-f478248ffc9ea2f91b37cb356ae1facc76870414-42aff63e/e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1-harness_regressions_pass-runner-collection.json.json
+- docs/exec-plans/evidence/KL-036/checks-f478248ffc9ea2f91b37cb356ae1facc76870414-42aff63e/harness_regressions_pass-execution.log.json
+- docs/exec-plans/evidence/KL-036/checks-f478248ffc9ea2f91b37cb356ae1facc76870414-42aff63e/harness_regressions_pass-runner-collection.json.json
+- docs/exec-plans/evidence/KL-036/checks-f478248ffc9ea2f91b37cb356ae1facc76870414-42aff63e/harness_regressions_pass-runner-collection.log.json
+- docs/exec-plans/evidence/KL-036/checks-f478248ffc9ea2f91b37cb356ae1facc76870414-42aff63e/harness_regressions_pass-runner-execution.json.json
+- docs/exec-plans/evidence/KL-036/checks-f478248ffc9ea2f91b37cb356ae1facc76870414-42aff63e/harness_regressions_pass-runner-junit.xml.json
+- docs/exec-plans/evidence/KL-036/checks-f478248ffc9ea2f91b37cb356ae1facc76870414-42aff63e/harness_regressions_pass-runner-manifest.json.json
+- docs/exec-plans/evidence/KL-036/checks-f478248ffc9ea2f91b37cb356ae1facc76870414-42aff63e/harness_regressions_pass-runner-pytest.log.json
+- docs/exec-plans/evidence/KL-036/checks-f478248ffc9ea2f91b37cb356ae1facc76870414-42aff63e/interrupted-55bde4556470ee3d555e3df8550a3b9337785d6c-a526e68f-runner-collection.json.json
+- docs/exec-plans/evidence/KL-036/checks-f478248ffc9ea2f91b37cb356ae1facc76870414-42aff63e/interrupted-b741559-9ebdf50b-harness_regressions_pass-runner-collection.json.json
+- docs/exec-plans/evidence/KL-036/checks-f478248ffc9ea2f91b37cb356ae1facc76870414-42aff63e/interrupted-bd22b92-873cc16b-harness_regressions_pass-runner-collection.json.json
+- docs/exec-plans/evidence/KL-036/checks-f478248ffc9ea2f91b37cb356ae1facc76870414-42aff63e/launcher-execution.log.json
+- docs/exec-plans/evidence/KL-036/entry/3591ce9c805bc87bc71a5cf61c85844abac1a0a35a691df8d9da99dd1de7cf70.gz
+- docs/exec-plans/evidence/KL-036/entry/harness.json
+- docs/exec-plans/evidence/KL-036/failed-ebe7ade-sanitized/13ef5d4d9c6f6519fcd2085a97c52e11ec64913214f14895eb54a383343cc9c4.gz
+- docs/exec-plans/evidence/KL-036/failed-ebe7ade-sanitized/606874acfb230b0b57086a5769bbf01538481b4fb562067db20528e4b0608ff5.gz
+- docs/exec-plans/evidence/KL-036/failed-ebe7ade-sanitized/766533a8634022d2722ec731d2974b7547927ced7105a36daced32feecdef544.gz
+- docs/exec-plans/evidence/KL-036/failed-ebe7ade-sanitized/7c6e413063e0e20e7bfdbf7945802352fcdbf3a4f9f973e11ae5d24a8d740934.gz
+- docs/exec-plans/evidence/KL-036/failed-ebe7ade-sanitized/FAILURE_RECORD.json
+- docs/exec-plans/evidence/KL-036/failed-ebe7ade-sanitized/cd7e464b522e041671e775a4fc192247b21ccdf60c937095e8e2e45cb431ecbb.gz
+- docs/exec-plans/evidence/KL-036/failed-ebe7ade-sanitized/collection.json.json
+- docs/exec-plans/evidence/KL-036/failed-ebe7ade-sanitized/collection.log.json
+- docs/exec-plans/evidence/KL-036/failed-ebe7ade-sanitized/execution.json.json
+- docs/exec-plans/evidence/KL-036/failed-ebe7ade-sanitized/execution.log.json
+- docs/exec-plans/evidence/KL-036/failed-ebe7ade-sanitized/junit.xml.json
+- docs/exec-plans/evidence/KL-036/interrupted-55bde45-a526e68f/1131179123d505bcb6eef96b11c3f23a0603f14871fa84e65dde54a64920542d.gz
+- docs/exec-plans/evidence/KL-036/interrupted-55bde45-a526e68f/6a3f10ef424f41bb690d8835f952484b0ca4f87b-11edd5b3-harness_regressions_pass-runner-collection.log.json
+- docs/exec-plans/evidence/KL-036/interrupted-55bde45-a526e68f/6f83e9f76603609d36540acb61147fb65ed44c951a681c4b6c6860e221ba123a.gz
+- docs/exec-plans/evidence/KL-036/interrupted-55bde45-a526e68f/FAILURE_RECORD.json
+- docs/exec-plans/evidence/KL-036/interrupted-55bde45-a526e68f/be7e45cf5fe20f65742f1ad2eccbfce96e9c567063581b7ee7d96ca1ee2fb2a8.gz
+- docs/exec-plans/evidence/KL-036/interrupted-55bde45-a526e68f/cc2615f25464547ffc4c8e73e7a6487d9d4046d22126eab397ed7d4ed3a8dca8.gz
+- docs/exec-plans/evidence/KL-036/interrupted-55bde45-a526e68f/execution.log.json
+- docs/exec-plans/evidence/KL-036/interrupted-55bde45-a526e68f/f47387e0f8d1c0abe8de17d6f1857e8ca8bf2433dab4be6848082183d1ae73af.gz
+- docs/exec-plans/evidence/KL-036/interrupted-55bde45-a526e68f/launcher.log.json
+- docs/exec-plans/evidence/KL-036/interrupted-55bde45-a526e68f/runner-collection.log.json
+- docs/exec-plans/evidence/KL-036/interrupted-55bde45-a526e68f/runner-execution.json.json
+- docs/exec-plans/evidence/KL-036/interrupted-55bde45-a526e68f/runner-junit.xml.json
+- docs/exec-plans/evidence/KL-036/interrupted-55bde45-a526e68f/runner-pytest.log.json
+- docs/exec-plans/evidence/KL-036/interrupted-b741559-9ebdf50b/09918c790a83283a260d8fd170662314e9e048f483ddf929e4ffbb5904a235cd.gz
+- docs/exec-plans/evidence/KL-036/interrupted-b741559-9ebdf50b/20dd007f0bb40a2daa6c5b2d61141e6b8571e79efa7d8de9c645a4204e5a72da.gz
+- docs/exec-plans/evidence/KL-036/interrupted-b741559-9ebdf50b/21e40674c64b5ba9bc1f95e153216f54a779fcba574a6fee15938afe3d6e6e46.gz
+- docs/exec-plans/evidence/KL-036/interrupted-b741559-9ebdf50b/439ced4b36be7371ab905cccdf4108a32da6085041e77dccb36ed46914548f61.gz
+- docs/exec-plans/evidence/KL-036/interrupted-b741559-9ebdf50b/56e876ec687f6341c99ef0b7b81f26eb7ea00b168e2271b9ac74702a5424569b.gz
+- docs/exec-plans/evidence/KL-036/interrupted-b741559-9ebdf50b/5fd38a57ce488044b3a557574e3e6eb0073266ce178ba7a81aa83df8d605e119.gz
+- docs/exec-plans/evidence/KL-036/interrupted-b741559-9ebdf50b/61e8048ed2933813a4e8a8ad769cda9cfc9fba8571b0935cc186d8d5ef1754f3.gz
+- docs/exec-plans/evidence/KL-036/interrupted-b741559-9ebdf50b/678036fe5fb3846276ab5bddcb2523e0a5e557645bebadb26e828a37eff18c1b.gz
+- docs/exec-plans/evidence/KL-036/interrupted-b741559-9ebdf50b/6d871cc454b1e722f5848c9b30d5e61c2d8e3dad4d438a28fd9e24bbc5f4502b.gz
+- docs/exec-plans/evidence/KL-036/interrupted-b741559-9ebdf50b/6f888496f6afa100a0d3bb1c279642e037ca23c6cde4115952291d9e8559b11c.gz
+- docs/exec-plans/evidence/KL-036/interrupted-b741559-9ebdf50b/82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18.gz
+- docs/exec-plans/evidence/KL-036/interrupted-b741559-9ebdf50b/91aa8bb53210053a459abab9466fb82bc630c69f59e5d00515fbb5209312062d.gz
+- docs/exec-plans/evidence/KL-036/interrupted-b741559-9ebdf50b/9719c17d5b504265e8489e9d4cf5c5fba39c21dee8ed0c757814d0af99563498.gz
+- docs/exec-plans/evidence/KL-036/interrupted-b741559-9ebdf50b/9a4a29e3816c0f37fa8e9dbdaa6f4a9e8272476223af81847f6998e4435e81c8.gz
+- docs/exec-plans/evidence/KL-036/interrupted-b741559-9ebdf50b/FAILURE_RECORD.json
+- docs/exec-plans/evidence/KL-036/interrupted-b741559-9ebdf50b/FORWARD_STORAGE.json
+- docs/exec-plans/evidence/KL-036/interrupted-b741559-9ebdf50b/a3c78bcce1b9163c6a54f21d1e5bfddacbd177bf4ddf3390a0d06c0cbd564ac3.gz
+- docs/exec-plans/evidence/KL-036/interrupted-b741559-9ebdf50b/a42378f810b530f2efeff239becc20d66b68d43ac8a0f6cc1cb8dc09f1947c9c.gz
+- docs/exec-plans/evidence/KL-036/interrupted-b741559-9ebdf50b/bc7cd34848e1f6a77ddab4ea722b471f7558716ddcdd2dee2c5c666d6c803868.gz
+- docs/exec-plans/evidence/KL-036/interrupted-b741559-9ebdf50b/bdacf81ae3994997f82f0c161626755f31cfaa19104fee56c6b28bec1b9afe8e.gz
+- docs/exec-plans/evidence/KL-036/interrupted-b741559-9ebdf50b/dd6de036cfaa5cda4b16be668306fbf3dae10fd3f7fb11ab6741012556559997.gz
+- docs/exec-plans/evidence/KL-036/interrupted-b741559-9ebdf50b/e69178b38e8a6c89be92cc76ec93dfff76c5026636667b817a66eff7d7036225.gz
+- docs/exec-plans/evidence/KL-036/interrupted-b741559-9ebdf50b/interrupted-b741559-9ebdf50b-harness_regressions_pass-execution.log.json
+- docs/exec-plans/evidence/KL-036/interrupted-b741559-9ebdf50b/interrupted-b741559-9ebdf50b-harness_regressions_pass-runner-manifest.json.json
+- docs/exec-plans/evidence/KL-036/interrupted-b741559-9ebdf50b/interrupted-b741559-9ebdf50b-harness_regressions_pass-runner-pytest.log.json
+- docs/exec-plans/evidence/KL-036/interrupted-b741559-9ebdf50b/interrupted-b741559-9ebdf50b-kl036-all-checks-v2.log.json
+- docs/exec-plans/evidence/KL-036/interrupted-b741559-9ebdf50b/interrupted-b741559-9ebdf50b-kl036-db-reviewed-candidate.log.json
+- docs/exec-plans/evidence/KL-036/interrupted-b741559-9ebdf50b/interrupted-b741559-9ebdf50b-kl036-reviewed-candidate-lint.log.json
+- docs/exec-plans/evidence/KL-036/interrupted-b741559-9ebdf50b/interrupted-b741559-9ebdf50b-kl036-reviewed-candidate-typecheck.log.json
+- docs/exec-plans/evidence/KL-036/interrupted-b741559-9ebdf50b/interrupted-b741559-9ebdf50b-worker_identity_namespace_pu-collection.json.json
+- docs/exec-plans/evidence/KL-036/interrupted-b741559-9ebdf50b/interrupted-b741559-9ebdf50b-worker_identity_namespace_pu-collection.log.json
+- docs/exec-plans/evidence/KL-036/interrupted-b741559-9ebdf50b/interrupted-b741559-9ebdf50b-worker_identity_namespace_pu-execution.json.json
+- docs/exec-plans/evidence/KL-036/interrupted-b741559-9ebdf50b/interrupted-b741559-9ebdf50b-worker_identity_namespace_pu-execution.log.json
+- docs/exec-plans/evidence/KL-036/interrupted-b741559-9ebdf50b/interrupted-b741559-9ebdf50b-worker_identity_namespace_pu-junit.xml.json
+- docs/exec-plans/evidence/KL-036/interrupted-b741559-9ebdf50b/interrupted-b741559-9ebdf50b-worker_lease_deadline_pu-collection.json.json
+- docs/exec-plans/evidence/KL-036/interrupted-b741559-9ebdf50b/interrupted-b741559-9ebdf50b-worker_lease_deadline_pu-collection.log.json
+- docs/exec-plans/evidence/KL-036/interrupted-b741559-9ebdf50b/interrupted-b741559-9ebdf50b-worker_lease_deadline_pu-execution.json.json
+- docs/exec-plans/evidence/KL-036/interrupted-b741559-9ebdf50b/interrupted-b741559-9ebdf50b-worker_lease_deadline_pu-execution.log.json
+- docs/exec-plans/evidence/KL-036/interrupted-b741559-9ebdf50b/interrupted-b741559-9ebdf50b-worker_lease_deadline_pu-junit.xml.json
+- docs/exec-plans/evidence/KL-036/interrupted-b741559-9ebdf50b/interrupted-b741559-9ebdf50b-worker_takeover_fencing_dc-collection.json.json
+- docs/exec-plans/evidence/KL-036/interrupted-b741559-9ebdf50b/interrupted-b741559-9ebdf50b-worker_takeover_fencing_dc-collection.log.json
+- docs/exec-plans/evidence/KL-036/interrupted-b741559-9ebdf50b/interrupted-b741559-9ebdf50b-worker_takeover_fencing_dc-execution.log.json
+- docs/exec-plans/evidence/KL-036/interrupted-bd22b92-873cc16b/1ac3f3489ca1f0aadda52e8cc80355babd770a3d0d9df76cb8777e6b85837004.gz
+- docs/exec-plans/evidence/KL-036/interrupted-bd22b92-873cc16b/6e8ffb84cbd1d9318a3a86271431e632c84a793b505594082a70739b56f9e47c.gz
+- docs/exec-plans/evidence/KL-036/interrupted-bd22b92-873cc16b/76e60f45cf3ba483f0047e66c3cbdd3b62e354571430efe5ab67c87f445434f8.gz
+- docs/exec-plans/evidence/KL-036/interrupted-bd22b92-873cc16b/FAILURE_RECORD.json
+- docs/exec-plans/evidence/KL-036/interrupted-bd22b92-873cc16b/be7e45cf5fe20f65742f1ad2eccbfce96e9c567063581b7ee7d96ca1ee2fb2a8.gz
+- docs/exec-plans/evidence/KL-036/interrupted-bd22b92-873cc16b/ee06a9412922d0a6cdafd98b28a6612c43056f76750d16c4dbf10e3f6f5623f6.gz
+- docs/exec-plans/evidence/KL-036/interrupted-bd22b92-873cc16b/interrupted-bd22b92-873cc16b-harness_regressions_pass-execution.log.json
+- docs/exec-plans/evidence/KL-036/interrupted-bd22b92-873cc16b/interrupted-bd22b92-873cc16b-harness_regressions_pass-runner-collection.log.json
+- docs/exec-plans/evidence/KL-036/interrupted-bd22b92-873cc16b/interrupted-bd22b92-873cc16b-harness_regressions_pass-runner-execution.json.json
+- docs/exec-plans/evidence/KL-036/interrupted-bd22b92-873cc16b/interrupted-bd22b92-873cc16b-harness_regressions_pass-runner-junit.xml.json
+- docs/exec-plans/evidence/KL-036/interrupted-bd22b92-873cc16b/interrupted-bd22b92-873cc16b-harness_regressions_pass-runner-pytest.log.json
+- docs/exec-plans/evidence/KL-036/interrupted-bd22b92-873cc16b/interrupted-bd22b92-873cc16b-kl036-all-checks-v3.log.json
+- docs/exec-plans/evidence/KL-036/review-fix-29f5596/CLEANUP.json
+- docs/exec-plans/evidence/KL-036/review-fix-29f5596/a74079bc3ea4840e38ebf038bc22221c50bc9abb0660a1a36207598b7acd1eaa.gz
+- docs/exec-plans/evidence/KL-036/review-fix-29f5596/failed-db-trial.json
+- docs/exec-plans/evidence/KL-036/run_checks.py
+- docs/exec-plans/reviews/KL-036/DB_CONCURRENCY.json
+- docs/exec-plans/reviews/KL-036/DB_CONCURRENCY/observations.md
+- docs/exec-plans/reviews/KL-036/GENERAL.json
+- docs/exec-plans/reviews/KL-036/GENERAL/evidence-audit.json
+- docs/exec-plans/reviews/KL-036/GENERAL/review-notes.md
+- docs/exec-plans/reviews/KL-036/GENERAL/storage-audit.json
+- docs/exec-plans/reviews/KL-036/PROTOCOL.json
+- docs/exec-plans/reviews/KL-036/PROTOCOL/NOTES.md
+- docs/exec-plans/reviews/KL-036/SECURITY_DATA_BOUNDARY.json
+- docs/exec-plans/reviews/KL-036/SECURITY_DATA_BOUNDARY/AUDIT.json
+- docs/exec-plans/reviews/KL-036/SECURITY_DATA_BOUNDARY/NOTES.md
+- docs/exec-plans/reviews/KL-036/SECURITY_DATA_BOUNDARY/audit.py
+- src/kineticloop/persistence/transactions.py
+- src/kineticloop/persistence/worker_reaper.py
+- src/kineticloop/workflow/worker_reaper.py
+- tests/db/test_worker_reaper.py
+- tests/unit/workflow/test_worker_reaper.py
+decisions:
+- Verified actual prerequisite result/integration PASS and merge ancestry at the protected HG053 base, current migration
+  head e8c2f1a6b904, M3 minimal isolated TEST closure and reserved exclusive transaction_interfaces/user_coordination/planning_ledger.
+  Admission evidence records exact identities and revisions.
+- Typed TEST ingress checks exact registered subject/policy/environment/principal before discovery and replay and
+  again under S01 against active policy. A private prepared token derives only exact S27/S29 closure; the original
+  generic legacy ReapIntent completion branch stays unchanged and provides no new runtime authority.
+- Committed discovery releases its read transaction before S01, then first-use reaping locks S27, sorted applicable
+  S31, S02 and S29. Exact current facts and post-lock database time derive DEADLINE_EXCEEDED/LEASE_LOST or policy-authorized
+  CANCELLED/CANCELLED. Only current unowned ADMITTED/PENDING, NULL owner, fence0, CREATED and elapsed deadline accepts
+  the nullable basis.
+- Complete S27/S29, receipt, event and outbox mutation commits atomically. Historical authenticated same-key/hash
+  replay stays non-executable; stale facts, altered payload and prepared-value tampering deny with complete relation
+  history unchanged.
+- Independent accounting scans use actual MarkUnknown in separate owner transactions. Confirmed stale accounting
+  discovery is reread through the ledger owner; actual settlement winning after the scan leaves complete stale-MarkUnknown
+  rollback equality and the same reaper processes another reservation. Unchanged-candidate guard failures propagate.
+  Interrupted cleanup preserves outstanding occupation; queued actual PermitDispatch wins against witnessed cancellation,
+  unknown cannot resend/refund, and reliable late settlement changes accounting only while actual stale T6 denial
+  preserves terminal planning authority.
+- Distinct spawned processes consume a real bounded ordinary queue, heartbeat outside coordination, saturate its
+  sole remaining queue slot, and preserve independent admission/reaper capacity after worker termination. Both takeover
+  contender preflights complete before actual guarded CAS contention; owner preflight/reentry waits are observed
+  on idle sessions, and deterministic S01 queues are witnessed through pg_locks and pg_blocking_pids.
+- Own DatabaseLifecycle gates constructor and every nested reset/bootstrap/seed reset/destroy on full tested SHA
+  and resolved-root SHA256. Names are kineticloop_kl036_e81cc2c_17e8ad78fba3 and kineticloop-kl036-e81cc2c-17e8ad78fba3.
+  Exact inherited lifecycle command shapes reject appended project/file overrides and foreign readiness/SQL targets
+  before any runner call. Before/after inventories prove owned children/resources removed and foreign databases/projects/containers/volumes/networks
+  unchanged.
+- Every final selector and suite has positive exact collection/execution/JUnit identity/count agreement and passing
+  setup/call/teardown, with lossless command/SHA-bound artifacts. A new collection record shares an existing own-task
+  byte-identical content-addressed payload; each execution retains its own provenance and no raw execution bytes
+  or failure facts are overwritten. Own interrupted-run duplicate storage was consolidated before this tested revision;
+  FORWARD_STORAGE.json retains original envelope identities and normal Git ancestry preserves original representations.
+- Previous failed and superseded trial records remain distinct. All sixteen checks at 0e330e4 exited PASS but were
+  superseded after an additional pure-unit probe exposed nested foreign Compose argv reaching a mock runner; no
+  physical Docker I/O occurred. The own fixture now pins the Compose file and exact lifecycle command shapes, with
+  negative rejection before the runner and positive migrated bootstrap/cleanup. The 55bde455 full-run launcher was
+  interrupted for a deterministic committed-heartbeat observation correction, retained as FAIL with remaining checks
+  NOT_RUN and no harness eligibility. The f478248 harness passed 1492 cases but its launcher stopped on an exact
+  tracked synthetic password-mutation node ID; the guard recognizes only that identifier and retains original bytes.
+  The 6a3f10e check run was superseded by two independent required review corrections; the first revised 29f5596
+  trial failed on immutable receipt IPC and an unstarted-child join. Its original safe diagnostics, failed status,
+  exact manual owned cleanup and unchanged foreign inventory are preserved. Receipt inputs are reconstructed as
+  typed inside the spawned process and only started children are tracked. Incomplete b741559 and bd22b92 runs remain
+  FAIL with honest interruption statuses; no partial run supplies final eligibility. The strict recovery branch
+  accepts only explicit existing-owner stale revision/transition errors and confirms changed facts through ledger.read;
+  unrelated guards never trigger a reread. Final eligibility uses only this result tested revision and complete
+  sixteen-check run.
+known_limitations:
+- 'BLOCKER: own lossless compact evidence/review storage measures 18097388 bytes before the blocker record, above
+  the 16777216-byte aggregate cap after bulk normalization. Preserved failed/superseded runs and final complete
+  execution remain available; no truncation, waived CI, authority edit or history rewrite is used. A committed exact-head
+  compact audit will bind the final total before fresh review. Exact-head compact audit at bfce1bd2be923204875360eddd0e5169332402be
+  confirms aggregate storage rejection; lossless FAIL record: docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/exact-head-storage-audit-fail.json.'
+- Runtime is bounded isolated TEST instrumentation, with a privileged internal service session separate from the
+  authenticated nonwriter client principal. It does not prove restricted-login ACL containment or production readiness;
+  there are no migration/grant/public-command/enum/authorization/Evidence Admission/lock-order/T1-T8 changes.
+- Coherent immutable S26/S34-S37 and COMMIT_READY preparation inputs are declared upstream TEST seeds. Actual T3/T4/T6
+  owners produce publication, admission/lease and success; no head/bundle/authorization/reaper success/receipt winner
+  is seeded. This is task DC/WF evidence, not full planner/model/provider workflow or product evidence.
+- An early failed trial exposed local-only setup DSNs in pytest diagnostics. Original unmodified logs/captures are
+  quarantined in private local scratch with hashes in failed-ebe7ade-sanitized/FAILURE_RECORD.json; Git has explicitly
+  labeled sanitized diagnostics, which are not lossless original eligibility evidence. Redacted connection representations
+  and the hard credential guard protect all final eligible captures.
+- Requirements covered stays empty. Product W/I, M4, release and full planning obligations remain NOT_RUN; production_auto_activation=false
+  and shadow_executable=false remain unchanged. Task PASS, review PASS and MERGED are separate facts.
+- The coordinator retains final installed-App admission, unchanged trusted full-DB regression/controller gate and
+  merge ownership. No installation or App/full-DB gate is run or published here. Hosted final-head ordinary CI and
+  independent review evidence are separate merge conditions.
+- This reviewed result remains UNMERGED with merge_commit null; a later integration record must bind the actual
+  normal merge without mutating the reviewed result.
+follow_up_tasks:
+- Separate prospective evidence-storage governance to resolve the exact measured KL-036 aggregate cap without changing
+  execution/PASS meanings or erasing failure history; no task identity is invented here.
+spec_change_request: null

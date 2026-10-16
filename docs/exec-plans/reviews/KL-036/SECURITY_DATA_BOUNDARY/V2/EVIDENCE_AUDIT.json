@@ -1,0 +1,1021 @@
+{
+  "task_identity": "harness-backlog-v0.2/KL-036",
+  "reviewed_head_sha": "900d667394599345a51cec851160d33c01ebce7f",
+  "protected_base": "af09be228fbc89d074b6e863c83e1fdda343d55b",
+  "tested_commit": "e81cc2ccff69bf32a42f7c81b4671c99879b544b",
+  "checks_verified": [
+    {
+      "check_id": "harness_regressions_pass",
+      "command": "uv run kl test-harness",
+      "tested_commit": "e81cc2ccff69bf32a42f7c81b4671c99879b544b",
+      "status": "PASS",
+      "exit_code": 0,
+      "artifacts_verified": 7,
+      "collected": 1492,
+      "executed": 1492,
+      "junit": 1492,
+      "all_three_phases_passed": true,
+      "complete_identity_agreement": true,
+      "manifest_integrity_verified": true,
+      "harness_workers": 2
+    },
+    {
+      "check_id": "worker_identity_namespace_pu",
+      "command": "uv run pytest -q tests/unit/workflow/test_worker_reaper.py::test_identity_and_namespace",
+      "tested_commit": "e81cc2ccff69bf32a42f7c81b4671c99879b544b",
+      "status": "PASS",
+      "exit_code": 0,
+      "artifacts_verified": 5,
+      "collected": 1,
+      "executed": 1,
+      "junit": 1,
+      "all_three_phases_passed": true,
+      "complete_identity_agreement": true
+    },
+    {
+      "check_id": "worker_lease_deadline_pu",
+      "command": "uv run pytest -q tests/unit/workflow/test_worker_reaper.py::test_lease_and_deadline_boundaries",
+      "tested_commit": "e81cc2ccff69bf32a42f7c81b4671c99879b544b",
+      "status": "PASS",
+      "exit_code": 0,
+      "artifacts_verified": 5,
+      "collected": 1,
+      "executed": 1,
+      "junit": 1,
+      "all_three_phases_passed": true,
+      "complete_identity_agreement": true
+    },
+    {
+      "check_id": "worker_takeover_fencing_dc",
+      "command": "uv run pytest -q tests/db/test_worker_reaper.py::test_takeover_fences_distinct_processes",
+      "tested_commit": "e81cc2ccff69bf32a42f7c81b4671c99879b544b",
+      "status": "PASS",
+      "exit_code": 0,
+      "artifacts_verified": 5,
+      "collected": 1,
+      "executed": 1,
+      "junit": 1,
+      "all_three_phases_passed": true,
+      "complete_identity_agreement": true,
+      "witness_kinds": {
+        "after_inventory": 1,
+        "after_process_inventory": 1,
+        "before_inventory": 1,
+        "before_process_inventory": 1,
+        "child_denial": 1,
+        "child_ready": 4,
+        "child_result": 3,
+        "elapsed_server_time": 2,
+        "migrated_namespace": 1,
+        "outside_transaction_wait": 2,
+        "postgres_blocker": 2,
+        "preflight_released": 2,
+        "zero_effects": 10
+      },
+      "namespace": {
+        "database_name": "kineticloop_kl036_e81cc2c_17e8ad78fba3",
+        "project_name": "kineticloop-kl036-e81cc2c-17e8ad78fba3"
+      },
+      "foreign_inventory_unchanged": true,
+      "owned_resources_removed": true,
+      "owned_children_count": 4
+    },
+    {
+      "check_id": "reaper_stale_candidate_dc",
+      "command": "uv run pytest -q tests/db/test_worker_reaper.py::test_reaper_rechecks_after_lock",
+      "tested_commit": "e81cc2ccff69bf32a42f7c81b4671c99879b544b",
+      "status": "PASS",
+      "exit_code": 0,
+      "artifacts_verified": 5,
+      "collected": 1,
+      "executed": 1,
+      "junit": 1,
+      "all_three_phases_passed": true,
+      "complete_identity_agreement": true,
+      "witness_kinds": {
+        "after_inventory": 1,
+        "after_process_inventory": 1,
+        "before_inventory": 1,
+        "before_process_inventory": 1,
+        "child_denial": 1,
+        "child_ready": 3,
+        "child_result": 2,
+        "elapsed_server_time": 1,
+        "migrated_namespace": 1,
+        "outside_transaction_wait": 1,
+        "postgres_blocker": 2,
+        "preflight_released": 1,
+        "scan_released": 2,
+        "zero_effects": 2
+      },
+      "namespace": {
+        "database_name": "kineticloop_kl036_e81cc2c_17e8ad78fba3",
+        "project_name": "kineticloop-kl036-e81cc2c-17e8ad78fba3"
+      },
+      "foreign_inventory_unchanged": true,
+      "owned_resources_removed": true,
+      "owned_children_count": 3
+    },
+    {
+      "check_id": "reaper_unowned_deadline_dc",
+      "command": "uv run pytest -q tests/db/test_worker_reaper.py::test_unowned_admitted_deadline",
+      "tested_commit": "e81cc2ccff69bf32a42f7c81b4671c99879b544b",
+      "status": "PASS",
+      "exit_code": 0,
+      "artifacts_verified": 5,
+      "collected": 1,
+      "executed": 1,
+      "junit": 1,
+      "all_three_phases_passed": true,
+      "complete_identity_agreement": true,
+      "witness_kinds": {
+        "after_inventory": 1,
+        "after_process_inventory": 1,
+        "before_inventory": 1,
+        "before_process_inventory": 1,
+        "child_ready": 1,
+        "child_result": 1,
+        "complete_rollback": 5,
+        "elapsed_server_time": 3,
+        "legacy_pending_alias": 1,
+        "migrated_namespace": 1,
+        "zero_effects": 7
+      },
+      "namespace": {
+        "database_name": "kineticloop_kl036_e81cc2c_17e8ad78fba3",
+        "project_name": "kineticloop-kl036-e81cc2c-17e8ad78fba3"
+      },
+      "foreign_inventory_unchanged": true,
+      "owned_resources_removed": true,
+      "owned_children_count": 1
+    },
+    {
+      "check_id": "reaper_atomicity_history_dc",
+      "command": "uv run pytest -q tests/db/test_worker_reaper.py::test_reaper_atomicity_and_history",
+      "tested_commit": "e81cc2ccff69bf32a42f7c81b4671c99879b544b",
+      "status": "PASS",
+      "exit_code": 0,
+      "artifacts_verified": 5,
+      "collected": 1,
+      "executed": 1,
+      "junit": 1,
+      "all_three_phases_passed": true,
+      "complete_identity_agreement": true,
+      "witness_kinds": {
+        "after_inventory": 1,
+        "after_process_inventory": 1,
+        "before_inventory": 1,
+        "before_process_inventory": 1,
+        "child_ready": 2,
+        "child_result": 2,
+        "complete_rollback": 5,
+        "elapsed_server_time": 3,
+        "migrated_namespace": 1,
+        "postgres_blocker": 2,
+        "scan_released": 3,
+        "zero_effects": 8
+      },
+      "namespace": {
+        "database_name": "kineticloop_kl036_e81cc2c_17e8ad78fba3",
+        "project_name": "kineticloop-kl036-e81cc2c-17e8ad78fba3"
+      },
+      "foreign_inventory_unchanged": true,
+      "owned_resources_removed": true,
+      "owned_children_count": 2
+    },
+    {
+      "check_id": "reaper_unknown_accounting_dc",
+      "command": "uv run pytest -q tests/db/test_worker_reaper.py::test_unknown_call_preserves_budget",
+      "tested_commit": "e81cc2ccff69bf32a42f7c81b4671c99879b544b",
+      "status": "PASS",
+      "exit_code": 0,
+      "artifacts_verified": 5,
+      "collected": 1,
+      "executed": 1,
+      "junit": 1,
+      "all_three_phases_passed": true,
+      "complete_identity_agreement": true,
+      "witness_kinds": {
+        "accounting_discovery_released": 1,
+        "accounting_only_late_settlement": 1,
+        "accounting_settlement_race_continued": 1,
+        "after_inventory": 1,
+        "after_process_inventory": 1,
+        "before_inventory": 1,
+        "before_process_inventory": 1,
+        "child_denial": 1,
+        "child_ready": 4,
+        "child_result": 3,
+        "elapsed_server_time": 2,
+        "migrated_namespace": 1,
+        "outside_transaction_wait": 5,
+        "postgres_blocker": 4,
+        "preflight_released": 3,
+        "scan_released": 2,
+        "stale_accounting_rollback": 1,
+        "zero_effects": 11
+      },
+      "namespace": {
+        "database_name": "kineticloop_kl036_e81cc2c_17e8ad78fba3",
+        "project_name": "kineticloop-kl036-e81cc2c-17e8ad78fba3"
+      },
+      "foreign_inventory_unchanged": true,
+      "owned_resources_removed": true,
+      "owned_children_count": 4
+    },
+    {
+      "check_id": "worker_independent_reaper_wf",
+      "command": "uv run pytest -q tests/db/test_worker_reaper.py::test_independent_reaper_survives_worker_loss",
+      "tested_commit": "e81cc2ccff69bf32a42f7c81b4671c99879b544b",
+      "status": "PASS",
+      "exit_code": 0,
+      "artifacts_verified": 5,
+      "collected": 1,
+      "executed": 1,
+      "junit": 1,
+      "all_three_phases_passed": true,
+      "complete_identity_agreement": true,
+      "witness_kinds": {
+        "after_inventory": 1,
+        "after_process_inventory": 1,
+        "before_inventory": 1,
+        "before_process_inventory": 1,
+        "child_ready": 4,
+        "child_result": 3,
+        "elapsed_server_time": 2,
+        "heartbeat_committed": 1,
+        "independent_terminal": 1,
+        "migrated_namespace": 1,
+        "ordinary_work_received": 1,
+        "outside_transaction_wait": 2,
+        "scan_released": 1,
+        "worker_loss": 1,
+        "zero_effects": 5
+      },
+      "namespace": {
+        "database_name": "kineticloop_kl036_e81cc2c_17e8ad78fba3",
+        "project_name": "kineticloop-kl036-e81cc2c-17e8ad78fba3"
+      },
+      "foreign_inventory_unchanged": true,
+      "owned_resources_removed": true,
+      "owned_children_count": 4
+    },
+    {
+      "check_id": "reaper_preserves_committed_success_wf",
+      "command": "uv run pytest -q tests/db/test_worker_reaper.py::test_reaper_cannot_reverse_t6_success",
+      "tested_commit": "e81cc2ccff69bf32a42f7c81b4671c99879b544b",
+      "status": "PASS",
+      "exit_code": 0,
+      "artifacts_verified": 5,
+      "collected": 1,
+      "executed": 1,
+      "junit": 1,
+      "all_three_phases_passed": true,
+      "complete_identity_agreement": true,
+      "witness_kinds": {
+        "after_inventory": 1,
+        "after_process_inventory": 1,
+        "before_inventory": 1,
+        "before_process_inventory": 1,
+        "child_denial": 1,
+        "child_ready": 2,
+        "child_result": 1,
+        "elapsed_server_time": 1,
+        "migrated_namespace": 1,
+        "outside_transaction_wait": 1,
+        "postgres_blocker": 2,
+        "preflight_released": 1,
+        "scan_released": 2,
+        "t6_success_preserved": 1,
+        "zero_effects": 5
+      },
+      "namespace": {
+        "database_name": "kineticloop_kl036_e81cc2c_17e8ad78fba3",
+        "project_name": "kineticloop-kl036-e81cc2c-17e8ad78fba3"
+      },
+      "foreign_inventory_unchanged": true,
+      "owned_resources_removed": true,
+      "owned_children_count": 2
+    },
+    {
+      "check_id": "worker_reaper_unit_suite",
+      "command": "uv run pytest -q tests/unit/workflow/test_worker_reaper.py",
+      "tested_commit": "e81cc2ccff69bf32a42f7c81b4671c99879b544b",
+      "status": "PASS",
+      "exit_code": 0,
+      "artifacts_verified": 5,
+      "collected": 2,
+      "executed": 2,
+      "junit": 2,
+      "all_three_phases_passed": true,
+      "complete_identity_agreement": true
+    },
+    {
+      "check_id": "worker_reaper_db_suite",
+      "command": "uv run pytest -q tests/db/test_worker_reaper.py",
+      "tested_commit": "e81cc2ccff69bf32a42f7c81b4671c99879b544b",
+      "status": "PASS",
+      "exit_code": 0,
+      "artifacts_verified": 5,
+      "collected": 7,
+      "executed": 7,
+      "junit": 7,
+      "all_three_phases_passed": true,
+      "complete_identity_agreement": true,
+      "witness_kinds": {
+        "accounting_discovery_released": 1,
+        "accounting_only_late_settlement": 1,
+        "accounting_settlement_race_continued": 1,
+        "after_inventory": 1,
+        "after_process_inventory": 1,
+        "before_inventory": 1,
+        "before_process_inventory": 1,
+        "child_denial": 4,
+        "child_ready": 20,
+        "child_result": 15,
+        "complete_rollback": 10,
+        "elapsed_server_time": 14,
+        "heartbeat_committed": 1,
+        "independent_terminal": 1,
+        "legacy_pending_alias": 1,
+        "migrated_namespace": 1,
+        "ordinary_work_received": 1,
+        "outside_transaction_wait": 11,
+        "postgres_blocker": 12,
+        "preflight_released": 7,
+        "scan_released": 10,
+        "stale_accounting_rollback": 1,
+        "t6_success_preserved": 1,
+        "worker_loss": 1,
+        "zero_effects": 48
+      },
+      "namespace": {
+        "database_name": "kineticloop_kl036_e81cc2c_17e8ad78fba3",
+        "project_name": "kineticloop-kl036-e81cc2c-17e8ad78fba3"
+      },
+      "foreign_inventory_unchanged": true,
+      "owned_resources_removed": true,
+      "owned_children_count": 20
+    },
+    {
+      "check_id": "unit_regressions_pass",
+      "command": "uv run kl test-unit",
+      "tested_commit": "e81cc2ccff69bf32a42f7c81b4671c99879b544b",
+      "status": "PASS",
+      "exit_code": 0,
+      "artifacts_verified": 5,
+      "collected": 249,
+      "executed": 249,
+      "junit": 249,
+      "all_three_phases_passed": true,
+      "complete_identity_agreement": true
+    },
+    {
+      "check_id": "lint_passes",
+      "command": "uv run kl lint",
+      "tested_commit": "e81cc2ccff69bf32a42f7c81b4671c99879b544b",
+      "status": "PASS",
+      "exit_code": 0,
+      "artifacts_verified": 1
+    },
+    {
+      "check_id": "typecheck_passes",
+      "command": "uv run kl typecheck",
+      "tested_commit": "e81cc2ccff69bf32a42f7c81b4671c99879b544b",
+      "status": "PASS",
+      "exit_code": 0,
+      "artifacts_verified": 1
+    },
+    {
+      "check_id": "harness_validation_passes",
+      "command": "uv run kl check-harness",
+      "tested_commit": "e81cc2ccff69bf32a42f7c81b4671c99879b544b",
+      "status": "PASS",
+      "exit_code": 0,
+      "artifacts_verified": 1
+    }
+  ],
+  "artifacts_verified": [
+    {
+      "check_id": "harness_regressions_pass",
+      "artifact": "execution.log",
+      "path": "docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/harness_regressions_pass-execution.log.json",
+      "sha256": "0b1a59d36a35dc9a69e57e7dc1e66cb28727cb620df47c7f24f1e5f31c80d4df",
+      "raw_bytes": 2198,
+      "credential_patterns_found": false
+    },
+    {
+      "check_id": "harness_regressions_pass",
+      "artifact": "runner/collection.json",
+      "path": "docs/exec-plans/evidence/KL-036/checks-f478248ffc9ea2f91b37cb356ae1facc76870414-42aff63e/e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1-harness_regressions_pass-runner-collection.json.json",
+      "sha256": "54f97de6c7415742983aae8996e6beba691a50befd12177a2e35a5775f2661ac",
+      "raw_bytes": 3318465,
+      "credential_patterns_found": false
+    },
+    {
+      "check_id": "harness_regressions_pass",
+      "artifact": "runner/collection.log",
+      "path": "docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/harness_regressions_pass-runner-collection.log.json",
+      "sha256": "61153d6b7da5f84ca1837cce0413ae696a382bde6ac32d6fd176053e2ef067f7",
+      "raw_bytes": 3175080,
+      "credential_patterns_found": false
+    },
+    {
+      "check_id": "harness_regressions_pass",
+      "artifact": "runner/execution.json",
+      "path": "docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/harness_regressions_pass-runner-execution.json.json",
+      "sha256": "4fad4b1a54ccc9196841a040beac3209a40ab0c84ac5d829a49311dff7b47840",
+      "raw_bytes": 20521604,
+      "credential_patterns_found": false
+    },
+    {
+      "check_id": "harness_regressions_pass",
+      "artifact": "runner/junit.xml",
+      "path": "docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/harness_regressions_pass-runner-junit.xml.json",
+      "sha256": "fd8c4268c4b3f99c8f323054868a6b0406e886897b0e4f8445579e6fe5956892",
+      "raw_bytes": 3541099,
+      "credential_patterns_found": false
+    },
+    {
+      "check_id": "harness_regressions_pass",
+      "artifact": "runner/manifest.json",
+      "path": "docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/harness_regressions_pass-runner-manifest.json.json",
+      "sha256": "ec2174e6a15e422123abf1df767d32cd0a92c8df07b1c1c020472e142e839855",
+      "raw_bytes": 2164,
+      "credential_patterns_found": false
+    },
+    {
+      "check_id": "harness_regressions_pass",
+      "artifact": "runner/pytest.log",
+      "path": "docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/harness_regressions_pass-runner-pytest.log.json",
+      "sha256": "0b1a59d36a35dc9a69e57e7dc1e66cb28727cb620df47c7f24f1e5f31c80d4df",
+      "raw_bytes": 2198,
+      "credential_patterns_found": false
+    },
+    {
+      "check_id": "worker_identity_namespace_pu",
+      "artifact": "collection.json",
+      "path": "docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/worker_identity_namespace_pu-collection.json.json",
+      "sha256": "e69178b38e8a6c89be92cc76ec93dfff76c5026636667b817a66eff7d7036225",
+      "raw_bytes": 196,
+      "credential_patterns_found": false
+    },
+    {
+      "check_id": "worker_identity_namespace_pu",
+      "artifact": "collection.log",
+      "path": "docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/worker_identity_namespace_pu-collection.log.json",
+      "sha256": "5fd38a57ce488044b3a557574e3e6eb0073266ce178ba7a81aa83df8d605e119",
+      "raw_bytes": 98,
+      "credential_patterns_found": false
+    },
+    {
+      "check_id": "worker_identity_namespace_pu",
+      "artifact": "execution.json",
+      "path": "docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/worker_identity_namespace_pu-execution.json.json",
+      "sha256": "dd13608aa9ec67648baed8fa421f87c7338eb382d056ca2d78d4ea73e54502ad",
+      "raw_bytes": 939,
+      "credential_patterns_found": false
+    },
+    {
+      "check_id": "worker_identity_namespace_pu",
+      "artifact": "execution.log",
+      "path": "docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/worker_identity_namespace_pu-execution.log.json",
+      "sha256": "539a1c31987d2906f6e4d5a2b77f804ddc3dfc71fa084186cbfbe0eb686af809",
+      "raw_bytes": 159,
+      "credential_patterns_found": false
+    },
+    {
+      "check_id": "worker_identity_namespace_pu",
+      "artifact": "junit.xml",
+      "path": "docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/worker_identity_namespace_pu-junit.xml.json",
+      "sha256": "298cfdd923d2016f615a66847621a083bf7ea43fd0d55bab7fb9384462727864",
+      "raw_bytes": 361,
+      "credential_patterns_found": false
+    },
+    {
+      "check_id": "worker_lease_deadline_pu",
+      "artifact": "collection.json",
+      "path": "docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/worker_lease_deadline_pu-collection.json.json",
+      "sha256": "09918c790a83283a260d8fd170662314e9e048f483ddf929e4ffbb5904a235cd",
+      "raw_bytes": 203,
+      "credential_patterns_found": false
+    },
+    {
+      "check_id": "worker_lease_deadline_pu",
+      "artifact": "collection.log",
+      "path": "docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/worker_lease_deadline_pu-collection.log.json",
+      "sha256": "4c9ee0fa1ab6c407b17bafcb14a1abc088e3d4af88c31ab6f08dc74991b7b372",
+      "raw_bytes": 105,
+      "credential_patterns_found": false
+    },
+    {
+      "check_id": "worker_lease_deadline_pu",
+      "artifact": "execution.json",
+      "path": "docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/worker_lease_deadline_pu-execution.json.json",
+      "sha256": "3b2d8ef67f3ab708cc7c5b169237c7cac9c8599f795f1f4f8e9aa6071c093648",
+      "raw_bytes": 977,
+      "credential_patterns_found": false
+    },
+    {
+      "check_id": "worker_lease_deadline_pu",
+      "artifact": "execution.log",
+      "path": "docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/worker_lease_deadline_pu-execution.log.json",
+      "sha256": "ced9efe8cd8d02d84eb8fa113358aac6a7c6b5b7200df2babadf0ec7a4eb037f",
+      "raw_bytes": 155,
+      "credential_patterns_found": false
+    },
+    {
+      "check_id": "worker_lease_deadline_pu",
+      "artifact": "junit.xml",
+      "path": "docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/worker_lease_deadline_pu-junit.xml.json",
+      "sha256": "442381224a3daec179b10b3b1e465cc00623fcf475d26c16c7d061705fef9b5c",
+      "raw_bytes": 368,
+      "credential_patterns_found": false
+    },
+    {
+      "check_id": "worker_takeover_fencing_dc",
+      "artifact": "collection.json",
+      "path": "docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/worker_takeover_fencing_dc-collection.json.json",
+      "sha256": "61e8048ed2933813a4e8a8ad769cda9cfc9fba8571b0935cc186d8d5ef1754f3",
+      "raw_bytes": 197,
+      "credential_patterns_found": false
+    },
+    {
+      "check_id": "worker_takeover_fencing_dc",
+      "artifact": "collection.log",
+      "path": "docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/worker_takeover_fencing_dc-collection.log.json",
+      "sha256": "f364f1fbd082be070a0e62ecf95be7691674a2606b082ecf3e21ff1d4c03ddee",
+      "raw_bytes": 99,
+      "credential_patterns_found": false
+    },
+    {
+      "check_id": "worker_takeover_fencing_dc",
+      "artifact": "execution.json",
+      "path": "docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/worker_takeover_fencing_dc-execution.json.json",
+      "sha256": "4a1f7cf19e01950b71c51a176c77e20fb1686c1b18699ac43dc21ebdc4db8324",
+      "raw_bytes": 934,
+      "credential_patterns_found": false
+    },
+    {
+      "check_id": "worker_takeover_fencing_dc",
+      "artifact": "execution.log",
+      "path": "docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/worker_takeover_fencing_dc-execution.log.json",
+      "sha256": "df0014a98a8f2748c48eb5817295ae0482056ad34603a02b56fbf4f1dc1894d5",
+      "raw_bytes": 220598,
+      "credential_patterns_found": false
+    },
+    {
+      "check_id": "worker_takeover_fencing_dc",
+      "artifact": "junit.xml",
+      "path": "docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/worker_takeover_fencing_dc-junit.xml.json",
+      "sha256": "e9789e4f3d5059f8000e89cc6c42a2c922b9d7d53799addbe6d10afa7d744d81",
+      "raw_bytes": 364,
+      "credential_patterns_found": false
+    },
+    {
+      "check_id": "reaper_stale_candidate_dc",
+      "artifact": "collection.json",
+      "path": "docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/reaper_stale_candidate_dc-collection.json.json",
+      "sha256": "ab06ea096c58a22842a718e3d83f74a9076a4f165095c6f17dcd63167294b3bc",
+      "raw_bytes": 189,
+      "credential_patterns_found": false
+    },
+    {
+      "check_id": "reaper_stale_candidate_dc",
+      "artifact": "collection.log",
+      "path": "docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/reaper_stale_candidate_dc-collection.log.json",
+      "sha256": "a5d77d310fff9fe099d0271a87142631454207eca9e20c6bfe98cdb59cefa5e1",
+      "raw_bytes": 91,
+      "credential_patterns_found": false
+    },
+    {
+      "check_id": "reaper_stale_candidate_dc",
+      "artifact": "execution.json",
+      "path": "docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/reaper_stale_candidate_dc-execution.json.json",
+      "sha256": "21ac3db5b0880e74ac658083f4619b0c3f6323777c500b6e355f20a163cd6ec8",
+      "raw_bytes": 896,
+      "credential_patterns_found": false
+    },
+    {
+      "check_id": "reaper_stale_candidate_dc",
+      "artifact": "execution.log",
+      "path": "docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/reaper_stale_candidate_dc-execution.log.json",
+      "sha256": "97a91c3d6efaddb33cc888c424e9cf6501742dbdfa2373ff67924f2638713f98",
+      "raw_bytes": 218932,
+      "credential_patterns_found": false
+    },
+    {
+      "check_id": "reaper_stale_candidate_dc",
+      "artifact": "junit.xml",
+      "path": "docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/reaper_stale_candidate_dc-junit.xml.json",
+      "sha256": "cc56e43e415de7382058d1827a239bdddf724ff7db8ff081ea95e3959c5ccaff",
+      "raw_bytes": 354,
+      "credential_patterns_found": false
+    },
+    {
+      "check_id": "reaper_unowned_deadline_dc",
+      "artifact": "collection.json",
+      "path": "docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/reaper_unowned_deadline_dc-collection.json.json",
+      "sha256": "47315e991149308528cfcb62da054eac2e26c5e62031cb34b988cc0283b6cbe6",
+      "raw_bytes": 188,
+      "credential_patterns_found": false
+    },
+    {
+      "check_id": "reaper_unowned_deadline_dc",
+      "artifact": "collection.log",
+      "path": "docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/reaper_unowned_deadline_dc-collection.log.json",
+      "sha256": "3825874e80cdd0a827cfa1607c838ec8eff02d7933bd81f6b09f93d2e50febd6",
+      "raw_bytes": 90,
+      "credential_patterns_found": false
+    },
+    {
+      "check_id": "reaper_unowned_deadline_dc",
+      "artifact": "execution.json",
+      "path": "docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/reaper_unowned_deadline_dc-execution.json.json",
+      "sha256": "a44db9d964e27153ae6dfd125732b6cce363e3581ea230a91cc05a4c4759f715",
+      "raw_bytes": 890,
+      "credential_patterns_found": false
+    },
+    {
+      "check_id": "reaper_unowned_deadline_dc",
+      "artifact": "execution.log",
+      "path": "docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/reaper_unowned_deadline_dc-execution.log.json",
+      "sha256": "4e966ca7112f16138c79fdbe5345d9c4ce8f754d731350cb74608caaf2d3e4b6",
+      "raw_bytes": 218840,
+      "credential_patterns_found": false
+    },
+    {
+      "check_id": "reaper_unowned_deadline_dc",
+      "artifact": "junit.xml",
+      "path": "docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/reaper_unowned_deadline_dc-junit.xml.json",
+      "sha256": "2c8699f95214e571bfce5cc366cbbde65a98642df87ca889eb23490754c50552",
+      "raw_bytes": 355,
+      "credential_patterns_found": false
+    },
+    {
+      "check_id": "reaper_atomicity_history_dc",
+      "artifact": "collection.json",
+      "path": "docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/reaper_atomicity_history_dc-collection.json.json",
+      "sha256": "3d307c65792a5327bf86e8db0925eb9548e22adb59b5774771e6c7c340361991",
+      "raw_bytes": 191,
+      "credential_patterns_found": false
+    },
+    {
+      "check_id": "reaper_atomicity_history_dc",
+      "artifact": "collection.log",
+      "path": "docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/reaper_atomicity_history_dc-collection.log.json",
+      "sha256": "16a27a09f0f287d9456d7cf42859fadb3003a42ec95f7040bf9a131924b44328",
+      "raw_bytes": 93,
+      "credential_patterns_found": false
+    },
+    {
+      "check_id": "reaper_atomicity_history_dc",
+      "artifact": "execution.json",
+      "path": "docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/reaper_atomicity_history_dc-execution.json.json",
+      "sha256": "3600b011d45f7e72057df85ab92243e8e67a682c4a3f6741a6f085abe25f7745",
+      "raw_bytes": 902,
+      "credential_patterns_found": false
+    },
+    {
+      "check_id": "reaper_atomicity_history_dc",
+      "artifact": "execution.log",
+      "path": "docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/reaper_atomicity_history_dc-execution.log.json",
+      "sha256": "4f8c5a39139dd548efd4df405610c8c69afa0324cfac47c501d1b9bc59eb6051",
+      "raw_bytes": 221296,
+      "credential_patterns_found": false
+    },
+    {
+      "check_id": "reaper_atomicity_history_dc",
+      "artifact": "junit.xml",
+      "path": "docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/reaper_atomicity_history_dc-junit.xml.json",
+      "sha256": "f1a6be5cab5aac85174087f86ae4965528594d5456e3c24a28fb1147a8ab9955",
+      "raw_bytes": 358,
+      "credential_patterns_found": false
+    },
+    {
+      "check_id": "reaper_unknown_accounting_dc",
+      "artifact": "collection.json",
+      "path": "docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/reaper_unknown_accounting_dc-collection.json.json",
+      "sha256": "adfc6940fad983e99b58d3d49bb1f102e79b852abaec8fcc02d4b838eca2abc9",
+      "raw_bytes": 192,
+      "credential_patterns_found": false
+    },
+    {
+      "check_id": "reaper_unknown_accounting_dc",
+      "artifact": "collection.log",
+      "path": "docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/reaper_unknown_accounting_dc-collection.log.json",
+      "sha256": "086ba5ef1fb6538ed6a0233bf9acb22b9a54a2acfa88cd4bd3d40fbc48eb426b",
+      "raw_bytes": 94,
+      "credential_patterns_found": false
+    },
+    {
+      "check_id": "reaper_unknown_accounting_dc",
+      "artifact": "execution.json",
+      "path": "docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/reaper_unknown_accounting_dc-execution.json.json",
+      "sha256": "d5fa98bee6954bb33c7da64e8291f7f853a9b65955b0f1ae46b29be1dc8d9361",
+      "raw_bytes": 911,
+      "credential_patterns_found": false
+    },
+    {
+      "check_id": "reaper_unknown_accounting_dc",
+      "artifact": "execution.log",
+      "path": "docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/reaper_unknown_accounting_dc-execution.log.json",
+      "sha256": "cfd55dc6e80aea25634e8580ca9bf2fd365707256611a89d7ac3bda28b2e024f",
+      "raw_bytes": 222795,
+      "credential_patterns_found": false
+    },
+    {
+      "check_id": "reaper_unknown_accounting_dc",
+      "artifact": "junit.xml",
+      "path": "docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/reaper_unknown_accounting_dc-junit.xml.json",
+      "sha256": "9e7cbdbbd000dedb636e4f1d3ec19ae4db4b67ea40dc5881d913e788878763da",
+      "raw_bytes": 359,
+      "credential_patterns_found": false
+    },
+    {
+      "check_id": "worker_independent_reaper_wf",
+      "artifact": "collection.json",
+      "path": "docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/worker_independent_reaper_wf-collection.json.json",
+      "sha256": "c55406d30f024830d3c693244dec2696de1a0fac23eabaf280b0f3482e2a074e",
+      "raw_bytes": 202,
+      "credential_patterns_found": false
+    },
+    {
+      "check_id": "worker_independent_reaper_wf",
+      "artifact": "collection.log",
+      "path": "docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/worker_independent_reaper_wf-collection.log.json",
+      "sha256": "37787dd67a4b59a6f9df5340042544dd615f86eb620f071587272f7fb7eef1c4",
+      "raw_bytes": 104,
+      "credential_patterns_found": false
+    },
+    {
+      "check_id": "worker_independent_reaper_wf",
+      "artifact": "execution.json",
+      "path": "docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/worker_independent_reaper_wf-execution.json.json",
+      "sha256": "04471d7372bf3c420d4d6d1dbc02d13376faf977c1c2d41c957c5e3261735d14",
+      "raw_bytes": 960,
+      "credential_patterns_found": false
+    },
+    {
+      "check_id": "worker_independent_reaper_wf",
+      "artifact": "execution.log",
+      "path": "docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/worker_independent_reaper_wf-execution.log.json",
+      "sha256": "2652e16cfc94d376af8f1cdbacf0d209c4c9c8ee69d685414c53446830bae4fa",
+      "raw_bytes": 218576,
+      "credential_patterns_found": false
+    },
+    {
+      "check_id": "worker_independent_reaper_wf",
+      "artifact": "junit.xml",
+      "path": "docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/worker_independent_reaper_wf-junit.xml.json",
+      "sha256": "5817cd0d8ddf7791bab27e62b1ceb96ade64576a680e8ed7529b492cf73f460a",
+      "raw_bytes": 369,
+      "credential_patterns_found": false
+    },
+    {
+      "check_id": "reaper_preserves_committed_success_wf",
+      "artifact": "collection.json",
+      "path": "docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/reaper_preserves_committed_success_wf-collection.json.json",
+      "sha256": "1f568a28bb56b8192de31283315257bf25ffa6475c04c15a32de582825db7931",
+      "raw_bytes": 195,
+      "credential_patterns_found": false
+    },
+    {
+      "check_id": "reaper_preserves_committed_success_wf",
+      "artifact": "collection.log",
+      "path": "docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/reaper_preserves_committed_success_wf-collection.log.json",
+      "sha256": "f4f3eb10efce60bcae38372c0167f3ea6f2aa4d69e881039956a6ae394bd9e22",
+      "raw_bytes": 97,
+      "credential_patterns_found": false
+    },
+    {
+      "check_id": "reaper_preserves_committed_success_wf",
+      "artifact": "execution.json",
+      "path": "docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/reaper_preserves_committed_success_wf-execution.json.json",
+      "sha256": "4f03ff7ef8c3cfead6a9acd28c1afd4632fa84525b9906a98128b67f06d53bc6",
+      "raw_bytes": 924,
+      "credential_patterns_found": false
+    },
+    {
+      "check_id": "reaper_preserves_committed_success_wf",
+      "artifact": "execution.log",
+      "path": "docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/reaper_preserves_committed_success_wf-execution.log.json",
+      "sha256": "1a6f1dd4b0f50a0e0f633b3151ddc9585eea3379c34965ac0cef36028d74e13b",
+      "raw_bytes": 218671,
+      "credential_patterns_found": false
+    },
+    {
+      "check_id": "reaper_preserves_committed_success_wf",
+      "artifact": "junit.xml",
+      "path": "docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/reaper_preserves_committed_success_wf-junit.xml.json",
+      "sha256": "1764def88236eacb6b5e0785c0090321f174189b148f3df8853e7780244e95e2",
+      "raw_bytes": 360,
+      "credential_patterns_found": false
+    },
+    {
+      "check_id": "worker_reaper_unit_suite",
+      "artifact": "collection.json",
+      "path": "docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/worker_reaper_unit_suite-collection.json.json",
+      "sha256": "4e2d3334eebc2a1413aa6361033935bd6fbcdcb7d8c67df5e48597c51e2fa4c0",
+      "raw_bytes": 283,
+      "credential_patterns_found": false
+    },
+    {
+      "check_id": "worker_reaper_unit_suite",
+      "artifact": "collection.log",
+      "path": "docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/worker_reaper_unit_suite-collection.log.json",
+      "sha256": "9e95b2dccac71124323c080e996cb6883c4d563a623df1d482b810e2a7bd4b18",
+      "raw_bytes": 177,
+      "credential_patterns_found": false
+    },
+    {
+      "check_id": "worker_reaper_unit_suite",
+      "artifact": "execution.json",
+      "path": "docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/worker_reaper_unit_suite-execution.json.json",
+      "sha256": "10c2469ca875aa64ae0d2f6fb6562c4c8db983e9c16152d178b2e0a22c6bc704",
+      "raw_bytes": 1796,
+      "credential_patterns_found": false
+    },
+    {
+      "check_id": "worker_reaper_unit_suite",
+      "artifact": "execution.log",
+      "path": "docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/worker_reaper_unit_suite-execution.log.json",
+      "sha256": "e37ed69b6e6c78ae35ebc4a95306b8929bea6d7f082695565a4b096c22abe5fc",
+      "raw_bytes": 156,
+      "credential_patterns_found": false
+    },
+    {
+      "check_id": "worker_reaper_unit_suite",
+      "artifact": "junit.xml",
+      "path": "docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/worker_reaper_unit_suite-junit.xml.json",
+      "sha256": "bd1539173bd135fff0c7fc2ca31da235115d7ad40ecc18d255f440615497ce1e",
+      "raw_bytes": 479,
+      "credential_patterns_found": false
+    },
+    {
+      "check_id": "worker_reaper_db_suite",
+      "artifact": "collection.json",
+      "path": "docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/worker_reaper_db_suite-collection.json.json",
+      "sha256": "cd7e464b522e041671e775a4fc192247b21ccdf60c937095e8e2e45cb431ecbb",
+      "raw_bytes": 658,
+      "credential_patterns_found": false
+    },
+    {
+      "check_id": "worker_reaper_db_suite",
+      "artifact": "collection.log",
+      "path": "docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/worker_reaper_db_suite-collection.log.json",
+      "sha256": "5629931c155694adbbb091b266c445bc92e5dcbff90625d36e242692cc68105c",
+      "raw_bytes": 507,
+      "credential_patterns_found": false
+    },
+    {
+      "check_id": "worker_reaper_db_suite",
+      "artifact": "execution.json",
+      "path": "docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/worker_reaper_db_suite-execution.json.json",
+      "sha256": "f9c9a586977aa5896b2d95bb3e51fd9fa18c85ed1f4fe9645f2c962173c3ee7e",
+      "raw_bytes": 5741,
+      "credential_patterns_found": false
+    },
+    {
+      "check_id": "worker_reaper_db_suite",
+      "artifact": "execution.log",
+      "path": "docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/worker_reaper_db_suite-execution.log.json",
+      "sha256": "22905ac61e8c32aa6d5c71d646352f486bf8f3aba2b2a4bad4cb583a5194c0a5",
+      "raw_bytes": 247556,
+      "credential_patterns_found": false
+    },
+    {
+      "check_id": "worker_reaper_db_suite",
+      "artifact": "junit.xml",
+      "path": "docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/worker_reaper_db_suite-junit.xml.json",
+      "sha256": "b2a0438b8d2566e1e33e6c4a435af1cc6ede7dc7417924f36abeb7aee5ae2deb",
+      "raw_bytes": 1011,
+      "credential_patterns_found": false
+    },
+    {
+      "check_id": "unit_regressions_pass",
+      "artifact": "collection.json",
+      "path": "docs/exec-plans/evidence/KL-036/checks-0e330e4712bb3c2a5e7ee9c624d9da5e4dcedf95-c0353986/e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1-unit_regressions_pass-collection.json.json",
+      "sha256": "894cbfcdc7b9c5fd0dd9ee121336f6ec83921fb33583d7c12614430acd0347de",
+      "raw_bytes": 26600,
+      "credential_patterns_found": false
+    },
+    {
+      "check_id": "unit_regressions_pass",
+      "artifact": "collection.log",
+      "path": "docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/unit_regressions_pass-collection.log.json",
+      "sha256": "556b4a49c9e8834ff6de825fdaedb22b7effa1186be08c887663fb998f861b28",
+      "raw_bytes": 24217,
+      "credential_patterns_found": false
+    },
+    {
+      "check_id": "unit_regressions_pass",
+      "artifact": "execution.json",
+      "path": "docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/unit_regressions_pass-execution.json.json",
+      "sha256": "df7768990866813f940cbf28bcfff1b1195935b46ee5137e11f366df5353e61b",
+      "raw_bytes": 237473,
+      "credential_patterns_found": false
+    },
+    {
+      "check_id": "unit_regressions_pass",
+      "artifact": "execution.log",
+      "path": "docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/unit_regressions_pass-execution.log.json",
+      "sha256": "8f4ff0c489db9a529167085802f7aa791bead33e41e47be9c31c876f6223f09d",
+      "raw_bytes": 68202,
+      "credential_patterns_found": false
+    },
+    {
+      "check_id": "unit_regressions_pass",
+      "artifact": "junit.xml",
+      "path": "docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/unit_regressions_pass-junit.xml.json",
+      "sha256": "9ccb177aacea062b9896b3b8b935148f82760e23925946b760da6cfa7f60539a",
+      "raw_bytes": 34779,
+      "credential_patterns_found": false
+    },
+    {
+      "check_id": "lint_passes",
+      "artifact": "execution.log",
+      "path": "docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/lint_passes-execution.log.json",
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "raw_bytes": 19,
+      "credential_patterns_found": false
+    },
+    {
+      "check_id": "typecheck_passes",
+      "artifact": "execution.log",
+      "path": "docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/typecheck_passes-execution.log.json",
+      "sha256": "6f888496f6afa100a0d3bb1c279642e037ca23c6cde4115952291d9e8559b11c",
+      "raw_bytes": 45,
+      "credential_patterns_found": false
+    },
+    {
+      "check_id": "harness_validation_passes",
+      "artifact": "execution.log",
+      "path": "docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/harness_validation_passes-execution.log.json",
+      "sha256": "3591ce9c805bc87bc71a5cf61c85844abac1a0a35a691df8d9da99dd1de7cf70",
+      "raw_bytes": 38,
+      "credential_patterns_found": false
+    }
+  ],
+  "prerequisites": [
+    {
+      "task_identity": "harness-backlog-v0.2/KL-024",
+      "merge_commit": "ff57a80feebd4e539f9af277e0dcb26d942bc3e0",
+      "ancestor_of_protected_base": true,
+      "result_sha256": "660e3a31a61c763ea6f48be1d6ef0d0f81b2b9a3bfcdd151f59ad2a4bb619b9b"
+    },
+    {
+      "task_identity": "harness-backlog-v0.2/KL-026",
+      "merge_commit": "70dc4863ccdca95f7a44e79b68501a698262e323",
+      "ancestor_of_protected_base": true,
+      "result_sha256": "8be63172f7abe5f2794a8a76e4f8b15fe3a797faab6d1bd5843c0842b80150f4"
+    },
+    {
+      "task_identity": "harness-backlog-v0.2/KL-025",
+      "merge_commit": "eab2b305351cf3c504f74ac74868edc58d0a3430",
+      "ancestor_of_protected_base": true,
+      "result_sha256": "dab5c5af4c07d26550238415cc99e04ab98d6d853e11aa94caa787f35ac544b8"
+    },
+    {
+      "task_identity": "harness-backlog-v0.2/KL-075",
+      "merge_commit": "d0470badf0ccf6bec28a9bc7e6836b57d9df93ce",
+      "ancestor_of_protected_base": true,
+      "result_sha256": "f7db410d2b340272b35d9cf5530bd59257f0a8626136db46556318e56306bf69"
+    },
+    {
+      "task_identity": "harness-backlog-v0.2/KL-019",
+      "merge_commit": "cfbfae0c366e654060d5d52f961a37abf956f2a0",
+      "ancestor_of_protected_base": true,
+      "result_sha256": "6631a121af1458a264d31a6ec0f541590692f51a553273f88b26185d1874717e"
+    }
+  ],
+  "post_test_suffix": [
+    {
+      "commit": "bfce1bd2be923204875360eddd0e5169332402be",
+      "changes": 144,
+      "allowed_result_or_new_own_evidence_only": true
+    },
+    {
+      "commit": "900d667394599345a51cec851160d33c01ebce7f",
+      "changes": 3,
+      "allowed_result_or_new_own_evidence_only": true
+    }
+  ],
+  "task_status": "BLOCKED",
+  "task_checks_status": "PASS",
+  "requirements_covered": [],
+  "production_auto_activation": false,
+  "shadow_executable": false,
+  "aggregate_storage": {
+    "stored_bytes": 18099028,
+    "limit_bytes": 16777216,
+    "excess_bytes": 1321812,
+    "changed_artifacts": 634,
+    "status": "FAIL"
+  },
+  "limitations": [
+    "Independent static and durable-artifact inspection; no DB/Docker/App/full-DB execution.",
+    "TEST service privilege is declared instrumentation, not restricted-login ACL or production readiness evidence.",
+    "Credential scanning covers decoded final16 artifacts; earlier sanitized failure retains FAIL and original local quarantine is not read or rebound."
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "task_identity": "harness-backlog-v0.2/KL-036",
+  "reviewed_head_sha": "900d667394599345a51cec851160d33c01ebce7f",
+  "review_type": "GENERAL",
+  "status": "CHANGES_REQUIRED",
+  "findings": [
+    {
+      "finding_id": "GENERAL-V2-001",
+      "classification": "BLOCKER",
+      "title": "Own evidence/review aggregate exceeds the unchanged storage limit",
+      "description": "Independent protected-base audit of reviewed SHA 900d667394599345a51cec851160d33c01ebce7f measures 634 changed evidence/review blobs totaling 18,099,028 bytes, exceeding the inclusive 16,777,216-byte cap by 1,321,812 bytes. Its sole audit error is the aggregate-size rejection. The result is truthfully BLOCKED; sixteen command PASS records do not satisfy storage/DoD or permit review/merge PASS. Fresh review-bookkeeping bytes increase the total further.",
+      "impact": "Readiness and Definition of Done remain unsatisfied, so the task cannot be recommended for merge or represented as task/review PASS.",
+      "required_correction": "Resolve storage in separately approved prospective governance using a lossless representation that preserves complete executions, failures and normal Git ancestry and satisfies the applicable storage contract. Do not truncate, delete failure history, waive the cap, alter frozen meaning or promote command success. Bind any resulting implementation/result/evidence changes to required fresh tested and reviewed revisions, then re-audit the exact final tree including all review suffix bytes.",
+      "evidence_refs": [
+        "docs/harness/EVIDENCE_STORAGE_POLICY.md",
+        "docs/exec-plans/completed/KL-036_RESULT.yaml",
+        "docs/exec-plans/reviews/KL-036/GENERAL/V2/storage-audit.txt"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "docs/exec-plans/active/KL-036.md",
+    "docs/exec-plans/completed/KL-036_RESULT.yaml",
+    "docs/harness/EVIDENCE_STORAGE_POLICY.md",
+    "docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/CHECK_INDEX.json",
+    "docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/exact-head-storage-audit-fail.json",
+    "docs/exec-plans/reviews/KL-036/GENERAL/V2/storage-audit.txt",
+    "docs/exec-plans/reviews/KL-036/GENERAL/V2/review-notes.md"
+  ],
+  "review_contract_version": "v0.2"
+}

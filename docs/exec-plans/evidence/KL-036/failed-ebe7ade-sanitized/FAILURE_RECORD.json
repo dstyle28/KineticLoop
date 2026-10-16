@@ -1,0 +1,48 @@
+{
+  "status": "FAIL",
+  "tested_commit": "ebe7ade0cd7cfba6121549e52a5f64a8f700bff8",
+  "original_command": "uv run pytest -q tests/db/test_worker_reaper.py",
+  "exit_code": 1,
+  "passed": 2,
+  "failed": 5,
+  "reason": "fixture setup/replay representation defects; raw local credential-bearing failed traces retained only in private scratch",
+  "original_execution_lossless_locally": true,
+  "sanitized_diagnostics_are_not_original_execution_evidence": true,
+  "records": [
+    {
+      "original_path": "/private/tmp/kl036-checks-ebe7ade0cd7cfba6121549e52a5f64a8f700bff8-23bd8693/worker_reaper_db_suite/execution.log",
+      "original_sha256": "f6969fe8376eb5121b99f74617059bc7365721f203272c92bc85c01a7b5c161a",
+      "original_bytes": 66053,
+      "sanitized_ref": "docs/exec-plans/evidence/KL-036/failed-ebe7ade-sanitized/execution.log.json",
+      "dsns_removed": true
+    },
+    {
+      "original_path": "/private/tmp/kl036-checks-ebe7ade0cd7cfba6121549e52a5f64a8f700bff8-23bd8693/worker_reaper_db_suite/junit.xml",
+      "original_sha256": "df95ea3cc4fd14f24097e88ddc00963ae50b87dd1dafb2478b9f41a0514346ca",
+      "original_bytes": 17381,
+      "sanitized_ref": "docs/exec-plans/evidence/KL-036/failed-ebe7ade-sanitized/junit.xml.json",
+      "dsns_removed": true
+    },
+    {
+      "original_path": "/private/tmp/kl036-checks-ebe7ade0cd7cfba6121549e52a5f64a8f700bff8-23bd8693/worker_reaper_db_suite/execution.json",
+      "original_sha256": "7c6e413063e0e20e7bfdbf7945802352fcdbf3a4f9f973e11ae5d24a8d740934",
+      "original_bytes": 5739,
+      "sanitized_ref": "docs/exec-plans/evidence/KL-036/failed-ebe7ade-sanitized/execution.json.json",
+      "dsns_removed": false
+    },
+    {
+      "original_path": "/private/tmp/kl036-checks-ebe7ade0cd7cfba6121549e52a5f64a8f700bff8-23bd8693/worker_reaper_db_suite/collection.log",
+      "original_sha256": "766533a8634022d2722ec731d2974b7547927ced7105a36daced32feecdef544",
+      "original_bytes": 507,
+      "sanitized_ref": "docs/exec-plans/evidence/KL-036/failed-ebe7ade-sanitized/collection.log.json",
+      "dsns_removed": false
+    },
+    {
+      "original_path": "/private/tmp/kl036-checks-ebe7ade0cd7cfba6121549e52a5f64a8f700bff8-23bd8693/worker_reaper_db_suite/collection.json",
+      "original_sha256": "cd7e464b522e041671e775a4fc192247b21ccdf60c937095e8e2e45cb431ecbb",
+      "original_bytes": 658,
+      "sanitized_ref": "docs/exec-plans/evidence/KL-036/failed-ebe7ade-sanitized/collection.json.json",
+      "dsns_removed": false
+    }
+  ]
+}

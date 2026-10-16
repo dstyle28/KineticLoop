@@ -1,0 +1,33 @@
+{
+  "task_identity": "harness-backlog-v0.2/KL-036",
+  "tested_commit": "55bde4556470ee3d555e3df8550a3b9337785d6c",
+  "status": "FAIL",
+  "command": "PATH=/private/tmp/hg053-uv/bin:$PATH .venv/bin/python docs/exec-plans/evidence/KL-036/run_checks.py",
+  "launcher_exit_code": 130,
+  "underlying_harness_exit_code": null,
+  "underlying_harness_status": "INTERRUPTED; no completed manifest/JUnit or execution outcome; never eligibility",
+  "remaining_checks": "NOT_RUN",
+  "reason": "Superseded during self-review: heartbeat assertion raced startup on fast hosts. Replace it with bounded trusted committed-receipt observation before worker termination, commit new revision, rerun all sixteen packet checks.",
+  "signals": [
+    {
+      "pid": 14145,
+      "role": "verified owned pytest master",
+      "signal": "SIGINT"
+    },
+    {
+      "pid": 14134,
+      "role": "verified owned launcher",
+      "signal": "SIGINT"
+    }
+  ],
+  "owned_process_tree_exited": true,
+  "artifacts": {
+    "execution.log": "docs/exec-plans/evidence/KL-036/interrupted-55bde45-a526e68f/execution.log.json",
+    "runner/collection.json": "docs/exec-plans/evidence/KL-036/checks-f478248ffc9ea2f91b37cb356ae1facc76870414-42aff63e/interrupted-55bde4556470ee3d555e3df8550a3b9337785d6c-a526e68f-runner-collection.json.json",
+    "runner/collection.log": "docs/exec-plans/evidence/KL-036/interrupted-55bde45-a526e68f/runner-collection.log.json",
+    "runner/execution.json": "docs/exec-plans/evidence/KL-036/interrupted-55bde45-a526e68f/runner-execution.json.json",
+    "runner/junit.xml": "docs/exec-plans/evidence/KL-036/interrupted-55bde45-a526e68f/runner-junit.xml.json",
+    "runner/pytest.log": "docs/exec-plans/evidence/KL-036/interrupted-55bde45-a526e68f/runner-pytest.log.json"
+  },
+  "storage": "Lossless available partial bytes; identical collection JSON uses a new wrapper/SHA-bound record beside its existing own-task shared payload. No previously committed evidence changed."
+}

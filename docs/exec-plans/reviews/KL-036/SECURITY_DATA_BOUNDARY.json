@@ -1,0 +1,39 @@
+{
+  "task_identity": "harness-backlog-v0.2/KL-036",
+  "reviewed_head_sha": "900d667394599345a51cec851160d33c01ebce7f",
+  "review_type": "SECURITY_DATA_BOUNDARY",
+  "status": "CHANGES_REQUIRED",
+  "findings": [
+    {
+      "id": "KL036-SDB-V2-001",
+      "severity": "BLOCKER",
+      "title": "Exact reviewed-head evidence exceeds the unchanged 16 MiB aggregate cap",
+      "description": "Independent repository compact-evidence audit of protected base af09be228fbc89d074b6e863c83e1fdda343d55b versus reviewed head 900d667394599345a51cec851160d33c01ebce7f measures 18,099,028 bytes across 634 changed evidence/review blobs. This exceeds the inclusive 16,777,216-byte cap by 1,321,812 bytes. The audit has exactly one error: PR-evidence-total. The task RESULT honestly remains BLOCKED, despite sixteen individually passing checks at e81cc2ccff69bf32a42f7c81b4671c99879b544b. All required completion conditions are not satisfied, so neither review PASS nor a merge recommendation is justified. Review-record additions also count toward the cap and cannot waive this failure.",
+      "file": "docs/harness/EVIDENCE_STORAGE_POLICY.md",
+      "required_change": "Resolve capture/storage through separately reviewed prospective governance, retain lossless current executions and failure history, and produce a compliant task revision with fresh revision-bound verification and reviews as required by the result/review contracts. Do not truncate, rewrite history, waive the budget, or treat recorded check PASS as task/review PASS.",
+      "evidence_refs": [
+        "docs/exec-plans/reviews/KL-036/SECURITY_DATA_BOUNDARY/V2/STORAGE_AUDIT.json",
+        "docs/exec-plans/reviews/KL-036/SECURITY_DATA_BOUNDARY/V2/EVIDENCE_AUDIT.json",
+        "docs/exec-plans/completed/KL-036_RESULT.yaml",
+        "docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/exact-head-storage-audit-fail.json"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "docs/exec-plans/reviews/KL-036/SECURITY_DATA_BOUNDARY/V2/NOTES.md",
+    "docs/exec-plans/reviews/KL-036/SECURITY_DATA_BOUNDARY/V2/AUTHORITY_SCOPE.json",
+    "docs/exec-plans/reviews/KL-036/SECURITY_DATA_BOUNDARY/V2/EVIDENCE_AUDIT.json",
+    "docs/exec-plans/reviews/KL-036/SECURITY_DATA_BOUNDARY/V2/CREDENTIAL_SCAN.json",
+    "docs/exec-plans/reviews/KL-036/SECURITY_DATA_BOUNDARY/V2/STORAGE_AUDIT.json",
+    "docs/exec-plans/active/KL-036.md",
+    "docs/contracts/worker_reaper.md",
+    "docs/exec-plans/completed/KL-036_RESULT.yaml",
+    "docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/CHECK_INDEX.json",
+    "src/kineticloop/persistence/worker_reaper.py",
+    "src/kineticloop/workflow/worker_reaper.py",
+    "src/kineticloop/persistence/transactions.py",
+    "tests/unit/workflow/test_worker_reaper.py",
+    "tests/db/test_worker_reaper.py"
+  ],
+  "review_contract_version": "v0.2"
+}

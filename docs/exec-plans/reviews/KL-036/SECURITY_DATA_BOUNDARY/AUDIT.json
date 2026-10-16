@@ -1,0 +1,298 @@
+{
+  "reviewed_head_sha": "96ebb9e0e95211fc684273e7b69a49dc11e11e87",
+  "base_commit": "af09be228fbc89d074b6e863c83e1fdda343d55b",
+  "tested_commit": "6a3f10ef424f41bb690d8835f952484b0ca4f87b",
+  "tested_suffix_only_result_and_own_evidence": true,
+  "checks": [
+    {
+      "check_id": "harness_regressions_pass",
+      "exit_code": 0,
+      "collected": 1492,
+      "executed": 1492,
+      "junit": 1492,
+      "verified_artifacts": 7
+    },
+    {
+      "check_id": "worker_identity_namespace_pu",
+      "exit_code": 0,
+      "collected": 1,
+      "executed": 1,
+      "junit": 1,
+      "verified_artifacts": 5
+    },
+    {
+      "check_id": "worker_lease_deadline_pu",
+      "exit_code": 0,
+      "collected": 1,
+      "executed": 1,
+      "junit": 1,
+      "verified_artifacts": 5
+    },
+    {
+      "check_id": "worker_takeover_fencing_dc",
+      "exit_code": 0,
+      "collected": 1,
+      "executed": 1,
+      "junit": 1,
+      "verified_artifacts": 5
+    },
+    {
+      "check_id": "reaper_stale_candidate_dc",
+      "exit_code": 0,
+      "collected": 1,
+      "executed": 1,
+      "junit": 1,
+      "verified_artifacts": 5
+    },
+    {
+      "check_id": "reaper_unowned_deadline_dc",
+      "exit_code": 0,
+      "collected": 1,
+      "executed": 1,
+      "junit": 1,
+      "verified_artifacts": 5
+    },
+    {
+      "check_id": "reaper_atomicity_history_dc",
+      "exit_code": 0,
+      "collected": 1,
+      "executed": 1,
+      "junit": 1,
+      "verified_artifacts": 5
+    },
+    {
+      "check_id": "reaper_unknown_accounting_dc",
+      "exit_code": 0,
+      "collected": 1,
+      "executed": 1,
+      "junit": 1,
+      "verified_artifacts": 5
+    },
+    {
+      "check_id": "worker_independent_reaper_wf",
+      "exit_code": 0,
+      "collected": 1,
+      "executed": 1,
+      "junit": 1,
+      "verified_artifacts": 5
+    },
+    {
+      "check_id": "reaper_preserves_committed_success_wf",
+      "exit_code": 0,
+      "collected": 1,
+      "executed": 1,
+      "junit": 1,
+      "verified_artifacts": 5
+    },
+    {
+      "check_id": "worker_reaper_unit_suite",
+      "exit_code": 0,
+      "collected": 2,
+      "executed": 2,
+      "junit": 2,
+      "verified_artifacts": 5
+    },
+    {
+      "check_id": "worker_reaper_db_suite",
+      "exit_code": 0,
+      "collected": 7,
+      "executed": 7,
+      "junit": 7,
+      "verified_artifacts": 5
+    },
+    {
+      "check_id": "unit_regressions_pass",
+      "exit_code": 0,
+      "collected": 249,
+      "executed": 249,
+      "junit": 249,
+      "verified_artifacts": 5
+    },
+    {
+      "check_id": "lint_passes",
+      "exit_code": 0,
+      "collected": null,
+      "executed": null,
+      "junit": null,
+      "verified_artifacts": 1
+    },
+    {
+      "check_id": "typecheck_passes",
+      "exit_code": 0,
+      "collected": null,
+      "executed": null,
+      "junit": null,
+      "verified_artifacts": 1
+    },
+    {
+      "check_id": "harness_validation_passes",
+      "exit_code": 0,
+      "collected": null,
+      "executed": null,
+      "junit": null,
+      "verified_artifacts": 1
+    }
+  ],
+  "witness_kind_counts": {
+    "worker_takeover_fencing_dc": {
+      "before_inventory": 1,
+      "before_process_inventory": 1,
+      "migrated_namespace": 1,
+      "child_ready": 4,
+      "child_result": 3,
+      "elapsed_server_time": 2,
+      "postgres_blocker": 2,
+      "child_denial": 1,
+      "zero_effects": 10,
+      "after_inventory": 1,
+      "after_process_inventory": 1
+    },
+    "reaper_stale_candidate_dc": {
+      "before_inventory": 1,
+      "before_process_inventory": 1,
+      "migrated_namespace": 1,
+      "elapsed_server_time": 1,
+      "scan_released": 2,
+      "child_ready": 3,
+      "preflight_released": 1,
+      "outside_transaction_wait": 1,
+      "postgres_blocker": 2,
+      "child_result": 2,
+      "child_denial": 1,
+      "zero_effects": 2,
+      "after_inventory": 1,
+      "after_process_inventory": 1
+    },
+    "reaper_unowned_deadline_dc": {
+      "before_inventory": 1,
+      "before_process_inventory": 1,
+      "migrated_namespace": 1,
+      "zero_effects": 7,
+      "elapsed_server_time": 3,
+      "complete_rollback": 5,
+      "child_ready": 1,
+      "child_result": 1,
+      "legacy_pending_alias": 1,
+      "after_inventory": 1,
+      "after_process_inventory": 1
+    },
+    "reaper_atomicity_history_dc": {
+      "before_inventory": 1,
+      "before_process_inventory": 1,
+      "migrated_namespace": 1,
+      "elapsed_server_time": 3,
+      "scan_released": 3,
+      "complete_rollback": 5,
+      "zero_effects": 8,
+      "child_ready": 2,
+      "postgres_blocker": 2,
+      "child_result": 2,
+      "after_inventory": 1,
+      "after_process_inventory": 1
+    },
+    "reaper_unknown_accounting_dc": {
+      "before_inventory": 1,
+      "before_process_inventory": 1,
+      "migrated_namespace": 1,
+      "child_ready": 2,
+      "preflight_released": 2,
+      "outside_transaction_wait": 2,
+      "postgres_blocker": 2,
+      "child_result": 1,
+      "child_denial": 1,
+      "elapsed_server_time": 1,
+      "scan_released": 1,
+      "zero_effects": 7,
+      "accounting_only_late_settlement": 1,
+      "after_inventory": 1,
+      "after_process_inventory": 1
+    },
+    "worker_independent_reaper_wf": {
+      "before_inventory": 1,
+      "before_process_inventory": 1,
+      "migrated_namespace": 1,
+      "child_ready": 4,
+      "ordinary_work_received": 1,
+      "outside_transaction_wait": 2,
+      "child_result": 3,
+      "heartbeat_committed": 1,
+      "elapsed_server_time": 2,
+      "independent_terminal": 1,
+      "zero_effects": 5,
+      "worker_loss": 1,
+      "scan_released": 1,
+      "after_inventory": 1,
+      "after_process_inventory": 1
+    },
+    "reaper_preserves_committed_success_wf": {
+      "before_inventory": 1,
+      "before_process_inventory": 1,
+      "migrated_namespace": 1,
+      "elapsed_server_time": 1,
+      "scan_released": 2,
+      "child_ready": 2,
+      "preflight_released": 1,
+      "outside_transaction_wait": 1,
+      "postgres_blocker": 2,
+      "child_result": 1,
+      "child_denial": 1,
+      "zero_effects": 5,
+      "t6_success_preserved": 1,
+      "after_inventory": 1,
+      "after_process_inventory": 1
+    },
+    "worker_reaper_db_suite": {
+      "before_inventory": 1,
+      "before_process_inventory": 1,
+      "migrated_namespace": 1,
+      "child_ready": 18,
+      "child_result": 13,
+      "elapsed_server_time": 13,
+      "postgres_blocker": 10,
+      "child_denial": 4,
+      "zero_effects": 44,
+      "scan_released": 9,
+      "preflight_released": 4,
+      "outside_transaction_wait": 6,
+      "complete_rollback": 10,
+      "legacy_pending_alias": 1,
+      "accounting_only_late_settlement": 1,
+      "ordinary_work_received": 1,
+      "heartbeat_committed": 1,
+      "independent_terminal": 1,
+      "worker_loss": 1,
+      "t6_success_preserved": 1,
+      "after_inventory": 1,
+      "after_process_inventory": 1
+    }
+  },
+  "changed_evidence_envelopes_verified": 187,
+  "credential_guard_matches_outside_exact_synthetic_identifier": 0,
+  "quarantined_originals_hash_verified_without_output": [
+    {
+      "sha256": "f6969fe8376eb5121b99f74617059bc7365721f203272c92bc85c01a7b5c161a",
+      "bytes": 66053,
+      "hash_verified": true
+    },
+    {
+      "sha256": "df95ea3cc4fd14f24097e88ddc00963ae50b87dd1dafb2478b9f41a0514346ca",
+      "bytes": 17381,
+      "hash_verified": true
+    },
+    {
+      "sha256": "7c6e413063e0e20e7bfdbf7945802352fcdbf3a4f9f973e11ae5d24a8d740934",
+      "bytes": 5739,
+      "hash_verified": true
+    },
+    {
+      "sha256": "766533a8634022d2722ec731d2974b7547927ced7105a36daced32feecdef544",
+      "bytes": 507,
+      "hash_verified": true
+    },
+    {
+      "sha256": "cd7e464b522e041671e775a4fc192247b21ccdf60c937095e8e2e45cb431ecbb",
+      "bytes": 658,
+      "hash_verified": true
+    }
+  ]
+}

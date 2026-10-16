@@ -1,0 +1,23 @@
+{
+  "task_identity": "harness-backlog-v0.2/KL-036",
+  "reviewed_head_sha": "900d667394599345a51cec851160d33c01ebce7f",
+  "review_type": "DB_CONCURRENCY",
+  "status": "CHANGES_REQUIRED",
+  "findings": [
+    {
+      "classification": "BLOCKER",
+      "title": "Aggregate evidence storage exceeds current cap; task result remains BLOCKED",
+      "location": "docs/harness/EVIDENCE_STORAGE_POLICY.md",
+      "finding": "At the exact reviewed SHA, 634 changed evidence/review blobs total 18099028 bytes, exceeding the unchanged 16777216-byte aggregate cap by 1321812 bytes. All sixteen successful check exits and verified DB concurrency oracles do not satisfy this remaining task/readiness condition; KL-036_RESULT.yaml records BLOCKED.",
+      "required_correction": "Resolve the aggregate through conforming lossless capture/storage refinement or separately approved prospective storage governance, preserving execution/failure history. Commit a valid completion result and evidence, retest if implementation changes, and obtain new SHA-bound independent reviews. No storage waiver or PASS promotion of the current BLOCKED result."
+    }
+  ],
+  "evidence_refs": [
+    "docs/exec-plans/reviews/KL-036/DB_CONCURRENCY/V2/review-notes.md",
+    "docs/exec-plans/reviews/KL-036/DB_CONCURRENCY/V2/ancestry-audit.json",
+    "docs/exec-plans/reviews/KL-036/DB_CONCURRENCY/V2/evidence-audit.json",
+    "docs/exec-plans/completed/KL-036_RESULT.yaml",
+    "docs/exec-plans/evidence/KL-036/checks-e81cc2ccff69bf32a42f7c81b4671c99879b544b-7de1c5b1/CHECK_INDEX.json"
+  ],
+  "review_contract_version": "v0.2"
+}
