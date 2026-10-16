@@ -1,0 +1,175 @@
+{
+  "cap_selection": "Conservative finite proposed policy ceilings; input lower bounds and isolated measurements do not prove project/import/history/runtime fit.",
+  "deadlines_ms": {
+    "api_request_existing_max": 60000,
+    "final_overall": 14400000,
+    "local_git_stream": 60000,
+    "local_phase": 600000,
+    "metadata_read": 10000,
+    "preimport_overall": 1800000,
+    "signing_existing_max": 15000
+  },
+  "emergency_envelope_bytes": 4096,
+  "format": "host-preparation-limits-draft-v1",
+  "host_invocation_includes_worker_wait_and_terminal_rechecks": true,
+  "limit_comparison": "actual <= limit",
+  "limits": {
+    "allocation_live_bytes": {
+      "kind": "HIGH_WATER",
+      "limit": 268435456,
+      "unit": "conservatively reserved live host buffers/strings/containers/cache/output, after trusted baseline"
+    },
+    "cache_insert_bytes": {
+      "kind": "CUMULATIVE",
+      "limit": 268435456,
+      "unit": "actual data bytes at each successful host cache insertion"
+    },
+    "cache_insertions": {
+      "kind": "CUMULATIVE",
+      "limit": 32768,
+      "unit": "every successful host immutable-data cache insertion including reinsertion"
+    },
+    "cache_live_bytes": {
+      "kind": "HIGH_WATER",
+      "limit": 67108864,
+      "unit": "simultaneously retained host cache data bytes"
+    },
+    "cache_live_objects": {
+      "kind": "HIGH_WATER",
+      "limit": 16384,
+      "unit": "simultaneously retained host immutable-data cache objects"
+    },
+    "command_chars": {
+      "kind": "HIGH_WATER",
+      "limit": 16384,
+      "unit": "codepoints in fixed trusted host argv, never credential-bearing"
+    },
+    "comparison_bytes": {
+      "kind": "CUMULATIVE",
+      "limit": 8589934592,
+      "unit": "length of both actual operands of every literal comparison, including repeats"
+    },
+    "diagnostic_bytes": {
+      "kind": "CUMULATIVE",
+      "limit": 2097152,
+      "unit": "retained sanitized host diagnostics; no secret body/argv"
+    },
+    "entry_visits": {
+      "kind": "CUMULATIVE",
+      "limit": 262144,
+      "unit": "every returned tree/diff/directory/ref/index entry on every visit"
+    },
+    "file_read_bytes": {
+      "kind": "CUMULATIVE",
+      "limit": 17179869184,
+      "unit": "all actual host filesystem bytes including copies/metadata/installed/object inputs"
+    },
+    "file_write_bytes": {
+      "kind": "CUMULATIVE",
+      "limit": 8589934592,
+      "unit": "all actual host filesystem output bytes including every copy"
+    },
+    "git_input_bytes": {
+      "kind": "CUMULATIVE",
+      "limit": 268435456,
+      "unit": "all actual bytes sent to host Git stdin"
+    },
+    "git_operations": {
+      "kind": "CUMULATIVE",
+      "limit": 65536,
+      "unit": "every actually started host Git process, including failures"
+    },
+    "git_output_bytes": {
+      "kind": "CUMULATIVE",
+      "limit": 4294967296,
+      "unit": "all actual stdout plus stderr bytes from host Git including framing/failures"
+    },
+    "metadata_read_bytes": {
+      "kind": "CUMULATIVE",
+      "limit": 268435456,
+      "unit": "actual Git/ref/index/config/installation metadata input; subset of file_read_bytes"
+    },
+    "network_input_bytes": {
+      "kind": "CUMULATIVE",
+      "limit": 67108864,
+      "unit": "all actual request body bytes, including token bodies, not persisted"
+    },
+    "network_output_bytes": {
+      "kind": "CUMULATIVE",
+      "limit": 268435456,
+      "unit": "all received headers/body/transport diagnostic bytes before decoding"
+    },
+    "network_requests": {
+      "kind": "CUMULATIVE",
+      "limit": 32,
+      "unit": "all actual API/transport request attempts including authentication/renewal/retry"
+    },
+    "object_copy_bytes": {
+      "kind": "CUMULATIVE",
+      "limit": 4294967296,
+      "unit": "actual copied owned object/pack/index bytes; subset of file_write_bytes"
+    },
+    "path_chars": {
+      "kind": "HIGH_WATER",
+      "limit": 1024,
+      "unit": "decoded literal normalized path codepoints; before insertion"
+    },
+    "physical_paths": {
+      "kind": "DISTINCT",
+      "limit": 65536,
+      "unit": "anchored store instance plus normalized absolute physical path; no OID/inode/owner deduplication"
+    },
+    "process_group_rss_bytes": {
+      "kind": "HIGH_WATER",
+      "limit": 1073741824,
+      "unit": "entire process-group resident memory including baseline/native/Git/helpers; enforced safety ceiling"
+    },
+    "process_operations": {
+      "kind": "CUMULATIVE",
+      "limit": 65664,
+      "unit": "all host child process starts including Git and signing; excludes unchanged worker/native starts"
+    },
+    "ref_chars": {
+      "kind": "HIGH_WATER",
+      "limit": 1024,
+      "unit": "decoded literal ref name codepoints"
+    },
+    "result_bytes": {
+      "kind": "HIGH_WATER",
+      "limit": 1048576,
+      "unit": "complete UTF8 full terminal host record before publication"
+    },
+    "signing_operations": {
+      "kind": "CUMULATIVE",
+      "limit": 8,
+      "unit": "all signing process starts, also process_operations"
+    },
+    "single_blob_bytes": {
+      "kind": "HIGH_WATER",
+      "limit": 67108864,
+      "unit": "immutable or physical size of one literal content source"
+    },
+    "single_metadata_bytes": {
+      "kind": "HIGH_WATER",
+      "limit": 16777216,
+      "unit": "full size of any one metadata source before reading"
+    },
+    "tracked_entries_per_snapshot": {
+      "kind": "HIGH_WATER",
+      "limit": 16384,
+      "unit": "complete tracked entries in each checkout or bare tree snapshot"
+    },
+    "worklist_entries": {
+      "kind": "HIGH_WATER",
+      "limit": 65536,
+      "unit": "simultaneously queued and in-progress metadata/path/entry records"
+    }
+  },
+  "native_deadlines_or_limits_changed": false,
+  "network_transport_git": "HTTPS final clone/fetch is additionally a host Git process and metered import; stream bytes also network counters; no ambient credential/helper",
+  "phase_start_reset_on_reentry": false,
+  "reservation_rejection_is_sticky": true,
+  "reset_allowed": false,
+  "status": "PROPOSED_NOT_APPROVED",
+  "stream_chunk_bytes": 65536
+}

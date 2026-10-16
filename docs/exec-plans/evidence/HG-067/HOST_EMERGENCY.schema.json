@@ -1,0 +1,170 @@
+{
+  "$id": "urn:kineticloop:draft:host-emergency-v4",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "acceptance_eligible": {
+      "const": false
+    },
+    "child_exit": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "child_state": {
+      "enum": [
+        "NOT_STARTED",
+        "EXITED",
+        "UNKNOWN"
+      ]
+    },
+    "complete": {
+      "const": false
+    },
+    "continuation_authorized": {
+      "const": false
+    },
+    "counter_state": {
+      "const": "LOWER_BOUND"
+    },
+    "driver_exit": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "driver_state": {
+      "enum": [
+        "NOT_STARTED",
+        "EXITED",
+        "UNKNOWN"
+      ]
+    },
+    "elapsed_ns": {
+      "minimum": 0,
+      "type": "integer"
+    },
+    "execution_reuse": {
+      "const": false
+    },
+    "format": {
+      "const": "host-preparation-emergency-draft-v4"
+    },
+    "invocation": {
+      "maxLength": 32,
+      "minLength": 32,
+      "pattern": "^[0-9a-f]{32}$",
+      "type": "string"
+    },
+    "observer_exit": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "observer_state": {
+      "enum": [
+        "LIVE",
+        "EXITED",
+        "LOST"
+      ]
+    },
+    "partial_log_sha256": {
+      "anyOf": [
+        {
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "publishable_positives": {
+      "const": 0
+    },
+    "reason": {
+      "enum": [
+        "HOST_LIMIT_EXHAUSTED",
+        "HOST_DEADLINE_EXCEEDED",
+        "HOST_READ_TIMEOUT",
+        "AUTH_DENIED",
+        "OWNERSHIP_DENIED",
+        "LOCK_DENIED",
+        "SOURCE_CHANGED",
+        "SOURCE_UNCLEAN",
+        "LITERAL_MISMATCH",
+        "MODE_MISMATCH",
+        "UNSUPPORTED_SOURCE",
+        "IMPORT_DENIED",
+        "ASSET_MISMATCH",
+        "NATIVE_DENIED",
+        "NATIVE_INCOMPLETE",
+        "OUTPUT_EXHAUSTED",
+        "MEMORY_ENFORCEMENT_UNAVAILABLE",
+        "INTERRUPTION",
+        "UNKNOWN_CHILD_EXIT",
+        "ACCOUNTING_INCOMPLETE",
+        "HOST_IO_ERROR",
+        "INTERNAL_CONTRACT_ERROR",
+        "HOST_DRIVER_FAILURE",
+        "HOST_CHILD_FAILURE",
+        "OBSERVER_LOST",
+        "CLEANUP_FAILED",
+        "PUBLICATION_UNCERTAIN",
+        "HOST_CLOCK_RESERVATION_DENIED"
+      ]
+    },
+    "route": {
+      "enum": [
+        "PREIMPORT",
+        "FINAL"
+      ]
+    },
+    "status": {
+      "enum": [
+        "DENIED",
+        "INTERRUPTED"
+      ]
+    }
+  },
+  "required": [
+    "format",
+    "invocation",
+    "route",
+    "status",
+    "reason",
+    "complete",
+    "counter_state",
+    "elapsed_ns",
+    "driver_state",
+    "child_state",
+    "driver_exit",
+    "child_exit",
+    "observer_state",
+    "observer_exit",
+    "partial_log_sha256",
+    "publishable_positives",
+    "continuation_authorized",
+    "acceptance_eligible",
+    "execution_reuse"
+  ],
+  "type": "object",
+  "x-maximum-utf8-bytes": 4096,
+  "x-required-conformance-oracle": "definition_oracle.py validate_emergency AND closed schema"
+}

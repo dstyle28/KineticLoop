@@ -1,0 +1,36 @@
+{
+  "initial_probe": {
+    "status": "REVIEW_PROBE_ERROR",
+    "cause": "seal_record recalculated intentionally malformed result_bytes before the rejection test; corrected to validate malformed result_bytes directly. Other counter probes remain sealed.",
+    "source": {
+      "name": "verify-attempt1.py",
+      "sha256": "5be361e93d7cb5c7cfd564ddc89245dc7c2ffbab0d176a398c8eaba97b5b5898"
+    },
+    "traceback": {
+      "name": "verify-attempt1.stderr",
+      "sha256": "46ac35948809859ddf8fcfaed795a170a758d740eecdc543093a0a2dcbed69d8"
+    },
+    "child_exit": "NOT_SEPARATELY_OBSERVED",
+    "composite_shell_exit": 0,
+    "composite_exit_not_python_exit": true
+  },
+  "corrected_probe": {
+    "source_sha256": "c468f5b3ed8b66eb95ce064f777408e72505b7403e322d89554f6211774daff4",
+    "observed_tool_process_exit": 0,
+    "session": 54530,
+    "semantic_probes": 236,
+    "additional_direct_result_bytes_checks": 3,
+    "unexpected": 0
+  },
+  "fresh_checks": {
+    "runner_sha256": "c629e2ced6c25241675a533ec66788369e25da9a6957f4b652926a690f7798e2",
+    "outer_observed_exit": 0,
+    "session": 54580
+  },
+  "supplement": {
+    "source_sha256": "d03489c4ea5a440744ad45f147f8365f694c4cc0f80def81773ae3cd97f4994f",
+    "observed_exit": 0,
+    "session": 98710
+  },
+  "historical_failed_author_attempt": "Preserved separately in SUPPLEMENT.json; never reused as acceptance."
+}

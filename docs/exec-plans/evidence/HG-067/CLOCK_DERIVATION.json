@@ -1,0 +1,220 @@
+{
+  "capture_limit_sum_seconds": 94800,
+  "capture_limits_seconds": [
+    {
+      "limit_seconds": 1200,
+      "name": "image_build"
+    },
+    {
+      "limit_seconds": 1200,
+      "name": "dependency_sync"
+    },
+    {
+      "limit_seconds": 6600,
+      "name": "lint"
+    },
+    {
+      "limit_seconds": 6600,
+      "name": "typecheck"
+    },
+    {
+      "limit_seconds": 6600,
+      "name": "unit"
+    },
+    {
+      "limit_seconds": 6600,
+      "name": "harness"
+    },
+    {
+      "limit_seconds": 6600,
+      "name": "merge_gate"
+    },
+    {
+      "limit_seconds": 6600,
+      "name": "collection"
+    },
+    {
+      "limit_seconds": 6600,
+      "name": "full_database"
+    },
+    {
+      "limit_seconds": 6600,
+      "name": "compose_config_valid"
+    },
+    {
+      "limit_seconds": 6600,
+      "name": "postgres_ready"
+    },
+    {
+      "limit_seconds": 6600,
+      "name": "reset_idempotent"
+    },
+    {
+      "limit_seconds": 6600,
+      "name": "peer_checkout"
+    },
+    {
+      "limit_seconds": 6600,
+      "name": "worktree_db_isolated"
+    },
+    {
+      "limit_seconds": 6600,
+      "name": "destroy"
+    },
+    {
+      "limit_seconds": 6600,
+      "name": "peer_remove"
+    }
+  ],
+  "classification": "STATIC_IMMUTABLE_SOURCE_AND_RETAINED_TIMING_NOT_EXECUTION_OR_FEASIBILITY",
+  "control_policy_ceiling": {
+    "calls": 64,
+    "derived_current_path_at_most": 32,
+    "each_seconds": 120,
+    "seconds": 7680
+  },
+  "daemon_readiness": {
+    "attempts": 60,
+    "probe_seconds": 10,
+    "seconds": 660,
+    "sleep_seconds": 1
+  },
+  "final_overall_proposed_seconds": 129600,
+  "known_conservative_sum_seconds": 103460,
+  "limits_of_inference": [
+    "observed timings are historical lower bounds only",
+    "control ceiling/headroom are prospective policy choices",
+    "no new worker/native/App/DB execution",
+    "RSS/import/history/host/project runtime feasibility NOT_DETERMINED"
+  ],
+  "retained_observations": {
+    "checks": [
+      {
+        "check_id": "image_build",
+        "duration_seconds": 1.772,
+        "exit_code": 0,
+        "interrupted": false
+      },
+      {
+        "check_id": "dependency_sync",
+        "duration_seconds": 1.212,
+        "exit_code": 0,
+        "interrupted": false
+      },
+      {
+        "check_id": "lint",
+        "duration_seconds": 0.131,
+        "exit_code": 0,
+        "interrupted": false
+      },
+      {
+        "check_id": "typecheck",
+        "duration_seconds": 4.845,
+        "exit_code": 0,
+        "interrupted": false
+      },
+      {
+        "check_id": "unit",
+        "duration_seconds": 33.288,
+        "exit_code": 0,
+        "interrupted": false
+      },
+      {
+        "check_id": "harness",
+        "duration_seconds": 406.811,
+        "exit_code": 0,
+        "interrupted": false
+      },
+      {
+        "check_id": "merge_gate",
+        "duration_seconds": 38.276,
+        "exit_code": 0,
+        "interrupted": false
+      },
+      {
+        "check_id": "collection",
+        "duration_seconds": 1.294,
+        "exit_code": 0,
+        "interrupted": false
+      },
+      {
+        "check_id": "full_database",
+        "duration_seconds": 1694.281,
+        "exit_code": 0,
+        "interrupted": false
+      },
+      {
+        "check_id": "compose_config_valid",
+        "duration_seconds": 0.185,
+        "exit_code": 0,
+        "interrupted": false
+      },
+      {
+        "check_id": "postgres_ready",
+        "duration_seconds": 0.505,
+        "exit_code": 0,
+        "interrupted": false
+      },
+      {
+        "check_id": "reset_idempotent",
+        "duration_seconds": 1.251,
+        "exit_code": 0,
+        "interrupted": false
+      },
+      {
+        "check_id": "peer_checkout",
+        "duration_seconds": 1.213,
+        "exit_code": 0,
+        "interrupted": false
+      },
+      {
+        "check_id": "worktree_db_isolated",
+        "duration_seconds": 2.305,
+        "exit_code": 0,
+        "interrupted": false
+      },
+      {
+        "check_id": "destroy",
+        "duration_seconds": 0.128,
+        "exit_code": 0,
+        "interrupted": false
+      },
+      {
+        "check_id": "peer_remove",
+        "duration_seconds": 0.137,
+        "exit_code": 0,
+        "interrupted": false
+      }
+    ],
+    "controller_seconds": 2210.9460785,
+    "reference": {
+      "bytes": 3660,
+      "path": "/private/tmp/hg058-host-rule-general-r2/WORKER_EVIDENCE.json",
+      "sha256": "bbe243cea763cf4631818f5c51cf114cee191f7df3746bb8b7d3e4d7d2b4f4f1"
+    },
+    "serial_seconds": 2187.634
+  },
+  "source_bindings": [
+    {
+      "bytes": 27208,
+      "path": "tools/harness/local_gate.py",
+      "revision": "9eb6ccc3f34a2914464213d466fae7a3015af977",
+      "sha256": "4b7d5c5740d9ceb895f5b43645ed2443235d17aff3f98c376180d95c45c188b4"
+    },
+    {
+      "bytes": 23676,
+      "path": "tools/harness/db_ci.py",
+      "revision": "276bcaebbf3b64b4ea128b175a0463b2f650ac7c",
+      "sha256": "9117178078cd33b46ccf9f66222dfcdb8733d180eb6ebf3f4bd8ed844253e95e"
+    }
+  ],
+  "terminal_reservation_seconds": 3600,
+  "termination_observation_policy": {
+    "endings_reserved": 16,
+    "kill_observe_seconds": 5,
+    "seconds": 320,
+    "term_seconds": 15
+  },
+  "unmeasured_inprocess_headroom_seconds": 4540,
+  "worker_operation_proposed_seconds": 108000
+}

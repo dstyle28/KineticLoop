@@ -1,0 +1,36 @@
+[
+  {
+    "label": "portable-definitions",
+    "argv": [
+      "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python",
+      "/Users/davetian/.codex/worktrees/hg067-host-resource-contract/KineticLoop/docs/exec-plans/evidence/HG-067/verify_definitions.py",
+      "--base",
+      "276bcaebbf3b64b4ea128b175a0463b2f650ac7c",
+      "--tested",
+      "c3ac6d57c4183ce0c9eb0a7806ebc30673ca58a2"
+    ],
+    "cwd": "/Users/davetian/.codex/worktrees/hg067-host-resource-contract/KineticLoop",
+    "child_exit": 0,
+    "elapsed_ns": 3925981208,
+    "log_sha256": "2745274559bfa2f4db9bd49550e2656ca15058e87834fbba9fe24ebbdffa6dad"
+  },
+  {
+    "label": "affected-validator",
+    "argv": [
+      "/Users/davetian/Personal_Projects/KineticLoop/.venv/bin/python",
+      "-m",
+      "pytest",
+      "tests/harness/test_validator.py::HostResourceDefinitionTests",
+      "tests/harness/test_validator.py::ValidatorTests::test_hg067_security_review_is_mandatory",
+      "-q",
+      "-p",
+      "no:cacheprovider",
+      "--basetemp=/private/tmp/hg067-general-r1/pytest-temp",
+      "--junitxml=/private/tmp/hg067-general-r1/affected-validator.xml"
+    ],
+    "cwd": "/Users/davetian/.codex/worktrees/hg067-host-resource-contract/KineticLoop",
+    "child_exit": 0,
+    "elapsed_ns": 10430335500,
+    "log_sha256": "17444adb2437f8c879bbe8cecd778e5b10aaaec2ddca299d24cd465446c84aee"
+  }
+]
